@@ -48,6 +48,6 @@ class StateStack {
 template<typename S>
 void StateStack::registerState(StateIdentifier id) {
     mFactories[id] = [this]() {
-        return std::unique_ptr(new S(*this, mContext));
+        return std::make_unique<S>(*this, mContext);
     };
 }
