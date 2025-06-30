@@ -58,13 +58,10 @@ void Entity::applyGravity(float dt) {
 
 void Entity::applyDrag(float dt) {
     float lambda = mIsGround ? Friction : AirDrag;
-    if (std::fabs(mVelocity.x) > Eps) {
-        float delta = mVelocity.x * lambda * dt;
-        if (std::fabs(mVelocity.x) <= delta)
-            mVelocity.x = 0.f;
-        else
-            mVelocity.x -= std::copysign(delta, mVelocity.x);
-    }
+    float delta = mVelocity.x * lambda * dt;
+    if (std::fabs(mVelocity.x) <= delta) {
+        mVelocity.x = 0.f;
+    } else mVelocity.x -= std::copysign(delta, mVelocity.x);
 }
 
 void Entity::updateCurrent(float dt) {
