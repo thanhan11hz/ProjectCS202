@@ -7,7 +7,8 @@ enum class TextureIdentifier {
     SETTING_BUTTON,
     INSTRUCTION_BUTTON,
     EXIT_BUTTON,
-    LEVEL1
+    LEVEL1,
+    TILE_SET
 };
 
 enum class FontIdentifier {

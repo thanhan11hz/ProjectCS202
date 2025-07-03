@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity/Entity.hpp"
+#include "Entity.hpp"
 
 class Mario : public Entity {
     public:
