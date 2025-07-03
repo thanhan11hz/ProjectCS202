@@ -14,8 +14,10 @@ LevelState::LevelState(StateStack& stack, Context ctx) : State(stack,ctx) {
 };
 
 void LevelState::draw() {
-    Texture2D background = mContext.textures.get(TextureIdentifier::LEVEL_BACKGROUND);
-    DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
+    Texture2D background = mContext.textures.get(TextureIdentifier::TILE_SET);
+    mMap.loadFromFile("resource\\Texture\\Map\\map1.txt");
+    mMap.draw(background);
+    //DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
     mContainer.draw();
 }
 

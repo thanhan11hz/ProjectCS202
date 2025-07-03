@@ -4,6 +4,7 @@
 #include "GUI/Container.hpp"
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
+#include "World/TileMap.hpp"
 
 class LevelState : public State {
     public:
@@ -13,4 +14,5 @@ class LevelState : public State {
         virtual bool handle();
         virtual bool update(float dt);
         Container mContainer;
+        TileMap mMap;
 };
