@@ -15,7 +15,9 @@ Game::Game() : mTextures(LoadTexture, UnloadTexture),
     mTextures.load(TextureIdentifier::INSTRUCTION_BUTTON, "resource\\Texture\\Button\\InstructionButton.png");
     mTextures.load(TextureIdentifier::EXIT_BUTTON, "resource\\Texture\\Button\\ExitButton.png");
     mTextures.load(TextureIdentifier::LEVEL1, "resource\\Texture\\Button\\Level1.png");
-    mTextures.load(TextureIdentifier::TILE_SET, "resource\\Texture\\Background\\tiles-2.png");
+    mTextures.load(TextureIdentifier::TILE_SET_BLOCKS, "resource\\Texture\\Spritesheet\\Blocks\\tiles-2.png");
+    mTextures.load(TextureIdentifier::TILE_SET_ENEMIES, "resource\\Texture\\Spritesheet\\Blocks\\enemies-fixed.png");
+    mTextures.load(TextureIdentifier::TILE_SET_ITEMS, "resource\\Texture\\Spritesheet\\Blocks\\items-objects.png");
     mStateStack.registerState<MenuState>(StateIdentifier::MENU);
     mStateStack.registerState<LevelState>(StateIdentifier::LEVEL);
     mStateStack.pushState(StateIdentifier::MENU);
