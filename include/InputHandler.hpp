@@ -4,11 +4,6 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "Command/Command.hpp"
-#include "Command/CommandQueue.hpp"
-
-
-
 class InputHandler {
     public:
         enum class Action {
@@ -27,5 +22,4 @@ class InputHandler {
 
     private:
         std::unordered_map<int, Action> mKeyBinding;
-        std::unordered_map<Action,Command> mActionBinding;
 };

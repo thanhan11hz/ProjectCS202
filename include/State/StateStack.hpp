@@ -7,13 +7,14 @@
 
 #include "State/State.hpp"
 #include "State/StateIdentifier.hpp"
+#include "World/TileMap.hpp"
 
 class StateStack {
     public:
-        explicit StateStack(Context ctx);
+        explicit StateStack();
         
         template<typename S>
-        void registerState(StateIdentifier id);
+        void registerState(StateIdentifier id, TileMap* mMap = nullptr);
 
         void pushState(StateIdentifier id);
         void popState();
@@ -46,8 +47,14 @@ class StateStack {
 };
 
 template<typename S>
-void StateStack::registerState(StateIdentifier id) {
-    mFactories[id] = [this]() {
-        return std::make_unique<S>(*this, mContext);
-    };
+void StateStack::registerState(StateIdentifier id, TileMap* mMap) {
+    if (!mMap) {
+        mFactories[id] = [this]() {
+            return std::make_unique<S>(*this, mContext);
+        };
+    } else {
+        mFactories[id] = [this]() {
+            return std::make_unique<S>(*this, mContext, mMap);
+        };
+    }
 }

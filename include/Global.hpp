@@ -17,3 +17,13 @@ typedef ResourceHolder<Font, FontIdentifier> FontHolder;
 typedef ResourceHolder<Sound, SoundIdentifier> SoundHolder;
 
 typedef ResourceHolder<Music, MusicIdentifier> MusicHolder;
+
+namespace Resource {
+    extern TextureHolder* mTexture;
+
+    extern FontHolder* mFont;
+
+    extern SoundHolder* mSound;
+
+    extern MusicHolder* mMusic;
+}

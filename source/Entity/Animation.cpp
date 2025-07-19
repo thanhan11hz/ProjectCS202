@@ -1,4 +1,4 @@
-#include "Animation.hpp"
+#include "Entity/Animation.hpp"
 
 Animation::Animation(Texture2D* texture, float frameW, float frameH, float dur, bool repeat) 
     : mTexture(texture), mFrameSize{frameW, frameH}, mDuration(dur), mRepeat(repeat) {

@@ -1,6 +1,6 @@
 #include "State/GameState.hpp"
 
-GameState::GameState(StateStack& stack, Context ctx) : State(stack, ctx), mWorld(ctx) {}
+GameState::GameState(StateStack& stack, Context ctx, TileMap *map) : State(stack, ctx), mWorld(ctx), mMap(map) {}
 
 void GameState::draw() {
     mWorld.draw();

@@ -1,7 +1,5 @@
 #include "State/StateStack.hpp"
 
-StateStack::StateStack(Context ctx) : mContext(ctx) {}
-
 void StateStack::pushState(StateIdentifier id) {
     mPendingList.emplace_back(Action::PUSH, id);
 }

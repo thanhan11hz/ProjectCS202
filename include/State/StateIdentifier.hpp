@@ -4,5 +4,7 @@ enum class StateIdentifier {
     NONE,
     MENU,
     LEVEL,
-    GAME
+    GAME1,
+    GAME2,
+    GAME3
 };

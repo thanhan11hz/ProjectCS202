@@ -1,9 +1,20 @@
 #pragma once
 
 template <typename Resource, typename Identifier>
+ResourceHolder<Resource, Identifier>*  ResourceHolder<Resource, Identifier>::instance = nullptr;
+
+template <typename Resource, typename Identifier>
 ResourceHolder<Resource, Identifier>::ResourceHolder(std::function<Resource(const char*)> loader,std::function<void(Resource)> unloader)
 : mLoader(loader), mUnloader(unloader)
 {}
+
+template <typename Resource, typename Identifier>
+ResourceHolder<Resource, Identifier>* ResourceHolder<Resource, Identifier>::getInstance(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader) {
+    if (!instance) {
+        instance = ResourceHolder(loader, unloader);
+    }
+    return instance;
+}
 
 template <typename Resource, typename Identifier>
 void ResourceHolder<Resource, Identifier>::load(Identifier id, const char* fileName) {

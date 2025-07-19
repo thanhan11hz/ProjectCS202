@@ -1,23 +1,22 @@
 #include "Game.hpp"
 
-Game::Game() : mTextures(LoadTexture, UnloadTexture), 
-               mFonts(LoadFont, UnloadFont), 
-               mSounds(LoadSound, UnloadSound), 
-               mMusics(LoadMusicStream, UnloadMusicStream),
-               mStateStack(Context(mTextures, mFonts, mSounds, mMusics))
-{
-    //SetConfigFlags(FLAG_FULLSCREEN_MODE);
+Game::Game() {
+
+    // SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(targetWidth, targetHeight, "Project CS202 - Group 7 - Super Mario Game");
-    mTextures.load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\MenuBackground.jpg");
-    mTextures.load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\LevelBackground.jpg");
-    mTextures.load(TextureIdentifier::PLAY_BUTTON, "resource\\Texture\\Button\\PlayButton.png");
-    mTextures.load(TextureIdentifier::SETTING_BUTTON, "resource\\Texture\\Button\\SettingButton.png");
-    mTextures.load(TextureIdentifier::INSTRUCTION_BUTTON, "resource\\Texture\\Button\\InstructionButton.png");
-    mTextures.load(TextureIdentifier::EXIT_BUTTON, "resource\\Texture\\Button\\ExitButton.png");
-    mTextures.load(TextureIdentifier::LEVEL1, "resource\\Texture\\Button\\Level1.png");
-    mTextures.load(TextureIdentifier::TILE_SET, "resource\\Texture\\Background\\tiles-2.png");
+
+    Resource::mTexture->load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\MenuBackground.jpg");
+    Resource::mTexture->load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\LevelBackground.jpg");
+    Resource::mTexture->load(TextureIdentifier::PLAY_BUTTON, "resource\\Texture\\Button\\PlayButton.png");
+    Resource::mTexture->load(TextureIdentifier::SETTING_BUTTON, "resource\\Texture\\Button\\SettingButton.png");
+    Resource::mTexture->load(TextureIdentifier::INSTRUCTION_BUTTON, "resource\\Texture\\Button\\InstructionButton.png");
+    Resource::mTexture->load(TextureIdentifier::EXIT_BUTTON, "resource\\Texture\\Button\\ExitButton.png");
+    Resource::mTexture->load(TextureIdentifier::LEVEL1, "resource\\Texture\\Button\\Level1.png");
+    Resource::mTexture->load(TextureIdentifier::TILE_SET, "resource\\Texture\\Background\\tiles-2.png");
+    
     mStateStack.registerState<MenuState>(StateIdentifier::MENU);
     mStateStack.registerState<LevelState>(StateIdentifier::LEVEL);
+
     mStateStack.pushState(StateIdentifier::MENU);
 }
 
@@ -55,7 +54,6 @@ void Game::run() {
 }
 
 void Game::inputProcess() {
-    mInput.handle();
     mStateStack.handle();
 }
 

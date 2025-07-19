@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.hpp"
+#include <raylib.h>
 
 
 enum TileType {
@@ -24,12 +24,12 @@ enum TileType {
     UnderPipe2Bottom2=323,
     UnderPipe2Bottom3=324,
     OwSky=613,
-    CLoudUpperLeftConer=581,
+    CLoudUpperLeftCorner=581,
     CloudUpperMiddel =582,
-    CLoudUpperRightConer=583,
-    CLoudBottomLeftConer=610,
+    CLoudUpperRightCorner=583,
+    CLoudBottomLeftCorner=610,
     CLoudBottomMiddle=611,
-    CLoudBottomRightConer=612,
+    CLoudBottomRightCorner=612,
     MountainUpperLeft1 = 241,
     MountainUpperMiddle1 =242, 
     MountainUpperRight1 = 243,
@@ -58,7 +58,7 @@ private:
     TileType mType;
     Rectangle mRect;
     Vector2 posTile;
-    const int TileCollum = 29;
+    const int TileColumn = 29;
     float TILE_SCALE = 3.0f;
     float TILE_SIZE = 16.0f;
    float TILE_RENDER_SIZE = TILE_SIZE * TILE_SCALE;

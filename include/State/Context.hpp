@@ -7,10 +7,10 @@
 #include "Resource/ResourceIdentifier.hpp"
 
 struct Context {
-    TextureHolder& textures;
-    FontHolder& fonts;
-    SoundHolder& sounds;
-    MusicHolder& musics;
+    TextureHolder* textures;
+    FontHolder* fonts;
+    SoundHolder* sounds;
+    MusicHolder* musics;
 
-    Context(TextureHolder& t, FontHolder& f, SoundHolder& s, MusicHolder& m) : textures(t), fonts(f), sounds(s), musics(m) {}
+    Context(TextureHolder* t, FontHolder* f, SoundHolder* s, MusicHolder* m) : textures(t), fonts(f), sounds(s), musics(m) {}
 };

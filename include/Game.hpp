@@ -23,10 +23,6 @@ class Game {
 
     private:
         InputHandler mInput;
-        TextureHolder mTextures;
-        FontHolder mFonts;
-        SoundHolder mSounds;
-        MusicHolder mMusics;
         StateStack mStateStack;
 
 };

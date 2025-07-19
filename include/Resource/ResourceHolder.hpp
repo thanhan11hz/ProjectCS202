@@ -6,13 +6,18 @@
 #include <cassert>
 
 template <typename Resource, typename Identifier>
-class ResourceHolder
-{
+class ResourceHolder {
 public:
-    ResourceHolder(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader);
+    ResourceHolder(ResourceHolder& other) = delete;
+    void operator=(const ResourceHolder&) = delete;
+    static ResourceHolder* getInstance(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader);
     void load(Identifier id, const char* fileName);
     Resource &get(Identifier id);
     ~ResourceHolder();
+
+protected:
+    ResourceHolder(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader);
+    static ResourceHolder* instance;
 
 private:
     static bool isValid(const Resource &resource);
