@@ -5,14 +5,16 @@ Game::Game() {
     // SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(targetWidth, targetHeight, "Project CS202 - Group 7 - Super Mario Game");
 
-    Resource::mTexture->load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\MenuBackground.jpg");
-    Resource::mTexture->load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\LevelBackground.jpg");
-    Resource::mTexture->load(TextureIdentifier::PLAY_BUTTON, "resource\\Texture\\Button\\PlayButton.png");
-    Resource::mTexture->load(TextureIdentifier::SETTING_BUTTON, "resource\\Texture\\Button\\SettingButton.png");
-    Resource::mTexture->load(TextureIdentifier::INSTRUCTION_BUTTON, "resource\\Texture\\Button\\InstructionButton.png");
-    Resource::mTexture->load(TextureIdentifier::EXIT_BUTTON, "resource\\Texture\\Button\\ExitButton.png");
-    Resource::mTexture->load(TextureIdentifier::LEVEL1, "resource\\Texture\\Button\\Level1.png");
-    Resource::mTexture->load(TextureIdentifier::TILE_SET, "resource\\Texture\\Background\\tiles-2.png");
+    Resource::mTexture.load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\MenuBackground.jpg");
+    Resource::mTexture.load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\LevelBackground.jpg");
+    Resource::mTexture.load(TextureIdentifier::PLAY_BUTTON, "resource\\Texture\\Button\\PlayButton.png");
+    Resource::mTexture.load(TextureIdentifier::SETTING_BUTTON, "resource\\Texture\\Button\\SettingButton.png");
+    Resource::mTexture.load(TextureIdentifier::INSTRUCTION_BUTTON, "resource\\Texture\\Button\\InstructionButton.png");
+    Resource::mTexture.load(TextureIdentifier::EXIT_BUTTON, "resource\\Texture\\Button\\ExitButton.png");
+    Resource::mTexture.load(TextureIdentifier::LEVEL1, "resource\\Texture\\Button\\Level1.png");
+    Resource::mTexture.load(TextureIdentifier::TILE_SET_BLOCKS, "resource\\Texture\\Spritesheet\\Blocks\\tiles-2.png");
+    Resource::mTexture.load(TextureIdentifier::TILE_SET_ENEMIES, "resource\\Texture\\Spritesheet\\Blocks\\enemies-fixed.png");
+    Resource::mTexture.load(TextureIdentifier::TILE_SET_ITEMS, "resource\\Texture\\Spritesheet\\Blocks\\items-objects.png");
     
     mStateStack.registerState<MenuState>(StateIdentifier::MENU);
     mStateStack.registerState<LevelState>(StateIdentifier::LEVEL);

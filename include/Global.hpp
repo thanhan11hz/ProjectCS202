@@ -19,11 +19,12 @@ typedef ResourceHolder<Sound, SoundIdentifier> SoundHolder;
 typedef ResourceHolder<Music, MusicIdentifier> MusicHolder;
 
 namespace Resource {
-    extern TextureHolder* mTexture;
 
-    extern FontHolder* mFont;
+    extern TextureHolder& mTexture;
 
-    extern SoundHolder* mSound;
+    extern FontHolder& mFont;
 
-    extern MusicHolder* mMusic;
+    extern SoundHolder& mSound;
+
+    extern MusicHolder& mMusic;
 }
