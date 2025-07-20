@@ -1,7 +1,7 @@
 #include "State/GameState.hpp"
 
-GameState::GameState(StateStack& stack, Context ctx, TileMap *map) : State(stack, ctx), mWorld(ctx), mMap(map) {
-    Button* muteButton = new Button(ctx);
+GameState::GameState(StateStack) : State(stack) {
+    Button* muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
@@ -11,7 +11,7 @@ GameState::GameState(StateStack& stack, Context ctx, TileMap *map) : State(stack
         }
     );
     
-    Button* pauseButton = new Button(ctx);
+    Button* pauseButton = new Button();
     pauseButton->changShape({1174,799,211,56});
     pauseButton->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pauseButton->changeText("Pause");
@@ -22,35 +22,35 @@ GameState::GameState(StateStack& stack, Context ctx, TileMap *map) : State(stack
         }
     );
 
-    Label* lvl = new Label(ctx);
+    Label* lvl = new Label();
     lvl->changeShape({23,794,187, 17});
     lvl->changeSize(17);
     lvl->changeText("Level 1 - 1");
     lvl->changeColor(WHITE);
     mContainer.pack(lvl);
 
-    Label* time = new Label(ctx);
+    Label* time = new Label();
     time->changeShape({23,846,170, 17});
     time->changeSize(17);
     time->changeText("00:00");
     time->changeColor(WHITE);
     mContainer.pack(time);
 
-    Label* hp = new Label(ctx);
+    Label* hp = new Label();
     hp->changeShape({229,794,187, 17});
     hp->changeSize(17);
     hp->changeText("Lives:  x3");
     hp->changeColor(WHITE);
     mContainer.pack(hp);
 
-    Label* coins = new Label(ctx);
+    Label* coins = new Label();
     coins->changeShape({229,846,275, 17});
     coins->changeSize(17);
     coins->changeText("00000000");
     coins->changeColor(WHITE);
     mContainer.pack(coins);
 
-    Label* items = new Label(ctx);
+    Label* items = new Label();
     items->changeShape({565,794,830, 17});
     items->changeSize(17);
     items->changeText("Active Power-Ups:");

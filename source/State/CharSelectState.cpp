@@ -1,28 +1,28 @@
 #include "State/CharSelectState.hpp"
 
-CharSelectState::CharSelectState(StateStack& stack, Context ctx): State(stack, ctx), selectedCharacter(0) {
-    Label* lvl = new Label(ctx);
+CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedCharacter(0) {
+    Label* lvl = new Label();
     title->changeShape({580, 72, 280, 40});
     title->changeSize(40);
     title->changeText("LEVEL 1");
     title->changeColor(WHITE);
     mContainer.pack(lvl);
 
-    Label* header = new Label(ctx);
+    Label* header = new Label();
     header->changeShape({405, 168, 630, 30});
     header->changeSize(30);
     header->changeText("SELECT YOUR CHARACTER");
     header->changeColor(WHITE);
     mContainer.pack(header);
 
-    Label* character = new Label(ctx);
+    Label* character = new Label();
     character->changeShape({515, 648, 85, 17});
     character->changeSize(17);
     character->changeText("MARIO");
     character->changeColor(WHITE);
     mContainer.pack(character);
 
-    Button* muteButton = new Button(ctx);
+    Button* muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
     muteButton->changShape({23, 22, 41, 41});
     mContainer.pack(muteButton);
@@ -32,7 +32,7 @@ CharSelectState::CharSelectState(StateStack& stack, Context ctx): State(stack, c
         }
     );
 
-    Button* back = new Button(ctx);
+    Button* back = new Button();
     back->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     back->changeText("Back");
     back->changShape({84, 793, 211, 56});
@@ -43,7 +43,7 @@ CharSelectState::CharSelectState(StateStack& stack, Context ctx): State(stack, c
         }
     );
 
-    Button* confirm = new Button(ctx);
+    Button* confirm = new Button();
     confirm->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     confirm->changeText("Confirm");
     confirm->changShape({1145, 793, 211, 56});

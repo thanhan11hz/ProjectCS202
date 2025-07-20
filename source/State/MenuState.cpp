@@ -1,19 +1,19 @@
 #include "State/MenuState.hpp"
 
 MenuState::MenuState(StateStack& stack): State(stack) {
-    Button* muteButton = new Button(ctx);
+    Button* muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     
-    Label* subtext = new Label(ctx);
+    Label* subtext = new Label();
     title->changeShape({66,267,300,15});
     title->changeSize(15);
     title->changeText("Developed by Group 6");
     title->changeColor(WHITE);
     mContainer.pack(subtext);
 
-    Button* playButton = new Button(ctx);
+    Button* playButton = new Button();
     playButton->changShape({93,319,245,65});
     playButton->changeText("New Game");
     playButton->changeCallback(
@@ -24,7 +24,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
     );
     mContainer.pack(playButton);
 
-    Button* loadButton = new Button(ctx);
+    Button* loadButton = new Button();
     loadButton->changShape({93,429,245,65});
     loadButton->changeText("Load Game");
     loadButton->changeCallback(
@@ -36,7 +36,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
     loadButton->changeToggle(false);
     mContainer.pack(loadButton);
 
-    Button* instructionButton = new Button(ctx);
+    Button* instructionButton = new Button();
     instructionButton->changShape({93,539,245,65});
     instructionButton->changeText("Instructions");
     mContainer.pack(instructionButton);
@@ -46,7 +46,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
         }
     );
 
-    Button* settingButton = new Button(ctx);
+    Button* settingButton = new Button();
     settingButton->changShape({93,649,245,65});
     settingButton->changeText("Settings");
     mContainer.pack(settingButton);
@@ -56,7 +56,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
         }
     );    
 
-    Button* exitButton = new Button(ctx);
+    Button* exitButton = new Button();
     exitButton->changShape({93,759,245,65});
     exitButton->changeText("Exit");
     mContainer.pack(exitButton);

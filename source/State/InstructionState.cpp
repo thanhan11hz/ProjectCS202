@@ -1,28 +1,28 @@
 #include "State/InstructionState.hpp"
 
-InstructionState::InstructionState(StateStack& stack, Context ctx): State(stack, ctx), mCurrentPage(1), mMaxPage(10) {
-    Label* title = new Label(ctx);
+InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(10) {
+    Label* title = new Label();
     title->changeShape({480, 103, 480, 40});
     title->changeSize(40);
     title->changeText("INSTRUCTIONS");
     title->changeColor(WHITE);
     mContainer.pack(title);
 
-    tracker = new Label(ctx);
+    tracker = new Label();
     tracker->changeShape({669, 860, 102, 17});
     tracker->changeSize(17);
     tracker->changeText("(" + std::to_string(mCurrentPage) + "/" + std::to_string(mMaxPage) + ")");
     tracker->changeColor(WHITE);
     mContainer.pack(tracker);   
 
-    description = new Label(ctx);
+    description = new Label();
     description->changeShape({191, 690, 1060, 100});
     description->changeSize(30);
     description->changeColor(WHITE);
     //description->changeFont(FontIdentifier::FONT_ARIAL);
     mContainer.pack(description);
 
-    Button* muteButton = new Button(ctx);
+    Button* muteButton = new Button();
     muteButton->changeToggle(true);
     muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
     muteButton->changShape({23,22,41,41});
@@ -33,7 +33,7 @@ InstructionState::InstructionState(StateStack& stack, Context ctx): State(stack,
         }
     );
 
-    Button* homeButton = new Button(ctx);
+    Button* homeButton = new Button();
     homeButton->changeToggle(true);
     muteButton->changeTexture(TextureIdentifier::HOME_BUTTON);
     muteButton->changShape({1372,24,41,41});
@@ -46,7 +46,7 @@ InstructionState::InstructionState(StateStack& stack, Context ctx): State(stack,
         }
     );
 
-    next = new Button(ctx);
+    next = new Button();
     next->changShape({1314, 397, 105, 105});
     next->changeTexture(TextureIdentifier::NEXT_WHITE);
     mContainer.pack(next);
@@ -57,7 +57,7 @@ InstructionState::InstructionState(StateStack& stack, Context ctx): State(stack,
         }
     );
 
-    previous = new Button(ctx);
+    previous = new Button();
     previous->changShape({1314, 612, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS_WHITE);
     mContainer.pack(previous);

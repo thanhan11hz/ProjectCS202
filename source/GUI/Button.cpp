@@ -1,6 +1,6 @@
 #include "GUI/Button.hpp"
 
-Button::Button(Context& ctx) : mContext(ctx), mCallback(), mIsToggle(false), mFontSize(17), mColor(BLACK) {
+Button::Button() : mCallback(), mIsToggle(false), mFontSize(17), mColor(BLACK) {
     mID = Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON);
 }
 

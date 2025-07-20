@@ -1,6 +1,6 @@
 #include "State/SettingState.hpp"
 
-SettingState::SettingState(StateStack& stack, Context ctx): State(stack, ctx), mCurrentPage(1), mMaxPage(3), changeMade(false) {
+SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(3), changeMade(false) {
     
     Label* title = new Label(ctx);
     title->changeShape({560, 92, 320, 40});
