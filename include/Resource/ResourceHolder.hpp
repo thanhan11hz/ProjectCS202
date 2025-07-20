@@ -10,14 +10,14 @@ class ResourceHolder {
 public:
     ResourceHolder(ResourceHolder& other) = delete;
     void operator=(const ResourceHolder&) = delete;
-    static ResourceHolder* getInstance(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader);
+    static ResourceHolder& getInstance(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader);
     void load(Identifier id, const char* fileName);
     Resource &get(Identifier id);
     ~ResourceHolder();
 
 protected:
     ResourceHolder(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader);
-    static ResourceHolder* instance;
+    static ResourceHolder<Resource, Identifier>* instance;
 
 private:
     static bool isValid(const Resource &resource);

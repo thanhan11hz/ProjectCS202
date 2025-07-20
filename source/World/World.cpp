@@ -1,17 +1,42 @@
 #include "World/World.hpp"
 
-World::World(Context ctx) : mContext(ctx) {}
+World::World() {}
         
 void World::update(float dt) {
+    
 }
         
-void World::draw() {    
+void World::draw() {
+    mMario->draw();
+    mMap[mCurrentMap]->draw();
 }
 
-void World::buildScene() {
+void World::loadMap(const std::string filename) {
+    TileMap* newMap = new TileMap();
+    newMap->loadFromFile(filename);
+    mMap.push_back(newMap);
+}
+
+void World::loadCharater(const std::string character) {
+    if (character == "Mario") {
+        if (mMario) delete mMario;
+        mMario = new Mario();
+    }
+}
+        
+bool World::isLevelComplete() {
 
 }
-    
-void World::loadLevel() {
-
+        
+bool World::hasNextMap() {
+    if (mCurrentMap >= mMap.size() - 1) return false;
+    return true;
+}
+        
+bool World::nextMap() {
+    mCurrentMap = (mCurrentMap + 1) % mMap.size();
+}
+        
+bool World::backMap() {
+    mCurrentMap = (mCurrentMap - 1 + mMap.size()) % mMap.size();
 }

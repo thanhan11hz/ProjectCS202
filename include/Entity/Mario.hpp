@@ -1,27 +1,30 @@
 #pragma once
 
-#include "Entity/Listener.hpp"
-#include "Entity/Animation.hpp"
-#include "Entity/MarioForm.hpp"
+#include "Entity/Entity.hpp"
+#include "Animation.hpp"
+#include "Global.hpp"
 
-class Mario : public Listener {
+class Mario : public Entity {
     public:
-        explicit Mario();
-        void input();
-        void update(float dt);
-        void draw();
-
-        void onGround();
-
-        void onSensorBegin(b2ShapeId self, b2ShapeId other);
-        void onSensorEnd(b2ShapeId self, b2ShapeId other);
-        void onContactBegin(b2ShapeId self, b2ShapeId other);
-        void onContactEnd(b2ShapeId self, b2ShapeId other);
+        enum class Action {IDLE, RUN, JUMP, FALL, CROUCH, SKID, DEAD};
+        enum class Form {NORMAL, SUPER, FIRE};
+        explicit Mario();  
+        Animation mAnimation;
+        virtual void draw();
+        virtual void update(float dt);
 
     private:
+        Action mAction;
+        Form mForm;
+        bool mIsRight;
+        bool mIsImmortal;
 
-        MarioForm* mForm;
-        Vector2 mPosition;
-        float mAngle;
-        b2BodyId mBody;
+        static constexpr float mImmortalTime = 200.f;
+        float mImmortalTimer;
+
+        void updateAction();
+        void updateImmortal(float dt);
+        void setAction(Action action);
+        void setForm(Form form);
+        void setImmortal(bool flag);
 };

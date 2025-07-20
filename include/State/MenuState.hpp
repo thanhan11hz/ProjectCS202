@@ -8,7 +8,7 @@
 
 class MenuState : public State {
     public:
-        MenuState(StateStack& stack, Context ctx);
+        MenuState(StateStack& stack);
     private:
         virtual void draw();
         virtual bool update(float dt);

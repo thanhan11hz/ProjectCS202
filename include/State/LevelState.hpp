@@ -9,7 +9,7 @@
 
 class LevelState : public State {
     public:
-        LevelState(StateStack& stack, Context ctx);
+        LevelState(StateStack& stack);
     private:
         virtual void draw();
         virtual bool handle();

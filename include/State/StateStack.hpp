@@ -11,10 +11,10 @@
 
 class StateStack {
     public:
-        explicit StateStack();
+        explicit StateStack() = default;
         
         template<typename S>
-        void registerState(StateIdentifier id, TileMap* mMap = nullptr);
+        void registerState(StateIdentifier id);
 
         void pushState(StateIdentifier id);
         void popState();
@@ -25,7 +25,6 @@ class StateStack {
         bool isEmpty();
         std::unique_ptr<State> creatState(StateIdentifier);
         void applyPendingChanges();
-        Context mContext;
 
     private:
 
@@ -47,14 +46,8 @@ class StateStack {
 };
 
 template<typename S>
-void StateStack::registerState(StateIdentifier id, TileMap* mMap) {
-    if (!mMap) {
+void StateStack::registerState(StateIdentifier id) {
         mFactories[id] = [this]() {
-            return std::make_unique<S>(*this, mContext);
+            return std::make_unique<S>(*this);
         };
-    } else {
-        mFactories[id] = [this]() {
-            return std::make_unique<S>(*this, mContext, mMap);
-        };
-    }
 }
