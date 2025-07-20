@@ -1,6 +1,8 @@
 #include "GUI/Button.hpp"
 
-Button::Button(Context& ctx) : mContext(ctx), mCallback(), mIsToggle(false) {}
+Button::Button(Context& ctx) : mContext(ctx), mCallback(), mIsToggle(false), mFontSize(17), mColor(BLACK) {
+    mID = Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON);
+}
 
 bool Button::isSelectable() {
     return true;
@@ -10,6 +12,9 @@ void Button::handle() {
     Vector2 mousePos = GetMousePosition();
     if (CheckCollisionPointRec(mousePos, mShape)) {
         select();
+        if (mID == Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON)) changeTexture(Resource::mTexture.get(TextureIdentifier::HOVERED_BUTTON));
+        else if (mID == Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON_MEDIUM)) changeTexture(Resource::mTexture.get(TextureIdentifier::HOVERED_BUTTON_MEDIUM));
+        else if (mID == Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON_SMALL)) changeTexture(Resource::mTexture.get(TextureIdentifier::HOVERED_BUTTON_SMALL));
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             mCallback();
         }
@@ -34,9 +39,33 @@ void Button::changeToggle(bool flag) {
     mIsToggle = flag;
 }
 
+void Button::changeText(const std::string& text) {
+    mText = text;
+}
+void Button::changeTextSize(int size) {
+    mFontSize = size;
+}
+void changeTextColor(Color color) {
+    mColor = color;
+}
+void changeFont(FontIdentifier id) {
+    mFont = id;
+}
+
 void Button::draw() {
     Color color = WHITE;
     if (mIsSelected) color = Fade(color,0.9);
     Texture2D& texture = mContext.textures.get(mID);
     DrawTexturePro(texture, {0, 0, (float)texture.width, (float)texture.height}, mShape, {0, 0}, 0.0f, color);
+
+    if (!mText.empty()) {
+        Font font = mContext.fonts.get(mFont);
+        Vector2 textSize = MeasureTextEx(font, mText.c_str(), mFontSize, 1);
+        Vector2 textPos = {
+            mShape.x + (mShape.width - textSize.x) / 2.0f,
+            mShape.y + (mShape.height - textSize.y) / 2.0f
+        };
+        DrawTextEx(font, mText.c_str(), textPos, mFontSize, 1, mColor);
+    }
+
 }

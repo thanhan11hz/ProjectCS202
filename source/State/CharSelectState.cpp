@@ -1,0 +1,90 @@
+#include "State/CharSelectState.hpp"
+
+CharSelectState::CharSelectState(StateStack& stack, Context ctx): State(stack, ctx), selectedCharacter(0) {
+    Label* lvl = new Label(ctx);
+    title->changeShape({580, 72, 280, 40});
+    title->changeSize(40);
+    title->changeText("LEVEL 1");
+    title->changeColor(WHITE);
+    mContainer.pack(lvl);
+
+    Label* header = new Label(ctx);
+    header->changeShape({405, 168, 630, 30});
+    header->changeSize(30);
+    header->changeText("SELECT YOUR CHARACTER");
+    header->changeColor(WHITE);
+    mContainer.pack(header);
+
+    Label* character = new Label(ctx);
+    character->changeShape({515, 648, 85, 17});
+    character->changeSize(17);
+    character->changeText("MARIO");
+    character->changeColor(WHITE);
+    mContainer.pack(character);
+
+    Button* muteButton = new Button(ctx);
+    muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
+    muteButton->changShape({23, 22, 41, 41});
+    mContainer.pack(muteButton);
+    muteButton->changeCallback(
+        [this]() {
+            //toggleMute();
+        }
+    );
+
+    Button* back = new Button(ctx);
+    back->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    back->changeText("Back");
+    back->changShape({84, 793, 211, 56});
+    mContainer.pack(back);
+    back->changeCallback(
+        [this]() {
+            requestStackPop();
+        }
+    );
+
+    Button* confirm = new Button(ctx);
+    confirm->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    confirm->changeText("Confirm");
+    confirm->changShape({1145, 793, 211, 56});
+    mContainer.pack(confirm);
+    confirm->changeCallback(
+        [this]() {
+            requestStackPop();
+            requestStackPush(StateIdentifier::GAME1);
+        }
+    );
+}
+
+void CharSelectState::draw() {
+    Texture2D background = mContext.textures.get(TextureIdentifier::CHAR_SELECT_BACKGROUND);
+    DrawTexture(background, 0, 0);
+    Texture2D mario = mContext.textures.get(TextureIdentifier::CHARACTER_MARIO);
+    DrawTexture(mario, 474, 308);
+    Texture2D luigi = mContext.textures.get(TextureIdentifier::CHARACTER_LUIGI);
+    DrawTexture(luigi, 796, 276);
+    Texture2D pointer = mContext.textures.get(TextureIdentifier::CHARACTER_POINTER);
+    if (selectedCharacter == 0) {
+        DrawTexture(pointer, 533, 599);
+        //DrawTextEx(Resource::mFont.get(ARIAL), "MARIO", {515 648}, 17, 10, WHITE);
+    } else {
+        DrawTexture(pointer, 856, 599);
+        //DrawTextEx(Resource::mFont.get(ARIAL), "LUIGI", {515 648}, 17, 10, WHITE);
+    }
+
+    mContainer.draw();
+}
+
+bool CharSelectState::update(float dt) {
+    return true;
+}
+
+bool CharSelectState::handle() {
+    mContainer.handle();
+    if (IsKeyPressed(KEY_RIGHT)) {
+        selectedCharacter = (selectedCharacter + 1) % 2; 
+    } else if (IsKeyPressed(KEY_LEFT)) {
+        selectedCharacter = (selectedCharacter - 1 + 2) % 2; 
+    }
+    return true;
+}

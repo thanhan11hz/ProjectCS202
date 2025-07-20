@@ -4,6 +4,7 @@
 
 #include "State/State.hpp"
 #include "GUI/Button.hpp"
+#include "GUI/Label.hpp"
 #include "GUI/Container.hpp"
 
 class MenuState : public State {
@@ -14,5 +15,4 @@ class MenuState : public State {
         virtual bool update(float dt);
         virtual bool handle();
         Container mContainer;
-
 };
