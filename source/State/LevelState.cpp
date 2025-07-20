@@ -11,6 +11,10 @@ LevelState::LevelState(StateStack& stack) : State(stack) {
     level1->changShape({300, 200, 200, 50});
     level1->changeTexture(TextureIdentifier::LEVEL1);
     mContainer.pack(level1);
+    Texture2D background = mContext.textures.get(TextureIdentifier::TILE_SET);
+    Texture2D object = mContext.textures.get(TextureIdentifier::OBJECT);
+    mMap.loadFromFile("resource\\Texture\\Map\\map1.txt");
+    mMap.setTexrure(background, object);
 };
 
 void LevelState::draw() {
@@ -27,5 +31,6 @@ bool LevelState::handle() {
 }
 
 bool LevelState::update(float dt) {
+    mMap.update(dt);
     return true;
 }
