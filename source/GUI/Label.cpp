@@ -1,9 +1,8 @@
 #include "GUI/Label.hpp"
 
-Label::Label(Context& ctx): mContext(ctx) {}
+Label::Label() {}
 
 void Label::draw() {
-    std::cout << "aaaaaaa";
     if (isBlink && !isDisplay) return;
     //Font font = mContext.fonts.get(mFont);
     Font font = GetFontDefault();

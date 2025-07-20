@@ -9,12 +9,11 @@
 
 class GameState: public State {
     public:
-        GameState(StateStack& stack, Context ctx, TileMap* map);
+        GameState(StateStack& stack);
     private:
-        World mWorld;
-        TileMap *mMap;
+        //World& mWorld;
+        Container mContainer;
         virtual void draw();
         virtual bool update(float dt);
         virtual bool handle();
-        Container mContainer;
 };

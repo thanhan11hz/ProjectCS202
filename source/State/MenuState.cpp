@@ -1,6 +1,6 @@
 #include "State/MenuState.hpp"
 
-MenuState::MenuState(StateStack& stack, Context ctx): State(stack, ctx) {
+MenuState::MenuState(StateStack& stack): State(stack) {
     Button* muteButton = new Button(ctx);
     muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
     muteButton->changShape({23,22,41,41});

@@ -55,7 +55,7 @@ void changeFont(FontIdentifier id) {
 void Button::draw() {
     Color color = WHITE;
     if (mIsSelected) color = Fade(color,0.9);
-    Texture2D& texture = mContext.textures.get(mID);
+    Texture2D& texture = Resource::mTexture.get(mID);
     DrawTexturePro(texture, {0, 0, (float)texture.width, (float)texture.height}, mShape, {0, 0}, 0.0f, color);
 
     if (!mText.empty()) {

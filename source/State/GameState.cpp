@@ -69,7 +69,7 @@ void GameState::draw() {
 }
 
 bool GameState::update(float dt) {
-    mWorld.update(dt);
+    //mWorld.update(dt);
     return true;
 }
 
@@ -78,5 +78,6 @@ bool GameState::handle() {
         requestStackPush(StateIdentifier::PAUSE);
     }
     mContainer.handle();
+    //mContainer.handle();
     return true;
 }

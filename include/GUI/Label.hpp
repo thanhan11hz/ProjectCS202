@@ -5,11 +5,11 @@
 #include "GUI/Component.hpp"
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
-#include "State/Context.hpp"
+#include "Global.hpp"
 
 class Label: public Component {
     public:
-        Label(Context& ctx);
+        Label();
         virtual void draw();
         virtual void handle();
         virtual bool isSelectable();
@@ -24,7 +24,6 @@ class Label: public Component {
         FontIdentifier mFont;
         Color mColor = BLACK;
         Rectangle mShape;
-        Context mContext;
         int mFontSize = 20;
         bool isBlink = false;
         bool isDisplay = true;

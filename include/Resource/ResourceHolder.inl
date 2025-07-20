@@ -9,11 +9,11 @@ ResourceHolder<Resource, Identifier>::ResourceHolder(std::function<Resource(cons
 {}
 
 template <typename Resource, typename Identifier>
-ResourceHolder<Resource, Identifier>* ResourceHolder<Resource, Identifier>::getInstance(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader) {
+ResourceHolder<Resource, Identifier>& ResourceHolder<Resource, Identifier>::getInstance(std::function<Resource(const char*)> loader, std::function<void(Resource)> unloader) {
     if (!instance) {
-        instance = ResourceHolder(loader, unloader);
+        instance = new ResourceHolder(loader, unloader);
     }
-    return instance;
+    return *instance;
 }
 
 template <typename Resource, typename Identifier>

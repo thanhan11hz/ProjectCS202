@@ -5,12 +5,12 @@
 #include <functional>
 
 #include "GUI/Component.hpp"
-#include "State/Context.hpp"
+#include "Global.hpp"
 
 class Button : public Component {
     public:
         
-        explicit Button(Context& ctx);
+        explicit Button();
         virtual bool isSelectable();
         virtual void handle();
         virtual void draw();
@@ -26,7 +26,6 @@ class Button : public Component {
         
     private:
         std::function<void()> mCallback;
-        Context mContext;
         Rectangle mShape;
         TextureIdentifier mID;
         bool mIsToggle = false;

@@ -10,11 +10,8 @@ class TileMap {
 public:
     TileMap();
     void loadFromFile(const std::string& filename);
-    void draw(Texture2D tileTexture);
-protected:
-    void drawCurrent();
-
+    void draw();
+    void drawTile(Texture2D tileTexture);
 private:
     std::vector<std::vector<TileBlock>> mTiles;
-
 };

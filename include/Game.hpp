@@ -9,7 +9,6 @@
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
 #include "State/StateStack.hpp"
-#include "State/Context.hpp"
 #include "State/MenuState.hpp"
 #include "State/LevelState.hpp"
 

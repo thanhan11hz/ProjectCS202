@@ -8,7 +8,7 @@
 
 class LevelState : public State {
     public:
-        LevelState(StateStack& stack, Context ctx);
+        LevelState(StateStack& stack);
     private:
         int mCurrentPage;
         int mMaxPage;

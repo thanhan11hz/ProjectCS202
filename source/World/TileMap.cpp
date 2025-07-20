@@ -39,10 +39,11 @@ void TileMap::loadFromFile(const std::string& filename) {
 
 }
 
-void TileMap::drawCurrent() {
+void TileMap::draw() {
     
 }
-void TileMap::draw(Texture2D tileTexture) {
+
+void TileMap::drawTile(Texture2D tileTexture) {
     const int screenW = 1440;
     const int screenH = 900;
     for (int i = 0; i < mTiles.size(); i++) {

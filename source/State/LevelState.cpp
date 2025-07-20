@@ -1,6 +1,6 @@
 #include "State/LevelState.hpp"
 
-LevelState::LevelState(StateStack& stack, Context ctx) : State(stack,ctx), mCurrentPage(1), mMaxPage(2) {
+LevelState::LevelState(StateStack& stack, Context ctx) : State(stack), mCurrentPage(1), mMaxPage(2) {
     Button* muteButton = new Button(ctx);
     muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
     muteButton->changShape({23,22,41,41});

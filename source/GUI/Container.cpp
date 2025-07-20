@@ -27,7 +27,6 @@ void Container::handle() {
 }
 
 void Container::draw() {
-    std::cout << mChildren.size();
     for (const auto& child: mChildren) {
         child->draw();
     }

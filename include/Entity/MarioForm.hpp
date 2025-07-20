@@ -1,62 +1,51 @@
-#pragma once
+// #pragma once
 
-#include "Mario.hpp"
+// #include "Mario.hpp"
 
-class MarioForm {
-
-    friend class Mario;
+// class MarioForm {
     
-    public:
-        MarioForm(Mario* mMario);
-        virtual void update(float dt) = 0;
-        virtual void draw() = 0;
-        virtual void fire() = 0;
+//     public:
+//         MarioForm(Mario* mMario);
+//         virtual void update(float dt) = 0;
+//         virtual void draw() = 0;
+//         virtual void fire() = 0;
+//         virtual void onEnter() = 0;
+//         virtual void onExit() = 0;
+//         virtual ~MarioForm() = default;
 
-    private:
-        Mario* mMario;
-        virtual ~MarioForm() = default;
-};
+//     private:
+//         Mario* mMario;
+// };
 
-class NormalForm : public MarioForm {
+// class NormalForm : public MarioForm {
 
-    public:
-        explicit NormalForm(Mario* mMario);
-        void update(float dt);
-        void draw();
-        void fire();
+//     public:
+//         NormalForm(Mario* mMario);
+//         void update(float dt) override;
+//         void draw() override;
+//         void fire() override;
 
-    private:
-        Animation mRun;
-        Animation mIdle;
-        Animation mJump;
-};
+//     private:
+// };
 
-class SuperForm : public MarioForm {
+// class SuperForm : public MarioForm {
 
-    public:
-        explicit SuperForm(Mario* mMario);
-        void update(float dt);
-        void draw();
-        void fire();
+//     public:
+//         SuperForm(Mario* mMario);
+//         void update(float dt);
+//         void draw() override;
+//         void fire() override;
 
-    private:
-        Animation mRun;
-        Animation mIdle;
-        Animation mJump;
-        Animation mCrouch;
-};
+//     private:
+// };
 
-class FireForm : public MarioForm {
+// class FireForm : public MarioForm {
 
-    public:
-        explicit FireForm(Mario* mMario);
-        void update(float dt);
-        void draw();
-        void fire();
+//     public:
+//         FireForm(Mario* mMario);
+//         void update(float dt);
+//         void draw() override;
+//         void fire() override;
 
-    private:
-        Animation mRun;
-        Animation mIdle;
-        Animation mJump;
-        Animation mCrouch;
-};
+//     private:
+// };
