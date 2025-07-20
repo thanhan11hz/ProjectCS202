@@ -2,15 +2,15 @@
 
 MenuState::MenuState(StateStack& stack): State(stack) {
     Button* muteButton = new Button();
-    muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
+    muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     
     Label* subtext = new Label();
-    title->changeShape({66,267,300,15});
-    title->changeSize(15);
-    title->changeText("Developed by Group 6");
-    title->changeColor(WHITE);
+    subtext->changeShape({66,267,300,15});
+    subtext->changeSize(15);
+    subtext->changeText("Developed by Group 6");
+    subtext->changeColor(WHITE);
     mContainer.pack(subtext);
 
     Button* playButton = new Button();
@@ -68,11 +68,14 @@ MenuState::MenuState(StateStack& stack): State(stack) {
 }
 
 void MenuState::draw() {
-    Texture2D background = mContext.textures.get(TextureIdentifier::MENU_BACKGROUND);
-    Texture2D gameLogo = mContext.textures.get(TextureIdentifier::LOGO);
-    DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
-    DrawTexture(gameLogo, 51, 75);
-    DrawRectangle(0, 0, 432, 900, {177, 146, 146, 185})
+    
+    Texture2D background = Resource::mTexture.get(TextureIdentifier::MENU_BACKGROUND);
+    
+    Texture2D gameLogo = Resource::mTexture.get(TextureIdentifier::LOGO);
+    
+    DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, BLACK);
+    DrawTexture(gameLogo, 51, 75, WHITE);
+    DrawRectangle(0, 0, 432, 900, {177, 146, 146, 185});
     mContainer.draw();
 }
 

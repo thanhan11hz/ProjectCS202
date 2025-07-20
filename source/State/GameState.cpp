@@ -1,8 +1,8 @@
 #include "State/GameState.hpp"
 
-GameState::GameState(StateStack) : State(stack) {
+GameState::GameState(StateStack& stack) : State(stack) {
     Button* muteButton = new Button();
-    muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
+    muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
@@ -59,12 +59,12 @@ GameState::GameState(StateStack) : State(stack) {
 }
 
 void GameState::draw() {
-    mWorld.draw();
+    //mWorld.draw();
     Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
-    mMap->loadFromFile("resource\\Map\\map1.txt");
-    mMap->draw(tiles);
+    mMap.loadFromFile("resource\\Map\\map1.txt");
+    mMap.drawTile(tiles);
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
-    DrawTexture(bricksTexture, 0, 760);
+    DrawTexture(bricksTexture, 0, 760, WHITE);
     mContainer.draw();
 }
 
@@ -74,7 +74,7 @@ bool GameState::update(float dt) {
 }
 
 bool GameState::handle() {
-    if (IS_PRESSED(KEY_ESCAPE)) {
+    if (IsKeyPressed(KEY_ESCAPE)) {
         requestStackPush(StateIdentifier::PAUSE);
     }
     mContainer.handle();

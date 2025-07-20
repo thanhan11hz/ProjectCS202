@@ -6,13 +6,13 @@
 #include "GUI/Label.hpp"
 #include "Resource/ResourceHolder.hpp"
 
-class SettingsState : public State {
+class SettingState : public State {
     public:
-        SettingsState(StateStack& stack, Context ctx);
+        SettingState(StateStack& stack);
     private:
         int mCurrentPage;
         int mMaxPage;
-        void setupPage(int page);
+        //void setupPage(int page);
         virtual void draw();
         virtual bool handle();
         virtual bool update(float dt);
@@ -20,5 +20,9 @@ class SettingsState : public State {
         Container mContainer_sound;
         Container mContainer_general;
         Container mContainer_movement;
+
+        bool changeMade;
+        Button* next;
+        Button* previous;
 
 };

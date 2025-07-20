@@ -54,8 +54,8 @@ PauseState::PauseState(StateStack& stack): State(stack) {
 
 void PauseState::draw() {
     DrawRectangle(0, 0, 1440, 900, {83,83,83,200});
-    Texture2D confirm = mContext.textures.get(TextureIdentifier::CONFIRM_BOX);
-    DrawTexture(confirm, 51, 75);
+    Texture2D confirm = Resource::mTexture.get(TextureIdentifier::CONFIRM_BOX);
+    DrawTexture(confirm, 51, 75, WHITE);
     mContainer.draw();
 }
 

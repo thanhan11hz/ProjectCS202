@@ -24,7 +24,7 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
 
     Button* muteButton = new Button();
     muteButton->changeToggle(true);
-    muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
+    muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
@@ -81,8 +81,7 @@ void InstructionState::setupPage(int page) {
             previous->changeToggle(false);
             next->changeToggle(true);
             description->changeText (
-                "The game opens on a tranquil kingdom — until Bowser swoops in and\n 
-                shatters the peace."
+                "The game opens on a tranquil kingdom — until Bowser swoops in and\nshatters the peace."
             );
             
             break;
@@ -91,56 +90,49 @@ void InstructionState::setupPage(int page) {
             previous->changeToggle(true);
             next->changeToggle(true);
             description->changeText (
-                "Bowser kidnaps Peach and unleashes his minions, plunging the kingdom\n
-                into chaos."
+                "Bowser kidnaps Peach and unleashes his minions, plunging the kingdom\ninto chaos."
             );
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION2);
-            DrawTexture(illustration, 241, 202);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION2);
+            DrawTexture(illustration, 241, 202, WHITE);
             break;
         }
         case 3: {
             description->changeText (
-                "Mario springs into action, vowing to cross every world and bring Peach\n
-                home."
+                "Mario springs into action, vowing to cross every world and bring Peach\nhome."
             );
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION3);
-            DrawTexture(illustration, 329, 202);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION3);
+            DrawTexture(illustration, 329, 202, WHITE);
             break;
         }
         case 4: {
             description->changeText (
-                "From sunny meadows to fiery volcanoes, each land introduces new\n
-                enemies, secrets, and platforming twists."
+                "From sunny meadows to fiery volcanoes, each land introduces new\nenemies, secrets, and platforming twists."
             );
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION4);
+            //Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION4);
 
             break;
         }
         case 5: {
             description->changeText (
-                "Grab the Fire Flower to scorch foes with blazing fireballs and light dark\n
-                paths ahead!"
+                "Grab the Fire Flower to scorch foes with blazing fireballs and light dark\npaths ahead!"
             );
             break;
         }
         case 6: {
             description->changeText (
-                "Grab the Super Mushroom to boost Mario’s size and strength — one hit\n
-                no longer spells defeat!"
+                "Grab the Super Mushroom to boost Mario’s size and strength — one hit\nno longer spells defeat!"
             );
             break;
         }
         case 7: {
             description->changeText (
-                "Grab the 1-Up Mushroom to earn an extra life — cheat defeat and get\n
-                another chance to press on!"
+                "Grab the 1-Up Mushroom to earn an extra life — cheat defeat and get\nanother chance to press on!"
             );
             break;
         }
         case 8: {
             description->changeText (
-                "Snag the Starman for brief invincibility and sprint through hazards\n
-                unharmed!"
+                "Snag the Starman for brief invincibility and sprint through hazards\nunharmed!"
             );
             break;
         }
@@ -148,8 +140,7 @@ void InstructionState::setupPage(int page) {
             next->changeToggle(true);
             previous->changeToggle(true);
            description->changeText (
-                "Outsmart Bowser’s generals — time your jumps, attacks, and power-\n
-                ups to claim each key."
+                "Outsmart Bowser’s generals — time your jumps, attacks, and power-\nups to claim each key."
             );
             break; 
         }
@@ -157,8 +148,7 @@ void InstructionState::setupPage(int page) {
             next->changeToggle(false);
             previous->changeToggle(true);
             description->changeText (
-                "With Bowser defeated, Peach is safe, the kingdom rejoices, and a new adventure \n
-                glimmers on the horizon."
+                "With Bowser defeated, Peach is safe, the kingdom rejoices, and a new adventure\nglimmers on the horizon."
             );
             next->changeToggle(false);
             break;
@@ -170,18 +160,18 @@ void InstructionState::draw() {
     DrawRectangle(0, 0, 1440, 900, {113,67,25,255});
     switch (mCurrentPage) {
         case 1: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION1);
-            DrawTexture(illustration, 241, 202);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION1);
+            DrawTexture(illustration, 241, 202, WHITE);
             break;
         }
         case 2: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION2);
-            DrawTexture(illustration, 241, 202);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION2);
+            DrawTexture(illustration, 241, 202, WHITE);
             break;
         }
         case 3: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION3);
-            DrawTexture(illustration, 329, 202);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION3);
+            DrawTexture(illustration, 329, 202, WHITE);
             break;
         }
         case 4: {
@@ -189,33 +179,33 @@ void InstructionState::draw() {
             break;
         }
         case 5: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION5);
-            DrawTexture(illustration, 306, 236);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION5);
+            DrawTexture(illustration, 306, 236, WHITE);
             break;
         }
         case 6: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION6);
-            DrawTexture(illustration, 362, 237);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION6);
+            DrawTexture(illustration, 362, 237, WHITE);
             break;
         }
         case 7: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION10);
-            DrawTexture(illustration, 412, 388);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION7);
+            DrawTexture(illustration, 412, 388, WHITE);
             break;
         }
         case 8: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION7);
-            DrawTexture(illustration, 370, 237);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION8);
+            DrawTexture(illustration, 370, 237, WHITE);
             break;
         }
         case 9: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION8);
-            DrawTexture(illustration, 270, 225);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION9);
+            DrawTexture(illustration, 270, 225, WHITE);
             break;
         }
         case 10: {
-            Texture2D illustration = mContext.textures.get(TextureIdentifier::INSTRUCTION9);
-            DrawTexture(illustration, 242, 225);
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION10);
+            DrawTexture(illustration, 242, 225, WHITE);
             break;
         }
     }

@@ -11,6 +11,10 @@
 #include "State/StateStack.hpp"
 #include "State/MenuState.hpp"
 #include "State/LevelState.hpp"
+#include "State/SettingState.hpp"
+#include "State/InstructionState.hpp"
+#include "State/PauseState.hpp"
+#include "State/CharSelectState.hpp"
 
 class Game {
     public:
@@ -23,5 +27,4 @@ class Game {
     private:
         InputHandler mInput;
         StateStack mStateStack;
-
 };

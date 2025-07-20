@@ -8,7 +8,7 @@
 
 class InstructionState : public State {
     public:
-        InstructionState(StateStack& stack, Context ctx);
+        InstructionState(StateStack& stack);
     private:
         int mCurrentPage;
         int mMaxPage;

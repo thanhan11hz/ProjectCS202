@@ -8,7 +8,7 @@
 
 class CharSelectState : public State {
     public:
-        CharSelectState(StateStack& stack, Context ctx);
+        CharSelectState(StateStack& stack);
     private:
         int selectedCharacter;
         virtual void draw();

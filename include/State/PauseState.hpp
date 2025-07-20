@@ -8,7 +8,7 @@
 
 class PauseState : public State {
     public:
-        PauseState(StateStack& stack, Context ctx);
+        PauseState(StateStack& stack);
     private:
         virtual void draw();
         virtual bool handle();

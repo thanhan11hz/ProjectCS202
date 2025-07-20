@@ -2,10 +2,10 @@
 
 CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedCharacter(0) {
     Label* lvl = new Label();
-    title->changeShape({580, 72, 280, 40});
-    title->changeSize(40);
-    title->changeText("LEVEL 1");
-    title->changeColor(WHITE);
+    lvl->changeShape({580, 72, 280, 40});
+    lvl->changeSize(40);
+    lvl->changeText("LEVEL 1");
+    lvl->changeColor(WHITE);
     mContainer.pack(lvl);
 
     Label* header = new Label();
@@ -23,7 +23,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     mContainer.pack(character);
 
     Button* muteButton = new Button();
-    muteButton->changeTexture(TextureIdentifier::MUTE_BUTTON);
+    muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23, 22, 41, 41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
@@ -57,18 +57,18 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
 }
 
 void CharSelectState::draw() {
-    Texture2D background = mContext.textures.get(TextureIdentifier::CHAR_SELECT_BACKGROUND);
-    DrawTexture(background, 0, 0);
-    Texture2D mario = mContext.textures.get(TextureIdentifier::CHARACTER_MARIO);
-    DrawTexture(mario, 474, 308);
-    Texture2D luigi = mContext.textures.get(TextureIdentifier::CHARACTER_LUIGI);
-    DrawTexture(luigi, 796, 276);
-    Texture2D pointer = mContext.textures.get(TextureIdentifier::CHARACTER_POINTER);
+    Texture2D background = Resource::mTexture.get(TextureIdentifier::CHAR_SELECT_BACKGROUND);
+    DrawTexture(background, 0, 0, WHITE);
+    Texture2D mario = Resource::mTexture.get(TextureIdentifier::CHARACTER_MARIO);
+    DrawTexture(mario, 474, 308, WHITE);
+    Texture2D luigi = Resource::mTexture.get(TextureIdentifier::CHARACTER_LUIGI);
+    DrawTexture(luigi, 796, 276, WHITE);
+    Texture2D pointer = Resource::mTexture.get(TextureIdentifier::CHARACTER_POINTER);
     if (selectedCharacter == 0) {
-        DrawTexture(pointer, 533, 599);
+        DrawTexture(pointer, 533, 599, WHITE);
         //DrawTextEx(Resource::mFont.get(ARIAL), "MARIO", {515 648}, 17, 10, WHITE);
     } else {
-        DrawTexture(pointer, 856, 599);
+        DrawTexture(pointer, 856, 599, WHITE);
         //DrawTextEx(Resource::mFont.get(ARIAL), "LUIGI", {515 648}, 17, 10, WHITE);
     }
 

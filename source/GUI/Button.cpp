@@ -1,7 +1,7 @@
 #include "GUI/Button.hpp"
 
 Button::Button() : mCallback(), mIsToggle(false), mFontSize(17), mColor(BLACK) {
-    mID = Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON);
+    mID = TextureIdentifier::ACTIVE_BUTTON;
 }
 
 bool Button::isSelectable() {
@@ -12,9 +12,9 @@ void Button::handle() {
     Vector2 mousePos = GetMousePosition();
     if (CheckCollisionPointRec(mousePos, mShape)) {
         select();
-        if (mID == Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON)) changeTexture(Resource::mTexture.get(TextureIdentifier::HOVERED_BUTTON));
-        else if (mID == Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON_MEDIUM)) changeTexture(Resource::mTexture.get(TextureIdentifier::HOVERED_BUTTON_MEDIUM));
-        else if (mID == Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON_SMALL)) changeTexture(Resource::mTexture.get(TextureIdentifier::HOVERED_BUTTON_SMALL));
+        if (mID == TextureIdentifier::ACTIVE_BUTTON) changeTexture(TextureIdentifier::HOVERED_BUTTON);
+        else if (mID == TextureIdentifier::ACTIVE_BUTTON_MEDIUM) changeTexture(TextureIdentifier::HOVERED_BUTTON_MEDIUM);
+        else if (mID == TextureIdentifier::ACTIVE_BUTTON_SMALL) changeTexture(TextureIdentifier::HOVERED_BUTTON_SMALL);
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             mCallback();
         }
@@ -45,10 +45,10 @@ void Button::changeText(const std::string& text) {
 void Button::changeTextSize(int size) {
     mFontSize = size;
 }
-void changeTextColor(Color color) {
+void Button::changeTextColor(Color color) {
     mColor = color;
 }
-void changeFont(FontIdentifier id) {
+void Button::changeFont(FontIdentifier id) {
     mFont = id;
 }
 
@@ -59,7 +59,7 @@ void Button::draw() {
     DrawTexturePro(texture, {0, 0, (float)texture.width, (float)texture.height}, mShape, {0, 0}, 0.0f, color);
 
     if (!mText.empty()) {
-        Font font = mContext.fonts.get(mFont);
+        Font font = Resource::mFont.get(mFont);
         Vector2 textSize = MeasureTextEx(font, mText.c_str(), mFontSize, 1);
         Vector2 textPos = {
             mShape.x + (mShape.width - textSize.x) / 2.0f,

@@ -33,6 +33,6 @@ class Button : public Component {
         std::string mText = "";
         FontIdentifier mFont;
         int mFontSize = 20;
-        Color mColor = BLACK;
+        Color mColor;
         
 };
