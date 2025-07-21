@@ -11,7 +11,7 @@ class GameState: public State {
     public:
         GameState(StateStack& stack);
     private:
-        //World& mWorld;
+        
         Container mContainer;
         virtual void draw();
         virtual bool update(float dt);
