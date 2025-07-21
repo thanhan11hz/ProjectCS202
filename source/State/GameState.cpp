@@ -74,10 +74,9 @@ bool GameState::update(float dt) {
 }
 
 bool GameState::handle() {
-    if (IsKeyPressed(KEY_ESCAPE)) {
+    if (IsKeyPressed(KEY_P)) {
         requestStackPush(StateIdentifier::PAUSE);
     }
     mContainer.handle();
-    //mContainer.handle();
     return true;
 }

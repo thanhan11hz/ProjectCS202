@@ -1,6 +1,6 @@
 #include "State/PauseState.hpp"
 
-PauseState::PauseState(StateStack& stack): State(stack) {
+PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     Label* title = new Label();
     title->changeShape({570, 327, 300, 50});
     title->changeSize(50);
@@ -9,7 +9,7 @@ PauseState::PauseState(StateStack& stack): State(stack) {
     mContainer.pack(title);
     
     Button* resume = new Button();
-    resume->changeText("Resume");
+    resume->changeText("RESUME");
     resume->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     resume->changShape({484, 426, 211, 56});
     mContainer.pack(resume);
@@ -19,17 +19,18 @@ PauseState::PauseState(StateStack& stack): State(stack) {
         }
     );
     Button* restart = new Button();
-    restart->changeText("Enter");
+    restart->changeText("RESTART");
     restart->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     restart->changShape({745, 426, 211, 56});
     mContainer.pack(restart);
     restart->changeCallback(
         [this]() {
-            //restartGame();
+            requestStackClear();
+            requestStackPush(StateIdentifier::GAME1);
         }
     );
     Button* settings = new Button();
-    settings->changeText("Settings");
+    settings->changeText("SETTINGS");
     settings->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     settings->changShape({484, 524, 211, 56});
     mContainer.pack(settings);
@@ -39,14 +40,42 @@ PauseState::PauseState(StateStack& stack): State(stack) {
         }
     );
     Button* quit = new Button();
-    quit->changeText("Quit");
+    quit->changeText("QUIT");
     quit->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    quit->changShape({484, 524, 211, 56});
+    quit->changShape({745, 524, 211, 56});
     mContainer.pack(quit);
     quit->changeCallback(
         [this]() {
+            confirmMode = true;
+        }
+    );
+
+    Label* confirm = new Label();
+    confirm->changeShape({496, 343, 458, 35});
+    confirm->changeSize(35);
+    confirm->changeText("ARE YOU SURE");
+    confirm->changeColor(WHITE);
+    mConfirmContainer.pack(confirm);
+
+    Button* ret = new Button();
+    ret->changeText("RETURN");
+    ret->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    ret->changShape({484, 426, 211, 56});
+    mConfirmContainer.pack(ret);
+    ret->changeCallback(
+        [this]() {
+            confirmMode = false;
+        }
+    );
+    Button* yes = new Button();
+    yes->changeText("YES");
+    yes->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    yes->changShape({745, 426, 211, 56});
+    mConfirmContainer.pack(yes);
+    restart->changeCallback(
+        [this]() {
+            confirmMode = false;
             requestStackClear();
-            //requestStackPush(StateIdentifier::CONFIRM_EXIT);
             requestStackPush(StateIdentifier::LEVEL);
         }
     );
@@ -55,8 +84,13 @@ PauseState::PauseState(StateStack& stack): State(stack) {
 void PauseState::draw() {
     DrawRectangle(0, 0, 1440, 900, {83,83,83,200});
     Texture2D confirm = Resource::mTexture.get(TextureIdentifier::CONFIRM_BOX);
-    DrawTexture(confirm, 51, 75, WHITE);
-    mContainer.draw();
+    DrawTexture(confirm, 426, 257, WHITE);
+    
+    if (confirmMode) {
+        mConfirmContainer.draw();
+    } else {
+        mContainer.draw();
+    }
 }
 
 bool PauseState::update(float dt) {

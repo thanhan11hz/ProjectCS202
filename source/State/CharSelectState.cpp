@@ -15,12 +15,12 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     header->changeColor(WHITE);
     mContainer.pack(header);
 
-    Label* character = new Label();
-    character->changeShape({515, 648, 85, 17});
-    character->changeSize(17);
-    character->changeText("MARIO");
-    character->changeColor(WHITE);
-    mContainer.pack(character);
+    // Label* character = new Label();
+    // character->changeShape({515, 648, 85, 17});
+    // character->changeSize(17);
+    // character->changeText("MARIO");
+    // character->changeColor(WHITE);
+    // mContainer.pack(character);
 
     Button* muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
@@ -50,7 +50,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     mContainer.pack(confirm);
     confirm->changeCallback(
         [this]() {
-            requestStackPop();
+            requestStackClear();
             requestStackPush(StateIdentifier::GAME1);
         }
     );
@@ -66,10 +66,10 @@ void CharSelectState::draw() {
     Texture2D pointer = Resource::mTexture.get(TextureIdentifier::CHARACTER_POINTER);
     if (selectedCharacter == 0) {
         DrawTexture(pointer, 533, 599, WHITE);
-        //DrawTextEx(Resource::mFont.get(ARIAL), "MARIO", {515 648}, 17, 10, WHITE);
+        DrawTextEx(Resource::mFont.get(FontIdentifier::PressStart2P), "MARIO", {515, 648}, 17, 0, WHITE);
     } else {
         DrawTexture(pointer, 856, 599, WHITE);
-        //DrawTextEx(Resource::mFont.get(ARIAL), "LUIGI", {515 648}, 17, 10, WHITE);
+        DrawTextEx(Resource::mFont.get(FontIdentifier::PressStart2P), "LUIGI", {839, 648}, 17, 0, WHITE);
     }
 
     mContainer.draw();
@@ -81,9 +81,9 @@ bool CharSelectState::update(float dt) {
 
 bool CharSelectState::handle() {
     mContainer.handle();
-    if (IsKeyPressed(KEY_RIGHT)) {
+    if (IsKeyPressed(KEY_RIGHT || IsKeyPressed(KEY_D))) {
         selectedCharacter = (selectedCharacter + 1) % 2; 
-    } else if (IsKeyPressed(KEY_LEFT)) {
+    } else if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
         selectedCharacter = (selectedCharacter - 1 + 2) % 2; 
     }
     return true;

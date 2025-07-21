@@ -12,8 +12,8 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
     );
 
     Button* homeButton = new Button();
-    muteButton->changeTexture(TextureIdentifier::HOME_BUTTON);
-    muteButton->changShape({1372,24,41,41});
+    homeButton->changeTexture(TextureIdentifier::HOME_BUTTON);
+    homeButton->changShape({1372,24,41,41});
     mContainer.pack(homeButton);
     homeButton->changeCallback(
         [this]() {
@@ -29,18 +29,18 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
     mContainer.pack(next);
     next->changeCallback(
         [this]() {
-            mCurrentPage++;
+            mCurrentPage = mCurrentPage % mMaxPage + 1;
             setupPage(mCurrentPage);
         }
     );
 
     previous = new Button();
-    previous->changShape({1314, 612, 105, 105});
+    previous->changShape({21, 397, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS);
     mContainer.pack(previous);
     previous->changeCallback(
         [this]() {
-            mCurrentPage--;
+            mCurrentPage = (mCurrentPage - 2 + mMaxPage) % mMaxPage + 1;
             setupPage(mCurrentPage);
         }
     );
@@ -112,11 +112,11 @@ void LevelState::setupPage(int page) {
     {
         case 1: 
         {
-            previous->changeToggle(false);
-            next->changeToggle(true);
+            // previous->changeToggle(false);
+            // next->changeToggle(true);
             header_lv1->changeText("LEVEL 1");
             level1->changeCallback([this]() {
-                    //requestStackPush(StateIdentifier::CHARSELECT);
+                    requestStackPush(StateIdentifier::CHARSELECT);
                 }
             );
             header_lv2->changeText("LEVEL 2");
@@ -137,8 +137,8 @@ void LevelState::setupPage(int page) {
             break;
         }
         case 2: {
-            previous->changeToggle(true);
-            next->changeToggle(false);
+            // previous->changeToggle(true);
+            // next->changeToggle(false);
             header_lv1->changeText("CUSTOM 1");
             level1->changeCallback([this]() {
                     //requestStackPush(StateIdentifier::GAME5);

@@ -10,8 +10,10 @@ class PauseState : public State {
     public:
         PauseState(StateStack& stack);
     private:
+        bool confirmMode;
         virtual void draw();
         virtual bool handle();
         virtual bool update(float dt);
         Container mContainer;
+        Container mConfirmContainer;
 };

@@ -19,11 +19,12 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
     description->changeShape({191, 690, 1060, 100});
     description->changeSize(30);
     description->changeColor(WHITE);
-    //description->changeFont(FontIdentifier::FONT_ARIAL);
+    description->changeAlignment(Alignment::CENTER);
+    description->changeFont(FontIdentifier::PixelifySans);
     mContainer.pack(description);
 
     Button* muteButton = new Button();
-    muteButton->changeToggle(true);
+    // muteButton->changeToggle(true);
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
@@ -34,9 +35,9 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
     );
 
     Button* homeButton = new Button();
-    homeButton->changeToggle(true);
-    muteButton->changeTexture(TextureIdentifier::HOME_BUTTON);
-    muteButton->changShape({1372,24,41,41});
+    // homeButton->changeToggle(true);
+    homeButton->changeTexture(TextureIdentifier::HOME_BUTTON);
+    homeButton->changShape({1372,24,41,41});
     mContainer.pack(homeButton);
     homeButton->changeCallback(
         [this]() {
@@ -52,18 +53,18 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
     mContainer.pack(next);
     next->changeCallback(
         [this]() {
-            mCurrentPage++;
+            mCurrentPage = mCurrentPage % mMaxPage + 1;
             setupPage(mCurrentPage);
         }
     );
 
     previous = new Button();
-    previous->changShape({1314, 612, 105, 105});
+    previous->changShape({21, 397, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS_WHITE);
     mContainer.pack(previous);
     previous->changeCallback(
         [this]() {
-            mCurrentPage--;
+            mCurrentPage = (mCurrentPage - 2 + mMaxPage) % mMaxPage + 1;
             setupPage(mCurrentPage);
         }
     );
@@ -78,8 +79,6 @@ void InstructionState::setupPage(int page) {
     {
         case 1: 
         {
-            previous->changeToggle(false);
-            next->changeToggle(true);
             description->changeText (
                 "The game opens on a tranquil kingdom — until Bowser swoops in and\nshatters the peace."
             );
@@ -87,28 +86,21 @@ void InstructionState::setupPage(int page) {
             break;
         }
         case 2: {
-            previous->changeToggle(true);
-            next->changeToggle(true);
             description->changeText (
                 "Bowser kidnaps Peach and unleashes his minions, plunging the kingdom\ninto chaos."
             );
-            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION2);
-            DrawTexture(illustration, 241, 202, WHITE);
             break;
         }
         case 3: {
             description->changeText (
                 "Mario springs into action, vowing to cross every world and bring Peach\nhome."
             );
-            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION3);
-            DrawTexture(illustration, 329, 202, WHITE);
             break;
         }
         case 4: {
             description->changeText (
                 "From sunny meadows to fiery volcanoes, each land introduces new\nenemies, secrets, and platforming twists."
             );
-            //Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION4);
 
             break;
         }
@@ -137,20 +129,19 @@ void InstructionState::setupPage(int page) {
             break;
         }
         case 9: {
-            next->changeToggle(true);
-            previous->changeToggle(true);
+            // next->changeToggle(true);
+            // previous->changeToggle(true);
            description->changeText (
                 "Outsmart Bowser’s generals — time your jumps, attacks, and power-\nups to claim each key."
             );
             break; 
         }
         case 10: {
-            next->changeToggle(false);
-            previous->changeToggle(true);
+            // next->changeToggle(false);
+            // previous->changeToggle(true);
             description->changeText (
                 "With Bowser defeated, Peach is safe, the kingdom rejoices, and a new adventure\nglimmers on the horizon."
             );
-            next->changeToggle(false);
             break;
         }
     }
@@ -175,7 +166,8 @@ void InstructionState::draw() {
             break;
         }
         case 4: {
-            
+            Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION4);
+            DrawTexture(illustration, 399, 201, WHITE);
             break;
         }
         case 5: {

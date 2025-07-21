@@ -26,18 +26,18 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mContainer.pack(next);
     next->changeCallback(
         [this]() {
-            mCurrentPage++;
+            mCurrentPage = mCurrentPage % mMaxPage + 1;
             //setupPage(mCurrentPage);
         }
     );
 
     previous = new Button();
-    previous->changShape({1314, 612, 105, 105});
+    previous->changShape({21, 397, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS_WHITE);
     mContainer.pack(previous);
     previous->changeCallback(
         [this]() {
-            mCurrentPage--;
+            mCurrentPage = (mCurrentPage - 2 + mMaxPage) % mMaxPage + 1;
             //setupPage(mCurrentPage);
         }
     );
@@ -61,7 +61,6 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mContainer.pack(save);
     cancel->changeCallback(
         [this]() {
-            changeMade = false;
             //saveSettings();
             requestStackPop();
         }
@@ -73,14 +72,14 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     Label* masterVol = new Label();
     masterVol->changeShape({166, 261, 350, 25});
     masterVol->changeSize(25);
-    masterVol->changeText("Master Volume");
+    masterVol->changeText("Master Volume:");
     masterVol->changeColor(WHITE);
     mContainer_sound.pack(masterVol);
 
     Label* sfxVol = new Label();
     sfxVol->changeShape({166, 349, 350, 25});
     sfxVol->changeSize(25);
-    sfxVol->changeText("SFX Volume");
+    sfxVol->changeText("SFX:");
     sfxVol->changeColor(WHITE);
     mContainer_sound.pack(sfxVol);
 
@@ -92,11 +91,18 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mContainer_sound.pack(musicVol);
 
     Label* bgm = new Label();
-    bgm->changeShape({166, 569, 1150, 25});
+    bgm->changeShape({166, 569, 309, 25});
     bgm->changeSize(25);
-    bgm->changeText("Current BGM: ♪");
+    bgm->changeText("Current BGM: ");
     bgm->changeColor(WHITE);
     mContainer_sound.pack(bgm);
+
+    Label* currentSong = new Label();
+    currentSong->changeShape({647, 569, 565, 25});
+    currentSong->changeSize(25);
+    currentSong->changeText("BGM_1");
+    currentSong->changeColor(WHITE);
+    mContainer_sound.pack(currentSong);
 
     Button* toggle = new Button();
     toggle->changeText("TOGGLE");
@@ -142,6 +148,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     Button* fireKey = new Button();
     fireKey->changeText("LSHIFT");
     fireKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+    fireKey->changeTextColor(WHITE);
     fireKey->changShape({498, 253, 170, 45});
     mContainer_general.pack(fireKey);
     fireKey->changeCallback(
@@ -152,6 +159,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
 
     Button* pauseKey = new Button();
     pauseKey->changeText("P");
+    pauseKey->changeTextColor(WHITE);
     pauseKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     pauseKey->changShape({498, 369, 170, 45});
     mContainer_general.pack(pauseKey);
@@ -162,6 +170,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     );
     Button* muteKey = new Button();
     muteKey->changeText("M");
+    muteKey->changeTextColor(WHITE);
     muteKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     muteKey->changShape({498, 485, 170, 45});
     mContainer_general.pack(muteKey);
@@ -189,6 +198,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
 
     Button* up = new Button();
     up->changeText("W");
+    up->changeTextColor(WHITE);
     up->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     up->changShape({391, 265, 170, 45});
     mContainer_movement.pack(up);
@@ -207,6 +217,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
 
     Button* down = new Button();
     down->changeText("S");
+    down->changeTextColor(WHITE);
     down->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     down->changShape({612, 569, 170, 45});
     mContainer_movement.pack(down);
@@ -225,6 +236,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
 
     Button* left = new Button();
     left->changeText("A");
+    left->changeTextColor(WHITE);
     left->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     left->changShape({225, 572, 170, 45});
     mContainer_movement.pack(left);
@@ -243,6 +255,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
 
     Button* right = new Button();
     right->changeText("D");
+    right->changeTextColor(WHITE);
     right->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     right->changShape({1000, 579, 170, 45});
     mContainer_movement.pack(right);
@@ -281,15 +294,15 @@ bool SettingState::handle() {
 }
 
 bool SettingState::update(float dt) {
-    if (mCurrentPage == 1) {
-        previous->changeToggle(false);
-        next->changeToggle(true);
-    } else if (mCurrentPage == 2) {
-        previous->changeToggle(true);
-        next->changeToggle(true);
-    } else if (mCurrentPage == 3) {
-        previous->changeToggle(true);
-        next->changeToggle(false);
-    }
+    // if (mCurrentPage == 1) {
+    //     previous->changeToggle(false);
+    //     next->changeToggle(true);
+    // } else if (mCurrentPage == 2) {
+    //     previous->changeToggle(true);
+    //     next->changeToggle(true);
+    // } else if (mCurrentPage == 3) {
+    //     previous->changeToggle(true);
+    //     next->changeToggle(false);
+    // }
     return true;
 }

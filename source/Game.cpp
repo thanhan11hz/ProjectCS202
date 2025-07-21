@@ -5,7 +5,7 @@ Game::Game() {
     // SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(targetWidth, targetHeight, "Project CS202 - Group 7 - Super Mario Game");
 
-    Resource::mTexture.load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\MenuBackground.jpg");
+    Resource::mTexture.load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\mainmenubg.png");
     Resource::mTexture.load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\cloudsbg.png");
     Resource::mTexture.load(TextureIdentifier::PLAY_BUTTON, "resource\\Texture\\Button\\PlayButton.png");
     Resource::mTexture.load(TextureIdentifier::SETTING_BUTTON, "resource\\Texture\\Button\\SettingButton.png");
@@ -42,7 +42,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION1, "resource\\Texture\\StateAsset\\Instructions\\ins1.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION2, "resource\\Texture\\StateAsset\\Instructions\\ins2.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION3, "resource\\Texture\\StateAsset\\Instructions\\ins3.png");
-    //Resource::mTexture.load(TextureIdentifier::INSTRUCTION4, "resource\\Texture\\StateAsset\\Instructions\\ins4.png");
+    Resource::mTexture.load(TextureIdentifier::INSTRUCTION4, "resource\\Texture\\StateAsset\\Instructions\\ins4.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION5, "resource\\Texture\\StateAsset\\Instructions\\ins5.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION6, "resource\\Texture\\StateAsset\\Instructions\\ins6.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION7, "resource\\Texture\\StateAsset\\Instructions\\ins7.png");
@@ -51,8 +51,8 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION10, "resource\\Texture\\StateAsset\\Instructions\\ins10.png");
     Resource::mTexture.load(TextureIdentifier::KEYBOARD, "resource\\Texture\\StateAsset\\keybinds.png");
 
-    //Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
-    //Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");
+    Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
+    Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");
 
     mStateStack.registerState<MenuState>(StateIdentifier::MENU);
     mStateStack.registerState<LevelState>(StateIdentifier::LEVEL);
@@ -60,8 +60,11 @@ Game::Game() {
     mStateStack.registerState<InstructionState>(StateIdentifier::INSTRUCTIONS);
     mStateStack.registerState<PauseState>(StateIdentifier::PAUSE);
     mStateStack.registerState<CharSelectState>(StateIdentifier::CHARSELECT);
+    mStateStack.registerState<GameState>(StateIdentifier::GAME1);
     
     mStateStack.pushState(StateIdentifier::MENU);
+
+    
 }
 
 void Game::run() {
@@ -73,7 +76,10 @@ void Game::run() {
     float scale = fminf(windowWidth / targetWidth, windowHeight / targetHeight);
     float offsetX = (windowWidth - targetWidth * scale) / 2.0f;
     float offsetY = (windowHeight - targetHeight * scale) / 2.0f;
-
+    SetTextureFilter(GetFontDefault().texture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(Resource::mFont.get(FontIdentifier::PressStart2P).texture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(Resource::mFont.get(FontIdentifier::PixelifySans).texture, TEXTURE_FILTER_BILINEAR);
+    SetTargetFPS(60);
     while (!WindowShouldClose()) {
         timeSinceLastUpdated += GetFrameTime();
         while (timeSinceLastUpdated > timePerFrame) {
@@ -81,7 +87,7 @@ void Game::run() {
             inputProcess();
             update(timePerFrame);
         }
-
+        
         BeginTextureMode(target);
         ClearBackground(RAYWHITE);
         draw();

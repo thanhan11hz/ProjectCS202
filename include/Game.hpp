@@ -15,6 +15,7 @@
 #include "State/InstructionState.hpp"
 #include "State/PauseState.hpp"
 #include "State/CharSelectState.hpp"
+#include "State/GameState.hpp"
 
 class Game {
     public:
