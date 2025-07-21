@@ -23,7 +23,7 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
         }
     );
     
-    next = new Button();
+    Button* next = new Button();
     next->changShape({1314, 397, 105, 105});
     next->changeTexture(TextureIdentifier::NEXT);
     mContainer.pack(next);
@@ -34,7 +34,7 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
         }
     );
 
-    previous = new Button();
+    Button* previous = new Button();
     previous->changShape({21, 397, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS);
     mContainer.pack(previous);
@@ -177,6 +177,7 @@ void LevelState::draw() {
     DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
     switch (mCurrentPage) {
         case 1: {
+            //sau này sẽ bổ sung hình preview khác cho các level khác nhau
             Texture2D preview1 = Resource::mTexture.get(TextureIdentifier::PREVIEW);
             DrawTexture(preview1, 245, 229, WHITE);
             Texture2D preview2 = Resource::mTexture.get(TextureIdentifier::PREVIEW);

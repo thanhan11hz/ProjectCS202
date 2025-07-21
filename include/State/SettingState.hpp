@@ -22,7 +22,4 @@ class SettingState : public State {
         Container mContainer_movement;
 
         bool changeMade;
-        Button* next;
-        Button* previous;
-
 };

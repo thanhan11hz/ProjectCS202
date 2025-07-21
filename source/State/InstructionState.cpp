@@ -47,7 +47,7 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
         }
     );
 
-    next = new Button();
+    Button* next = new Button();
     next->changShape({1314, 397, 105, 105});
     next->changeTexture(TextureIdentifier::NEXT_WHITE);
     mContainer.pack(next);
@@ -58,7 +58,7 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
         }
     );
 
-    previous = new Button();
+    Button* previous = new Button();
     previous->changShape({21, 397, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS_WHITE);
     mContainer.pack(previous);

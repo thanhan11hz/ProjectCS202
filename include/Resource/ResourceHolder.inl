@@ -42,4 +42,3 @@ ResourceHolder<Resource, Identifier>::~ResourceHolder() {
 // bool ResourceHolder<Resource, Identifier>::isValid(const Resource& resource) {
 //     return (resource.id != 0);
 // }
-

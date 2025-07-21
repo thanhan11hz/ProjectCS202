@@ -16,7 +16,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
 
     Button* playButton = new Button();
     playButton->changShape({93,319,245,65});
-    playButton->changeText("New Game");
+    playButton->changeText("NEW GAME");
     playButton->changeCallback(
         [this]() {
             requestStackPop();
@@ -27,7 +27,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
 
     Button* loadButton = new Button();
     loadButton->changShape({93,429,245,65});
-    loadButton->changeText("Load Game");
+    loadButton->changeText("LOAD GAME");
     loadButton->changeCallback(
         [this]() {
             requestStackPop();
@@ -39,7 +39,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
 
     Button* instructionButton = new Button();
     instructionButton->changShape({93,539,245,65});
-    instructionButton->changeText("Instructions");
+    instructionButton->changeText("INSTRUCTIONS");
     instructionButton->changeCallback(
         [this]() {
             requestStackPop();
@@ -50,7 +50,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
 
     Button* settingButton = new Button();
     settingButton->changShape({93,649,245,65});
-    settingButton->changeText("Settings");
+    settingButton->changeText("SETTINGS");
     settingButton->changeCallback(
         [this]() {
             requestStackPush(StateIdentifier::SETTINGS);
@@ -61,7 +61,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
     Button* exitButton = new Button();
     exitButton->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
     exitButton->changShape({93,759,245,65});
-    exitButton->changeText("Exit");
+    exitButton->changeText("EXIT");
     
     exitButton->changeCallback(
         [this]() {
@@ -74,7 +74,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
 void MenuState::draw() {
     Texture2D background = Resource::mTexture.get(TextureIdentifier::MENU_BACKGROUND);
     DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
-    DrawRectangle(0, 0, 432, 900, {177, 146, 146, 185});
+    DrawRectangle(0, 0, 432, 900, {177, 146, 146, 190});
     Texture2D gameLogo = Resource::mTexture.get(TextureIdentifier::LOGO);
     DrawTexture(gameLogo, 51, 75, WHITE);
     mContainer.draw();

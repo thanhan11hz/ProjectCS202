@@ -18,8 +18,6 @@ class InstructionState : public State {
         virtual bool update(float dt);
         Container mContainer;
 
-        Button* next;
-        Button* previous;
         Label* tracker;
         Label* description;
 };

@@ -20,7 +20,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         }
     );
 
-    next = new Button();
+    Button* next = new Button();
     next->changShape({1314, 397, 105, 105});
     next->changeTexture(TextureIdentifier::NEXT_WHITE);
     mContainer.pack(next);
@@ -31,7 +31,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         }
     );
 
-    previous = new Button();
+    Button* previous = new Button();
     previous->changShape({21, 397, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS_WHITE);
     mContainer.pack(previous);
@@ -67,8 +67,6 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     );
 
     //Sound config
-    previous->changeToggle(false);
-    next->changeToggle(true);
     Label* masterVol = new Label();
     masterVol->changeShape({166, 261, 350, 25});
     masterVol->changeSize(25);
@@ -123,7 +121,6 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     subtitleGen->changeColor(WHITE);
     mContainer_general.pack(subtitleGen);
 
-    previous->changeToggle(true);
     Label* fire = new Label();
     fire->changeShape({170, 263, 350, 25});
     fire->changeSize(25);

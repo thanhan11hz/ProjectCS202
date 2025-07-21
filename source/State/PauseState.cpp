@@ -53,7 +53,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     Label* confirm = new Label();
     confirm->changeShape({496, 343, 458, 35});
     confirm->changeSize(35);
-    confirm->changeText("ARE YOU SURE");
+    confirm->changeText("ARE YOU SURE?");
     confirm->changeColor(WHITE);
     mConfirmContainer.pack(confirm);
 
@@ -69,10 +69,11 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     );
     Button* yes = new Button();
     yes->changeText("YES");
+    yes->changeTextColor(RED);
     yes->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     yes->changShape({745, 426, 211, 56});
     mConfirmContainer.pack(yes);
-    restart->changeCallback(
+    yes->changeCallback(
         [this]() {
             confirmMode = false;
             requestStackClear();
@@ -82,7 +83,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
 }
 
 void PauseState::draw() {
-    DrawRectangle(0, 0, 1440, 900, {83,83,83,200});
+    DrawRectangle(0, 0, 1440, 900, {83,83,83,100});
     Texture2D confirm = Resource::mTexture.get(TextureIdentifier::CONFIRM_BOX);
     DrawTexture(confirm, 426, 257, WHITE);
     
@@ -98,6 +99,7 @@ bool PauseState::update(float dt) {
 }
 
 bool PauseState::handle() {
-    mContainer.handle();
+    if (!confirmMode) mContainer.handle();
+    else mConfirmContainer.handle();
     return true;
 }

@@ -34,7 +34,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
 
     Button* back = new Button();
     back->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    back->changeText("Back");
+    back->changeText("BACK");
     back->changShape({84, 793, 211, 56});
     mContainer.pack(back);
     back->changeCallback(
@@ -45,7 +45,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
 
     Button* confirm = new Button();
     confirm->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    confirm->changeText("Confirm");
+    confirm->changeText("CONFIRM");
     confirm->changShape({1145, 793, 211, 56});
     mContainer.pack(confirm);
     confirm->changeCallback(
@@ -82,9 +82,9 @@ bool CharSelectState::update(float dt) {
 bool CharSelectState::handle() {
     mContainer.handle();
     if (IsKeyPressed(KEY_RIGHT || IsKeyPressed(KEY_D))) {
-        selectedCharacter = (selectedCharacter + 1) % 2; 
+        selectedCharacter = selectedCharacter % 2 + 1;
     } else if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
-        selectedCharacter = (selectedCharacter - 1 + 2) % 2; 
+        selectedCharacter = selectedCharacter % 2 + 1;
     }
     return true;
 }

@@ -19,8 +19,6 @@ class LevelState : public State {
         Container mContainer;
 
         Label* tracker;
-        Button* previous;
-        Button* next;
         Label* header_lv1;
         Button* level1;
         Label* header_lv2;
