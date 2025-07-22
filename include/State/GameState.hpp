@@ -11,7 +11,7 @@ class GameState: public State {
     public:
         GameState(StateStack& stack);
     private:
-        //World& mWorld;
+        
         Container mContainer;
         TileMap mMap;
         virtual void draw();
