@@ -57,13 +57,17 @@ GameState::GameState(StateStack& stack) : State(stack) {
     items->changeText("ACTIVE POWER-UPS:");
     items->changeColor(WHITE);
     mContainer.pack(items);
+    mMap.loadFromFile("resource\\Map\\01 - Field Area (1-1)");
 }
 
 void GameState::draw() {
     //mWorld.draw();
     Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
-    mMap.loadFromFile("resource\\Map\\map1.txt");
-    mMap.drawTile(tiles);
+    Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
+    mMap.setTexture(tiles, object);
+    mMap.drawBackground();
+    mMap.drawItem();
+    mMap.drawMain();
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
     DrawTexture(bricksTexture, 0, 760, WHITE);
     mContainer.draw();
@@ -71,6 +75,7 @@ void GameState::draw() {
 
 bool GameState::update(float dt) {
     //mWorld.update(dt);
+    mMap.update(dt);
     return true;
 }
 
