@@ -20,7 +20,7 @@ void InputHandler::handle() {
         if (IsKeyPressed(itr->first)) ;
     }
 
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 
     }
 }

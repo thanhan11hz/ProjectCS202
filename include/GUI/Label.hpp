@@ -7,12 +7,19 @@
 #include "Resource/ResourceIdentifier.hpp"
 #include "Global.hpp"
 
+enum class Alignment {
+    LEFT,
+    CENTER,
+    RIGHT
+};
+
 class Label: public Component {
     public:
         Label();
         virtual void draw();
         virtual void handle();
         virtual bool isSelectable();
+        void changeAlignment(Alignment alignment);
         void changeText(std::string text);
         void changeColor(Color color);
         void changeShape(Rectangle shape);
@@ -22,6 +29,7 @@ class Label: public Component {
     private:
         std::string mText = "";
         FontIdentifier mFont;
+        Alignment mAlignment;
         Color mColor = BLACK;
         Rectangle mShape;
         int mFontSize = 20;

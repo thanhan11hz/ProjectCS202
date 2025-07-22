@@ -60,3 +60,11 @@ void Container::selectPrevious() {
     while (!mChildren[prev]->isSelectable());
     select(prev);
 }
+// void Container::clear() {
+//     for (auto& child: mChildren) {
+//         delete child;
+//         child = nullptr;
+//     }
+//     mChildren.clear();
+//     mSelectedChildren = -1;
+// }
