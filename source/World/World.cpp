@@ -27,7 +27,9 @@ void World::update(float dt) {
 }
         
 void World::draw() {
-    mMap[mCurrent]->draw();
+    mMap[mCurrent]->drawBackground();
+    mMap[mCurrentMap]->drawItem();
+    mMap[mCurrentMap]->drawMain();
 }
 
 void World::handle() {

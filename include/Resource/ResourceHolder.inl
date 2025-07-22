@@ -33,7 +33,7 @@ void ResourceHolder<Resource, Identifier>::load(Identifier id, const char* fileN
 template <typename Resource, typename Identifier>
 Resource& ResourceHolder<Resource, Identifier>::get(Identifier id) {
     auto found = mResourceMap.find(id);
-    assert(found != mResourceMap.end() && "Resource not found");
+    assert(found != mResourceMap.end() && "Resource not found" );
     return found->second;
 }
 

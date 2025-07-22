@@ -1,67 +1,135 @@
 #pragma once
-
 #include <raylib.h>
-
+#include <vector>
+#include <memory>
 
 enum TileType {
-    Empty=0,
-    OwGround=1,
-    UnderGround=59,
-    OwInitialTile=24,
-    OwCoinBlock1=24,
-    OwPipeTop1=233,
-    OwPipeTop2=234,
-    OwPipeBottom1=262,
-    OwPipeBottom2=263,
-    UnderPipeTop1=291,
-    UnderPipeTop2=292,
-    UnderPipeBottom1=320,
-    UnderPipeBottom2=321,
-    UnderPipe2Top1=293,
-    UnderPipe2Top2=294,
-    UnderPipe2Top3=295,
-    UnderPipe2Bottom1=322,
-    UnderPipe2Bottom2=323,
-    UnderPipe2Bottom3=324,
-    OwSky=613,
-    CLoudUpperLeftCorner=581,
-    CloudUpperMiddel =582,
-    CLoudUpperRightCorner=583,
-    CLoudBottomLeftCorner=610,
-    CLoudBottomMiddle=611,
-    CLoudBottomRightCorner=612,
-    MountainUpperLeft1 = 241,
-    MountainUpperMiddle1 =242, 
-    MountainUpperRight1 = 243,
-    MountainBottomLeft1 = 270,
-    MountainBottomMiddle1 =271, 
-    MountainBottomRight1 = 272,
-    BushLeft1 = 273,
-    BushMiddle1=274,
-    BushRight1=275,
-    BlackBLock = 101,
-    UnderInitialTile1= 72,
-    Coin2=111,
-    
+    Empty=-1,        //Tile Underground,... = Overworld tile + 2*29*n;
+    OwGround=0,    //cvs -> -1
+    OwInitialTile=1,
+    OwWall = 2,
+    OwBlock = 3,
+    OwAfterHitBlock = 26,
+    OwCoinBlock1=23,
+    OwCoinBlock2=24,
+    OwCoinBlock3=25,
+    OwPipeTop1=232,
+    OwPipeTop2=233,
+    OwPipeBottom1=261,
+    OwPipeBottom2=262,
+    OWBridge = 32,
+    OwPole = 277,
+    BrownCube = 29,
+    GrassPlatform1 = 237,
+    GrassPlatform2 = 238,
+    GrassPlatform3 = 239,
+    GreenDotPlatForm1 = 266,
+    GreenDotPlatForm2 = 267,
+    GreenDotPlatForm3 = 268,
+    HoriPipe1 = 234,
+    HoriPipe2 = 263,
+
+    UnderTile = 60,
 };
 
-class TileBlock  {
+
+ extern std::vector<int> tileItemValues; 
+enum TileItem {
+    mushroom = 0, //Underground,... +=n*9
+    flower = 72,
+    star = 108,
+    normalCoin = 180,
+    specialCoin = 216,
+    fragment = 4,
+    invalidItem = -1,
+};
+class TileBlock;
+class TileObject;
+
+class IBlockBehavior {
 public:
-    TileBlock(TileBlock&&) noexcept = default;
-    TileBlock& operator=(TileBlock&&) noexcept = default;
-    TileBlock(const TileBlock&) = delete;
-    TileBlock& operator=(const TileBlock&) = delete;
-    TileBlock(TileType type, int row, int col);
-    void draw(Texture2D tileTexture);
-    const Rectangle& getRect() const { return mRect; }
-private:
-    TileType mType;
-    Rectangle mRect;
-    Vector2 posTile;
-    const int TileColumn = 29;
-    float TILE_SCALE = 3.0f;
-    float TILE_SIZE = 16.0f;
-   float TILE_RENDER_SIZE = TILE_SIZE * TILE_SCALE;
+    virtual void onHit(TileBlock& block, float dt) = 0;
 
+    virtual void update(TileBlock& block, float dt) = 0;
+    virtual ~IBlockBehavior() = default;
+};
+class TileBlock {
+public:
+    TileBlock(int type, int row, int col);
+    virtual void draw(Texture2D& background, Texture2D& object);
+
+    void print();
+    TileType getType(int type = -2);
+    int calType();
+    const Rectangle& getRect() const { return mRect; }
+
+    virtual void update(float dt);
+    //virtual int calType();
+    //void moveUp(float dt);
+    //void destroy(float dt);
+    
+    //void destroyAnimation(float dt);
+    void setVelocity(Vector2 velocity);
+    void applyGravity(float dt);
+    void addFragment();
+    void setAnimation();
+    void setState();
+    bool isSolid();
+    void hit(); // Calls behavior->onHit(*this)
+    virtual ~TileBlock();
+
+
+    static constexpr int TileCollum = 29;
+    static constexpr int ObjectRow = 35;
+    static constexpr float TILE_SCALE = 3.0f;
+    static constexpr float TILE_SIZE = 16.0f;
+    static constexpr float TILE_RENDER_SIZE = 48.0f;
+    static constexpr float duration = 0.15f;
+    static constexpr float Gravity = 950.f;
+    friend class SimpleBlockBehavior;
+    friend class CoinBlockBehavior;
+
+private:
+    void setRect(Rectangle rect);
+    void setPostile(Vector2 pos);
+    void setSource(Rectangle source);
+    float calculateVec(float duration, float dis);
+    virtual void createBehavior();
+protected:
+    int mType;
+    Rectangle mRect;
+    Rectangle mSource;
+    Vector2 posTile;
+    Vector2 mVelocity;
+    Rectangle aniRect;
+    bool printed;
+    bool isDoneAnimation = true;
+    bool bumped = false;
+    bool isDestroyed = false;
+    bool solid = false;
+    float aniTime = 0.0f;
+    IBlockBehavior* mBehavior = nullptr;
+    std::vector<std::unique_ptr<TileObject>> frag;
 
 };
+
+
+
+// Example behaviors
+
+
+
+class SimpleBlockBehavior : public IBlockBehavior {
+public:
+    void onHit(TileBlock& block, float dt) override ;
+    void update(TileBlock& block, float dt) override ;
+    void bump(TileBlock& block, float dt) ;
+    void destroy(TileBlock& bloc, float dt) ;
+};
+
+
+class CoinBlockBehavior : public SimpleBlockBehavior{
+    public:
+        void update(TileBlock& block, float dt) override ;
+};
+
