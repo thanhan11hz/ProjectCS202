@@ -35,8 +35,10 @@ bool World::hasNextMap() {
         
 bool World::nextMap() {
     mCurrentMap = (mCurrentMap + 1) % mMap.size();
+    return true;
 }
         
 bool World::backMap() {
     mCurrentMap = (mCurrentMap - 1 + mMap.size()) % mMap.size();
+    return true;
 }

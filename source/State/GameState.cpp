@@ -18,6 +18,7 @@ GameState::GameState(StateStack& stack) : State(stack) {
     mContainer.pack(pauseButton);
     pauseButton->changeCallback(
         [this]() {
+            //std::cout << "Add";
             requestStackPush(StateIdentifier::PAUSE);
         }
     );

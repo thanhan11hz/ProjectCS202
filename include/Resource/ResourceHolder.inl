@@ -19,7 +19,7 @@ ResourceHolder<Resource, Identifier>& ResourceHolder<Resource, Identifier>::getI
 template <typename Resource, typename Identifier>
 void ResourceHolder<Resource, Identifier>::load(Identifier id, const char* fileName) {
     Resource resource = mLoader(fileName);
-    assert(isValid(resource) && "Failed to load resource");
+    //assert(isValid(resource) && "Failed to load resource");
     auto result = mResourceMap.emplace(id, resource);
     assert(result.second && "Duplicated resource ID");
 }

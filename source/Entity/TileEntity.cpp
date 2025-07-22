@@ -9,14 +9,13 @@ TileBlock::TileBlock(TileType type, int col, int row)
         int x = (static_cast<int>(type) - 1) % 29;
         int y = (static_cast<int>(type) - 1) / 29;
         posTile = { x * TILE_SIZE, y * TILE_SIZE };  
-        std::cout << mRect.x << " " << mRect.y << " " << mRect.height  << std::endl;
     }
 }
 
 
 void TileBlock::draw(Texture2D tileTexture) {
-    Rectangle dest = {100, 100, 48, 48}; // phóng to ra
-    Rectangle source = {208, 48, 16, 16};  // vẽ ô đầu tiên
+    Rectangle dest = {100, 100, 48, 48}; 
+    Rectangle source = {208, 48, 16, 16};
     DrawTexturePro(tileTexture, source, dest, {0, 0}, 0.0f, WHITE);
     if (mType != TileType::Empty) {      
         Rectangle source = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE }; 

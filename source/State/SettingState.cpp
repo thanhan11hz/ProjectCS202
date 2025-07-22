@@ -287,7 +287,7 @@ bool SettingState::handle() {
     } else if (mCurrentPage == 3) {
         mContainer_movement.handle();
     }
-    return true;
+    return false;
 }
 
 bool SettingState::update(float dt) {
@@ -301,5 +301,5 @@ bool SettingState::update(float dt) {
     //     previous->changeToggle(true);
     //     next->changeToggle(false);
     // }
-    return true;
+    return false;
 }

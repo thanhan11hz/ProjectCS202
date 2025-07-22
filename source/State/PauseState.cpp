@@ -95,11 +95,11 @@ void PauseState::draw() {
 }
 
 bool PauseState::update(float dt) {
-    return true;
+    return false;
 }
 
 bool PauseState::handle() {
     if (!confirmMode) mContainer.handle();
     else mConfirmContainer.handle();
-    return true;
+    return false;
 }
