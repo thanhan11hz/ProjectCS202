@@ -1,14 +1,37 @@
 #include "World/World.hpp"
 
-World::World() {}
+World* World::instance = nullptr;
+
+World::World() {
+
+}
+
+World& World::getInstance() {
+    if (!instance) {
+        instance = new World();
+    }
+    return *instance;
+}
+
+void World::destroyInstance() {
+    delete instance;
+    instance = nullptr;
+}
+
+World::~World() {
+
+}
         
 void World::update(float dt) {
     
 }
         
 void World::draw() {
-    mMario->draw();
-    mMap[mCurrentMap]->draw();
+    mMap[mCurrent]->draw();
+}
+
+void World::handle() {
+    
 }
 
 void World::loadMap(const std::string filename) {
@@ -17,28 +40,33 @@ void World::loadMap(const std::string filename) {
     mMap.push_back(newMap);
 }
 
-void World::loadCharater(const std::string character) {
-    if (character == "Mario") {
-        if (mMario) delete mMario;
-        mMario = new Mario();
+void World::setCharater(int character) {
+    if (character == 0) {
+        if (mChar) {
+            delete mChar;
+            mChar = new Mario();
+        }
+    } else if (character == 1) {
+        if (mChar) {
+            delete mChar;
+            mChar = new Luigi();
+        }
     }
 }
         
 bool World::isLevelComplete() {
-
+    return false;
 }
         
 bool World::hasNextMap() {
-    if (mCurrentMap >= mMap.size() - 1) return false;
+    if (mCurrent >= mMap.size() - 1) return false;
     return true;
 }
         
-bool World::nextMap() {
-    mCurrentMap = (mCurrentMap + 1) % mMap.size();
-    return true;
+void World::nextMap() {
+    mCurrent = (mCurrent + 1) % mMap.size();
 }
         
-bool World::backMap() {
-    mCurrentMap = (mCurrentMap - 1 + mMap.size()) % mMap.size();
-    return true;
+void World::backMap() {
+    mCurrent = (mCurrent - 1 + mMap.size()) % mMap.size();
 }

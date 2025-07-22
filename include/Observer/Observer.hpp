@@ -6,9 +6,9 @@
 
 class BaseComponent;
 
-class Mediator {
+class Observer {
     public:
-        Mediator();
+        Observer();
     private:
         std::vector<std::unique_ptr<BaseComponent*>> mComponent;
         void notify(std::string& event);

@@ -51,6 +51,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     confirm->changeCallback(
         [this]() {
             requestStackClear();
+            //mWorld.setCharater(selectedCharacter);
             requestStackPush(StateIdentifier::GAME1);
         }
     );
@@ -76,15 +77,15 @@ void CharSelectState::draw() {
 }
 
 bool CharSelectState::update(float dt) {
-    return true;
+    return false;
 }
 
 bool CharSelectState::handle() {
     mContainer.handle();
-    if (IsKeyPressed(KEY_RIGHT || IsKeyPressed(KEY_D))) {
-        selectedCharacter = selectedCharacter % 2 + 1;
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
+        if (selectedCharacter == 0) selectedCharacter = (selectedCharacter + 1) % 2;
     } else if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
-        selectedCharacter = selectedCharacter % 2 + 1;
+        if (selectedCharacter == 1) selectedCharacter = (selectedCharacter - 1) % 2;
     }
-    return true;
+    return false;
 }

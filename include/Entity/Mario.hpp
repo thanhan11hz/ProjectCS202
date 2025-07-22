@@ -1,20 +1,21 @@
 #pragma once
 
-#include "Entity/Entity.hpp"
+#include "Entity/Character.hpp"
 #include "Animation.hpp"
 #include "Global.hpp"
 
-class Mario : public Entity {
+class Mario : public Character {
     public:
-        enum class Action {IDLE, RUN, JUMP, FALL, CROUCH, SKID, DEAD};
+        enum class Movement {IDLE, RUN, JUMP, FALL, CROUCH, SKID, DEAD};
         enum class Form {NORMAL, SUPER, FIRE};
         explicit Mario();  
         Animation mAnimation;
+        virtual void handle();
         virtual void draw();
         virtual void update(float dt);
 
     private:
-        Action mAction;
+        Movement mMovement;
         Form mForm;
         bool mIsRight;
         bool mIsImmortal;
@@ -22,9 +23,9 @@ class Mario : public Entity {
         static constexpr float mImmortalTime = 200.f;
         float mImmortalTimer;
 
-        void updateAction();
+        void updateMovement();
         void updateImmortal(float dt);
-        void setAction(Action action);
+        void setMovement(Movement movement);
         void setForm(Form form);
         void setImmortal(bool flag);
 };

@@ -1,6 +1,6 @@
 #include "Entity/Mario.hpp"
 
-Mario::Mario(): mAnimation(nullptr, 16, 16, 0.5f, true), mAction(Action::IDLE) , mIsRight(true)
+Mario::Mario(): mAnimation(nullptr, 16, 16, 0.5f, true), mMovement(Movement::IDLE) , mIsRight(true)
                           , mIsImmortal(true), mForm(Form::FIRE), mImmortalTimer(mImmortalTime)
 {}
 
@@ -19,21 +19,21 @@ void Mario::update(float dt) {
     } else mIsGround = false;
 
     updateImmortal(dt);
-    updateAction();
+    updateMovement();
     mAnimation.update(dt);
 }
 
-void Mario::updateAction() {
-    Action next = mAction;           
+void Mario::updateMovement() {
+    Movement next = mMovement;           
 
     if (!mIsGround)                      
-        next = isRising() ? Action::JUMP : Action::FALL;
+        next = isRising() ? Movement::JUMP : Movement::FALL;
     else if (isRunning())
-        next = Action::RUN;
+        next = Movement::RUN;
     else
-        next = Action::IDLE;
+        next = Movement::IDLE;
 
-    if (next != mAction) setAction(next);
+    if (next != mMovement) setMovement(next);
 }
 
 void Mario::updateImmortal(float dt) {
@@ -46,25 +46,25 @@ void Mario::updateImmortal(float dt) {
     }
 }
 
-void Mario::setAction(Action action) {
-    mAction = action;
+void Mario::setMovement(Movement Movement) {
+    mMovement = Movement;
     Texture2D* texture = nullptr;
     bool repeat = true;
 
     switch (mForm) {
         case Form::NORMAL :
-            switch (mAction) {
-                case Action::IDLE:
+            switch (mMovement) {
+                case Movement::IDLE:
                     texture = &Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
                     break;
-                case Action::RUN:
+                case Movement::RUN:
                     texture = &Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);
                     break;
-                case Action::JUMP:
+                case Movement::JUMP:
                     texture  = &Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
                     repeat   = false;     
                     break;
-                case Action::FALL:
+                case Movement::FALL:
                     texture  = &Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
                     repeat   = false;
                     break;
@@ -72,18 +72,18 @@ void Mario::setAction(Action action) {
             break;
 
         case Form::SUPER :
-            switch (mAction) {
-                case Action::IDLE:
+            switch (mMovement) {
+                case Movement::IDLE:
                     texture = &Resource::mTexture.get(TextureIdentifier::MARIO_S_IDLE);
                     break;
-                case Action::RUN:
+                case Movement::RUN:
                     texture = &Resource::mTexture.get(TextureIdentifier::MARIO_S_RUN);
                     break;
-                case Action::JUMP:
+                case Movement::JUMP:
                     texture  = &Resource::mTexture.get(TextureIdentifier::MARIO_S_JUMP);
                     repeat   = false;
                     break;
-                case Action::FALL:
+                case Movement::FALL:
                     texture  = &Resource::mTexture.get(TextureIdentifier::MARIO_S_JUMP);
                     repeat   = false;
                     break;
@@ -91,18 +91,18 @@ void Mario::setAction(Action action) {
             break;
 
         case Form::FIRE :
-            switch (mAction) {
-                case Action::IDLE:
+            switch (mMovement) {
+                case Movement::IDLE:
                     texture = &Resource::mTexture.get(TextureIdentifier::MARIO_F_IDLE);
                     break;
-                case Action::RUN:
+                case Movement::RUN:
                     texture = &Resource::mTexture.get(TextureIdentifier::MARIO_F_RUN);
                     break;
-                case Action::JUMP:
+                case Movement::JUMP:
                     texture  = &Resource::mTexture.get(TextureIdentifier::MARIO_F_JUMP);
                     repeat   = false;     
                     break;
-                case Action::FALL:
+                case Movement::FALL:
                     texture  = &Resource::mTexture.get(TextureIdentifier::MARIO_F_JUMP);
                     repeat   = false;
                     break;
@@ -126,9 +126,13 @@ void Mario::setAction(Action action) {
 void Mario::setForm(Form form) {
     if (mForm == form) return;
     mForm = form;
-    setAction(mAction);
+    setMovement(mMovement);
 }
 
 void Mario::setImmortal(bool flag) {
     mIsImmortal = flag;
+}
+
+void Mario::handle() {
+    
 }

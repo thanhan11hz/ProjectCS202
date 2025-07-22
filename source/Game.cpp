@@ -4,6 +4,7 @@ Game::Game() {
 
     // SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(targetWidth, targetHeight, "Project CS202 - Group 7 - Super Mario Game");
+    InitAudioDevice();
 
     Resource::mTexture.load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\mainmenubg.png");
     Resource::mTexture.load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\cloudsbg.png");
@@ -54,6 +55,12 @@ Game::Game() {
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");
 
+    Resource::mMusic.load(MusicIdentifier::BACKGROUND_MUSIC, "resource\\Music\\backgroundMusic.ogg");
+    SetMusicVolume(Resource::mMusic.get(MusicIdentifier::BACKGROUND_MUSIC), 1.0f);
+    Resource::mMusic.get(MusicIdentifier::BACKGROUND_MUSIC).looping = true;
+
+    mPlayingMusic = Resource::mMusic.get(MusicIdentifier::BACKGROUND_MUSIC);
+
     mStateStack.registerState<MenuState>(StateIdentifier::MENU);
     mStateStack.registerState<LevelState>(StateIdentifier::LEVEL);
     mStateStack.registerState<SettingState>(StateIdentifier::SETTINGS);
@@ -64,11 +71,9 @@ Game::Game() {
     
     mStateStack.pushState(StateIdentifier::MENU);
 
-    
 }
 
 void Game::run() {
-
     float timeSinceLastUpdated = 0;
     RenderTexture2D target = LoadRenderTexture(targetWidth, targetHeight);
     float windowWidth = (float)GetScreenWidth();
@@ -79,6 +84,7 @@ void Game::run() {
     SetTextureFilter(GetFontDefault().texture, TEXTURE_FILTER_BILINEAR);
     SetTextureFilter(Resource::mFont.get(FontIdentifier::PressStart2P).texture, TEXTURE_FILTER_BILINEAR);
     SetTextureFilter(Resource::mFont.get(FontIdentifier::PixelifySans).texture, TEXTURE_FILTER_BILINEAR);
+    PlayMusicStream(mPlayingMusic);
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
         timeSinceLastUpdated += GetFrameTime();
@@ -87,6 +93,8 @@ void Game::run() {
             inputProcess();
             update(timePerFrame);
         }
+        
+        UpdateMusicStream(mPlayingMusic);
         
         BeginTextureMode(target);
         ClearBackground(RAYWHITE);
@@ -100,6 +108,12 @@ void Game::run() {
     }
 
     UnloadRenderTexture(target);
+    CloseAudioDevice();
+    TextureHolder::destroyInstance();
+    FontHolder::destroyInstance();
+    SoundHolder::destroyInstance();
+    MusicHolder::destroyInstance();
+    World::destroyInstance();
     CloseWindow();
 }
 

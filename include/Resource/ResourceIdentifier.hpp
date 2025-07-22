@@ -34,5 +34,5 @@ enum class SoundIdentifier {
 };
 
 enum class MusicIdentifier {
-
+    BACKGROUND_MUSIC
 };

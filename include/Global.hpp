@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 #include <iostream>
+#include <vector>
 
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
@@ -28,3 +29,21 @@ namespace Resource {
 
     extern MusicHolder& mMusic;
 }
+
+class World;
+
+extern World& mWorld;
+
+enum class Action {
+    PAUSE,
+    MUTE,
+    FIRE,
+    LEFT,
+    RIGHT,
+    JUMP,
+    DOWN
+};
+
+extern std::vector<std::pair<KeyboardKey, Action>> mKeyBinding;
+
+extern Music mPlayingMusic;

@@ -18,7 +18,6 @@ GameState::GameState(StateStack& stack) : State(stack) {
     mContainer.pack(pauseButton);
     pauseButton->changeCallback(
         [this]() {
-            //std::cout << "Add";
             requestStackPush(StateIdentifier::PAUSE);
         }
     );
@@ -57,12 +56,13 @@ GameState::GameState(StateStack& stack) : State(stack) {
     items->changeText("ACTIVE POWER-UPS:");
     items->changeColor(WHITE);
     mContainer.pack(items);
+
+    mMap.loadFromFile("resource\\Map\\map1.txt");
 }
 
 void GameState::draw() {
     //mWorld.draw();
     Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
-    mMap.loadFromFile("resource\\Map\\map1.txt");
     mMap.drawTile(tiles);
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
     DrawTexture(bricksTexture, 0, 760, WHITE);
@@ -75,7 +75,7 @@ bool GameState::update(float dt) {
 }
 
 bool GameState::handle() {
-    if (IsKeyPressed(KEY_P)) {
+    if (IsKeyPressed(mKeyBinding[0].first)) {
         requestStackPush(StateIdentifier::PAUSE);
     }
     mContainer.handle();

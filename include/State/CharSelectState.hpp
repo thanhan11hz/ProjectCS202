@@ -5,6 +5,8 @@
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
 #include "Resource/ResourceHolder.hpp"
+#include "Global.hpp"
+#include "World/World.hpp"
 
 class CharSelectState : public State {
     public:
