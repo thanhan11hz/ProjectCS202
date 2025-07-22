@@ -209,5 +209,6 @@ bool LevelState::handle() {
 }
 
 bool LevelState::update(float dt) {
+    mMap.update(dt);
     return true;
 }
