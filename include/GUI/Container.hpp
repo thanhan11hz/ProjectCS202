@@ -11,6 +11,7 @@ class Container: public Component {
     public:
         Container();
         ~Container();
+        //void clear();
         void pack(Component* component);
         virtual bool isSelectable();
         virtual void handle();

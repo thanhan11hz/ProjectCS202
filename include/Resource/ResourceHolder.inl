@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 template <typename Resource, typename Identifier>
 ResourceHolder<Resource, Identifier>*  ResourceHolder<Resource, Identifier>::instance = nullptr;
 
@@ -26,6 +26,7 @@ void ResourceHolder<Resource, Identifier>::load(Identifier id, const char* fileN
 
 template <typename Resource, typename Identifier>
 Resource& ResourceHolder<Resource, Identifier>::get(Identifier id) {
+    // std::cout << "Trying to get resource with ID: " << static_cast<int>(id) << std::endl;
     auto found = mResourceMap.find(id);
     assert(found != mResourceMap.end() && "Resource not found");
     return found->second;
@@ -37,7 +38,7 @@ ResourceHolder<Resource, Identifier>::~ResourceHolder() {
         mUnloader(pair.second);
 }
 
-template <typename Resource, typename Identifier>
-bool ResourceHolder<Resource, Identifier>::isValid(const Resource& resource) {
-    return (resource.id != 0);
-}
+// template <typename Resource, typename Identifier>
+// bool ResourceHolder<Resource, Identifier>::isValid(const Resource& resource) {
+//     return (resource.id != 0);
+// }

@@ -1,17 +1,21 @@
 #include "GUI/Label.hpp"
 
-Label::Label() {}
+Label::Label(): mFont(FontIdentifier::PressStart2P), mAlignment(Alignment::LEFT) {}
 
 void Label::draw() {
     if (isBlink && !isDisplay) return;
-    //Font font = mContext.fonts.get(mFont);
-    Font font = GetFontDefault();
-    Vector2 textSize = MeasureTextEx(font, mText.c_str(), mFontSize, 10);
+    Font font = Resource::mFont.get(mFont);
+    Vector2 textSize = MeasureTextEx(font, mText.c_str(), mFontSize, 0);
     Vector2 textPos = {
         mShape.x + (mShape.width - textSize.x) / 2.0f,
         mShape.y + (mShape.height - textSize.y) / 2.0f
     };
-    DrawTextEx(font, mText.c_str(), textPos, mFontSize, 10, BLACK);
+    if (mAlignment == Alignment::LEFT) {
+        textPos.x = mShape.x + 10;
+    } else if (mAlignment == Alignment::RIGHT) {
+        textPos.x = mShape.x + mShape.width - textSize.x - 10; 
+    }
+    DrawTextEx(font, mText.c_str(), textPos, mFontSize, 0, mColor);
 }
         
 void Label::handle() {
@@ -21,7 +25,9 @@ void Label::handle() {
 bool Label::isSelectable() {
     return false;
 }
-        
+void Label::changeAlignment(Alignment alignment) {
+    mAlignment = alignment;
+}
 void Label::changeText(std::string text) {
     mText = text;
 }
