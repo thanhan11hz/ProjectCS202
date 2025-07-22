@@ -8,7 +8,9 @@ void World::update(float dt) {
         
 void World::draw() {
     mMario->draw();
-    mMap[mCurrentMap]->draw();
+    mMap[mCurrentMap]->drawBackground();
+    mMap[mCurrentMap]->drawItem();
+    mMap[mCurrentMap]->drawMain();
 }
 
 void World::loadMap(const std::string filename) {

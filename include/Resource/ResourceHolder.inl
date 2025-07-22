@@ -28,7 +28,7 @@ template <typename Resource, typename Identifier>
 Resource& ResourceHolder<Resource, Identifier>::get(Identifier id) {
     // std::cout << "Trying to get resource with ID: " << static_cast<int>(id) << std::endl;
     auto found = mResourceMap.find(id);
-    assert(found != mResourceMap.end() && "Resource not found");
+    assert(found != mResourceMap.end() && "Resource not found" );
     return found->second;
 }
 
