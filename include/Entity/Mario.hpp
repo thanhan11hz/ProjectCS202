@@ -5,26 +5,26 @@
 #include "Global.hpp"
 
 class Mario : public Entity {
-    public:
-        enum class Action {IDLE, RUN, JUMP, FALL, CROUCH, SKID, DEAD};
-        enum class Form {NORMAL, SUPER, FIRE};
-        explicit Mario();  
-        Animation mAnimation;
-        virtual void draw();
-        virtual void update(float dt);
+public:
+    enum class Action {IDLE, RUN, JUMP, FALL, CROUCH, SKID, DEAD};
+    enum class Form {NORMAL, SUPER, FIRE};
+    explicit Mario();  
+    Animation mAnimation;
+    virtual void draw();
+    virtual void update(float dt);
+    virtual void startJump();
+    virtual void setAction(Action action);
 
-    private:
-        Action mAction;
-        Form mForm;
-        bool mIsRight;
-        bool mIsImmortal;
+protected:
+    Action mAction;
+    Form mForm;
+    bool mIsRight;
+    bool mIsImmortal;
+    static constexpr float mImmortalTime = 200.f;
+    float mImmortalTimer;
 
-        static constexpr float mImmortalTime = 200.f;
-        float mImmortalTimer;
-
-        void updateAction();
-        void updateImmortal(float dt);
-        void setAction(Action action);
-        void setForm(Form form);
-        void setImmortal(bool flag);
+    void updateAction();
+    void updateImmortal(float dt);
+    void setForm(Form form);
+    void setImmortal(bool flag);
 };
