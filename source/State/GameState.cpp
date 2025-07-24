@@ -80,7 +80,7 @@ bool GameState::update(float dt) {
 }
 
 bool GameState::handle() {
-    if (IsKeyPressed(mKeyBinding[0].first)) {
+    if (IsKeyPressed(mKeyBinding[Action::PAUSE])) {
         requestStackPush(StateIdentifier::PAUSE);
     }
     mWorld.handle();

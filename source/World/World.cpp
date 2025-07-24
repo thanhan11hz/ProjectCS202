@@ -27,11 +27,12 @@ World::~World() {
         
 void World::update(float dt) {
     mMap[mCurrent]->update(dt);
+    mCam.target = mCharacter->mPhysics.getPosition();
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
     if (mCam.target.y < targetHeight / 2.0f) mCam.target.y = targetHeight / 2.0f;
     if (mCam.target.y > 1584 - targetHeight / 2.0f) mCam.target.y = 1584 - targetHeight / 2.0f;
-    std::cout << mCam.target.x << " " << mCam.target.y << "\n";
+    mCharacter->update(dt);
 }
         
 void World::draw() {
@@ -42,14 +43,16 @@ void World::draw() {
     mMap[mCurrent]->drawBackground();
     mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawMain();
+    mCharacter->draw();
     EndMode2D();
 }
 
 void World::handle() {
-    if (IsKeyDown(KEY_LEFT)) mCam.target.x -= 100;
-    if (IsKeyDown(KEY_RIGHT)) mCam.target.x += 100;
-    if (IsKeyDown(KEY_UP)) mCam.target.y -= 100;
-    if (IsKeyDown(KEY_DOWN)) mCam.target.y += 100;
+    // if (IsKeyDown(KEY_LEFT)) mCam.target.x -= 100;
+    // if (IsKeyDown(KEY_RIGHT)) mCam.target.x += 100;
+    // if (IsKeyDown(KEY_UP)) mCam.target.y -= 100;
+    // if (IsKeyDown(KEY_DOWN)) mCam.target.y += 100;
+    mCharacter->handle();
 }
 
 void World::loadMap(const std::string folder) {
@@ -60,13 +63,9 @@ void World::loadMap(const std::string folder) {
 
 void World::setCharater(int Character) {
     if (Character == 0) {
-        if (mCharacter) {
-            mCharacter = Character::spawnMario();
-        }
+        mCharacter = Character::spawnMario();
     } else if (Character == 1) {
-        if (mCharacter) {
-            mCharacter = Character::spawnLuigi();
-        }
+        mCharacter = Character::spawnLuigi();
     }
 }
         

@@ -24,7 +24,7 @@ class Character : public Entity {
             FIRE
         };
         
-        Character();
+        Character(int length, int high);
         virtual void handle();
         virtual void draw();
         virtual void update(float dt);
@@ -38,12 +38,14 @@ class Character : public Entity {
         std::map<Move,Texture2D> mFire;
         std::map<Move,Texture2D> mSuper;
 
+        virtual void handleCollision(Side side, Category other);
+
     private:
-        Move mMove;
-        Form mForm;
+        Move mMove = Move::IDLE;
+        Form mForm = Form::NORMAL;
         static constexpr float mImmortalTime = 5.0f;
         float mImmortalTimer;
-        bool mIsImmortal;
+        bool mIsImmortal = false;
         void updateMove();
         void setMove(Move move);
         void updateImmortal(float dt);
@@ -51,6 +53,9 @@ class Character : public Entity {
         void setForm(Form form);
 
         Animation mAnim;
+
+        float mHigh;
+        float mLength;
 
         std::map<Action, KeyboardKey> &mKey;
 };

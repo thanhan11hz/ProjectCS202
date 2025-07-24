@@ -1,6 +1,6 @@
 #include "Entity/Physics.hpp"
 
-Physics::Physics() : mVelocity({0,0}), mPosition({0,0}), mIsGround(false) {}
+Physics::Physics() : mVelocity({0,0}), mPosition({0,0}), mIsGround(false), mIsRight(true) {}
 
 void Physics::setPosition(Vector2 position) {
     mPosition = position;
@@ -54,10 +54,10 @@ void Physics::update(float dt) {
     }
 }
 
-void Physics::startJump() {
+void Physics::startJump(int high) {
     if (mIsGround) {
         mIsGround = false;
-        mVelocity.y = - std::sqrt(2.0f * Gravity * 128.f);
+        mVelocity.y = - std::sqrt(2.0f * Gravity * high * 48.0f);
     }
 }
 
@@ -79,4 +79,12 @@ bool Physics::isRising() {
 
 bool Physics::isRight() {
     return mIsRight;
+}
+
+bool Physics::onGround() {
+    return mIsGround;
+}
+
+void Physics::setOnGround(bool flag) {
+    mIsGround = flag;
 }

@@ -1,6 +1,6 @@
 #include "Entity/Collide.hpp"
 
-Collide::Collide() {
+Collide::Collide(Entity* owner) : mOwner(owner) {
 
 }
 

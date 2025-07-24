@@ -16,7 +16,7 @@ class Physics {
         Vector2 getVelocity() const;
         void accelerate(Vector2 dv);
         void accelerate(float vx, float vy);
-        void startJump();
+        void startJump(int high);
         void endJump();
         bool onGround();
         void setOnGround(bool flag);

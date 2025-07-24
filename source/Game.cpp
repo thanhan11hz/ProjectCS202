@@ -51,6 +51,25 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION9, "resource\\Texture\\StateAsset\\Instructions\\ins9.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION10, "resource\\Texture\\StateAsset\\Instructions\\ins10.png");
     Resource::mTexture.load(TextureIdentifier::KEYBOARD, "resource\\Texture\\StateAsset\\keybinds.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_N_IDLE, "resource\\Texture\\Spritesheet\\Mario_N_Idle.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_N_RUN, "resource\\Texture\\Spritesheet\\Mario_N_Run.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_N_JUMP, "resource\\Texture\\Spritesheet\\Mario_N_Jump.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_S_IDLE, "resource\\Texture\\Spritesheet\\Mario_S_Idle.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_S_RUN, "resource\\Texture\\Spritesheet\\Mario_S_Run.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_S_JUMP, "resource\\Texture\\Spritesheet\\Mario_S_Jump.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_S_CROUCH, "resource\\Texture\\Spritesheet\\Mario_S_Crouch.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_F_IDLE, "resource\\Texture\\Spritesheet\\Mario_F_Idle.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_F_RUN, "resource\\Texture\\Spritesheet\\Mario_F_Run.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_F_JUMP, "resource\\Texture\\Spritesheet\\Mario_F_Jump.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_F_CROUCH, "resource\\Texture\\Spritesheet\\Mario_F_Crouch.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_N_IDLE, "resource\\Texture\\Spritesheet\\Luigi_N_Idle.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_N_RUN, "resource\\Texture\\Spritesheet\\Luigi_N_Run.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_N_JUMP, "resource\\Texture\\Spritesheet\\Luigi_N_Jump.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_S_IDLE, "resource\\Texture\\Spritesheet\\Luigi_S_Idle.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_S_RUN, "resource\\Texture\\Spritesheet\\Luigi_S_Run.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_S_JUMP, "resource\\Texture\\Spritesheet\\Luigi_S_Jump.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_S_CROUCH, "resource\\Texture\\Spritesheet\\Luigi_S_Crouch.png");
+
 
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");

@@ -5,6 +5,7 @@
 
 class Entity {
     public:
+        Entity();
 
         Physics mPhysics;
         Collide mCollide;
@@ -13,7 +14,7 @@ class Entity {
         virtual void handle() = 0;
         virtual void draw() = 0;
 
-        virtual void die() = 0;
+        //virtual void die() = 0;
 
         virtual void handleCollision(Side side, Category other) = 0;
         virtual Vector2 getSize() = 0;

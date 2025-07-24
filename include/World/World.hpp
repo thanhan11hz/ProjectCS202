@@ -27,7 +27,7 @@ class World {
 
     private:
         std::vector<std::unique_ptr<TileMap>> mMap;
-        size_t mCurrent = 7;
+        size_t mCurrent = 0;
         std::unique_ptr<Character> mCharacter;
         Camera2D mCam;
         bool isLevelComplete();

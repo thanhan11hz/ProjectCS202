@@ -1,4 +1,4 @@
-#include "Animation.hpp"
+#include "Entity/Animation.hpp"
 
 Animation::Animation(Texture2D* texture, float frameW, float frameH, float dur, bool repeat) 
     : mTexture(texture), mFrameSize{frameW, frameH}, mDuration(dur), mRepeat(repeat), mCurrentColor(0) {
@@ -39,8 +39,11 @@ void Animation::update(float dt) {
     if (mDuration <= 0) return;
     float frameLength = mDuration / (float) mFrameCount;
     size_t newFrame = mElapsed / frameLength;
-    if (mRepeat) mCurrentFrames = newFrame % mFrameCount;
+    if (mRepeat) {
+        mCurrentFrames = newFrame % mFrameCount;
+    }
     else mCurrentFrames = (newFrame < mFrameCount) ? newFrame : mFrameCount - 1;
+
 }
 
 void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, bool colorBlink, Color tint) {
@@ -94,8 +97,7 @@ void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, 
 
         mCurrentColor = (mCurrentColor + 1) % 8;
     } 
-    
-    DrawTexturePro(*mTexture, src, dst, {dst.width / 2.0f, dst.height / 2.0f}, rotation, tint);
+    DrawTexturePro(*mTexture, src, dst, {0, 0}, rotation, tint);
 }
 
 void Animation::setFrameSize(Vector2 size) {

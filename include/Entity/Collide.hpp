@@ -22,7 +22,7 @@ class Entity;
 class Collide {
     public:
 
-        Collide();
+        Collide(Entity* owner);
         void setStatic(bool flag);
         bool isStatic() const;
         void setLabel(Category label);
