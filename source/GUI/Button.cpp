@@ -52,6 +52,10 @@ void Button::changeFont(FontIdentifier id) {
     mFont = id;
 }
 
+void Button::changeFontSize(int size) {
+    mFontSize = size;
+}
+
 void Button::draw() {
     // std::cout << "Button drawing with TextureIdentifier: " << static_cast<int>(mID) << std::endl;
     Color color = WHITE;

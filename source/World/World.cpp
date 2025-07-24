@@ -27,7 +27,7 @@ void World::loadCharater(const std::string character) {
 }
         
 bool World::isLevelComplete() {
-
+    return true;
 }
         
 bool World::hasNextMap() {

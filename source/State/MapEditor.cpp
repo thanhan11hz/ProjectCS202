@@ -1,15 +1,15 @@
 #include "State/MapEditor.hpp"
 
-MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalette(Palette::NONE) hasChanges(false), selected(-1), tileX(0), tileY(0), showPalette(false) {
+MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW), mPalette(Palette::NONE), hasChanges(false), selected(-1), tileX(0), tileY(0), showPalette(false), showGrid(true), isDropDown(false), confirm(false) {
     mMap = std::vector<std::vector<int>>(20, std::vector<int>(100, -1));
     mItems = std::vector<std::vector<int>>(20, std::vector<int>(100, -1));
     setupCamera();
+    dropdownRect = {885,247,284,519};
     //beginEditing();
     Button* muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer_view.pack(muteButton);
-    mContainer_edit.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
             //toggleMute();
@@ -22,9 +22,13 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     mContainer_view.pack(homeButton);
     homeButton->changeCallback(
         [this]() {
-            endEditing();
-            requestStackClear();
-            requestStackPush(StateIdentifier::MENU);
+            if (!hasChanges) {
+                requestStackPop();
+                requestStackPush(StateIdentifier::MENU);
+            } else {
+                confirm = true;
+                mMode = MapEditorMode::CONFIRM;
+            }
         }
     );
 
@@ -41,25 +45,25 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     mapName->changeAlignment(Alignment::CENTER);
     mapName->changeText("MAP_NAME");
     mapName->changeColor(BLACK);
-    mContainer.pack(header);
+    mContainer.pack(mapName);
 
     Button* next = new Button();
     next->changShape({1314, 397, 105, 105});
     next->changeTexture(TextureIdentifier::NEXT);
-    mContainer.pack(next);
+    mContainer_view.pack(next);
     next->changeCallback(
         [this]() {
-            camera.target.x+=5;
+            mCamera.target.x+=20;
         }
     );
 
     Button* previous = new Button();
     previous->changShape({21, 397, 105, 105});
     previous->changeTexture(TextureIdentifier::PREVIOUS);
-    mContainer.pack(previous);
+    mContainer_view.pack(previous);
     previous->changeCallback(
         [this]() {
-            camera.target.x-=5;
+            mCamera.target.x-=20;
         }
     );
 
@@ -72,10 +76,10 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     mContainer.pack(currentMode);
 
     subtext = new Label();
-    subtext->changeShape({23,794,530,17});
+    subtext->changeShape({23,842,530,17});
     subtext->changeSize(17);
     subtext->changeAlignment(Alignment::LEFT);
-    subtext->changeText("MAP NAME: ");
+    subtext->changeText("Navigate using WASD");
     subtext->changeColor(WHITE);
     mContainer.pack(subtext);
 
@@ -94,7 +98,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     rename->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     rename->changeText("RENAME");
     rename->changeCallback([this]() {
-            mMode = MapEditorMode::RENAME;
+            //mMode = MapEditorMode::RENAME;
         }
     );
     mContainer_view.pack(rename);
@@ -104,7 +108,8 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     reset->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     reset->changeText("RESET");
     reset->changeCallback([this]() {
-            //gonna add a confirmation
+            cfReset = true;
+            mMode = MapEditorMode::CONFIRM;
         }
     );
     mContainer_view.pack(reset);
@@ -114,17 +119,104 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     save->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     save->changeText("SAVE");
     save->changeCallback([this]() {
-            //gonna implement file saving later
+            //gonna implement file saving later !!!
             hasChanges = false;
         }
     );
     mContainer_view.pack(save);
 
+    //exit without saving
+    Label* cfsHeader = new Label();
+    cfsHeader->changeShape({476, 325, 490, 30});
+    cfsHeader->changeSize(30);
+    cfsHeader->changeText("UNSAVED CHANGES!");
+    cfsHeader->changeColor(WHITE);
+    mContainer_confirm.pack(cfsHeader);
+
+    Button* confirmSave = new Button();
+    confirmSave->changShape({478,440,211,56});
+    confirmSave->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    confirmSave->changeText("SAVE");
+    confirmSave->changeCallback([this]() {
+            //gonna implement file saving later !!!
+            hasChanges = false;
+            requestStackPop();
+            requestStackPush(StateIdentifier::MENU);
+        }
+    );
+    mContainer_confirm.pack(confirmSave);
+
+    Button* noSave = new Button();
+    noSave->changShape({751,440,211,56});
+    noSave->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    noSave->changeTextColor(RED);
+    noSave->changeText("DON'T SAVE");
+    noSave->changeCallback([this]() {
+            confirm = false;
+            hasChanges = false;
+            requestStackPop();
+            requestStackPush(StateIdentifier::MENU);
+        }
+    );
+    mContainer_confirm.pack(noSave);
+    
+    Button* cancel = new Button();
+    cancel->changShape({613,544,211,56});
+    cancel->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    cancel->changeTextColor(BLACK);
+    cancel->changeText("CANCEL");
+    cancel->changeCallback([this]() {
+            confirm = false;
+            mMode = MapEditorMode::VIEW;
+        }
+    );
+    mContainer_confirm.pack(cancel);
+    
+    //reset confirmation
+    Label* cfrHeader = new Label();
+    cfrHeader->changeShape({476, 351, 490, 30});
+    cfrHeader->changeColor(WHITE);
+    cfrHeader->changeSize(30);
+    cfrHeader->changeText("ARE YOU SURE?");
+    cfrHeader->changeAlignment(Alignment::CENTER);
+    mContainer_reset.pack(cfrHeader);
+
+    Button* confirmReset = new Button();
+    confirmReset->changShape({478,440,211,56});
+    confirmReset->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    confirmReset->changeTextColor(RED);
+    confirmReset->changeText("RESET");
+    confirmReset->changeCallback([this]() {
+            cfReset = false;
+            selected = -1;
+            mMap.clear();
+            mItems.clear();
+            mMap = std::vector<std::vector<int>>(20, std::vector<int>(100, -1));
+            mItems = std::vector<std::vector<int>>(20, std::vector<int>(100, -1));
+            mMode = MapEditorMode::VIEW;
+        }
+    );
+    mContainer_reset.pack(confirmReset);
+
+    Button* cancelReset = new Button();
+    cancelReset->changShape({751,440,211,56});
+    cancelReset->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    cancelReset->changeText("CANCEL");
+    cancelReset->changeCallback([this]() {
+            cfReset = false;
+            mMode = MapEditorMode::VIEW;
+        }
+    );
+    mContainer_reset.pack(cancelReset);
+
+    //edit mode
     Button* pen = new Button();
     pen->changShape({929, 800, 211, 56});
     pen->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pen->changeText("PEN");
     pen->changeCallback([this]() {
+            showPalette = false;
+            isDropDown = false;
             mMode = MapEditorMode::PEN;
             showGrid = true;
         }
@@ -147,7 +239,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     display->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     display->changeText("DISPLAY");
     display->changeCallback([this]() {
-            isShowPal = !isShowPal;
+            showPalette = !showPalette;
         }
     );
     mContainer_pen.pack(display);
@@ -157,7 +249,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pals->changeText("PALETTES");
     pals->changeCallback([this]() {
-            isDropDown = true;
+            isDropDown = !isDropDown;
         }
     );
     mContainer_pen.pack(pals);
@@ -165,8 +257,10 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     Button* eraserPen = new Button();
     eraserPen->changShape({1162, 800, 211, 56});
     eraserPen->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    eraserPen->changeText("SAVE");
+    eraserPen->changeText("ERASER");
     eraserPen->changeCallback([this]() {
+            showPalette = false;
+            isDropDown = false;
             mMode = MapEditorMode::ERASE;
         }
     );
@@ -228,44 +322,68 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(selection), mPalett
     mContainer_dropdown.pack(pal_blocks);
 
     Button* pal_clr = new Button(); 
-    pal_clr->changShape({920, 441, 211, 56});
+    pal_clr->changShape({920, 684, 211, 56});
     pal_clr->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pal_clr->changeText("CLEAR");
     pal_clr->changeCallback([this]() {
             isDropDown = false;
+            selected = -1;
             mPalette = Palette::NONE;
         }
     );
     mContainer_dropdown.pack(pal_clr);
+
+    Button* grid = new Button();
+    grid->changShape({929, 800, 211, 56});
+    grid->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    grid->changeText("GRID");
+    grid->changeCallback([this]() {
+            showGrid = !showGrid;
+        }
+    );
+    mContainer_erase.pack(grid); 
+
+    Button* penEraser = new Button();
+    penEraser->changShape({1162, 800, 211, 56});
+    penEraser->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    penEraser->changeText("PEN");
+    penEraser->changeCallback([this]() {
+            showGrid = true;
+            mMode = MapEditorMode::PEN;
+        }
+    );
+    mContainer_erase.pack(penEraser);
+
 
 }
 
 void MapEditor::setupCamera() {
     mCamera = { 0 };
     mCamera.zoom = 1.0f;
-    mCamera.target = (Vector2D){0,0};
-    mCamera.offset = (Vector2D){workspaceWidth/2, workspaceHeight/2};
+    mCamera.target = {0,0};
+    mCamera.offset = {workspaceWidth/8,workspaceHeight/2};
 }
 
 void MapEditor::cameraHandle() {
-    if (IsKeyDown(KEY_A)) camera.target.x -= 5;
-    if (IsKeyDown(KEY_D)) camera.target.x += 5;
-    if (IsKeyDown(KEY_W)) camera.target.y -= 5;
-    if (IsKeyDown(KEY_S)) camera.target.y += 5;
+    if (IsKeyDown(KEY_A)) mCamera.target.x -= 5;
+    if (IsKeyDown(KEY_D)) mCamera.target.x += 5;
+    if (IsKeyDown(KEY_W)) mCamera.target.y -= 5;
+    if (IsKeyDown(KEY_S)) mCamera.target.y += 5;
     float wheel = GetMouseWheelMove();
     if (wheel != 0) {
-        camera.zoom += wheel * 0.1f;
-        if (camera.zoom < 0.2f) camera.zoom = 0.2f;
+        mCamera.zoom += wheel * 0.1f;
+        if (mCamera.zoom < 1.0f) mCamera.zoom = 1.0f;
+        if (mCamera.zoom > 10.0f) mCamera.zoom = 10.0f;
     }
-    if (camera.target.x < 0) camera.target.x = 0;
-    if (camera.target.x > workspaceWidth) camera.target.x = workspaceWidth;
-    if (camera.target.y < 0) camera.target.y = 0;
-    if (camera.target.y > workspaceHeight) camera.target.y = workspaceHeight;
+    if (mCamera.target.x < 0) mCamera.target.x = 0;
+    if (mCamera.target.x > workspaceWidth/2) mCamera.target.x = workspaceWidth/2;
+    if (mCamera.target.y < 0) mCamera.target.y = 0;
+    if (mCamera.target.y > workspaceHeight/2) mCamera.target.y = workspaceHeight/2;
 }
 
 void MapEditor::paletteHandle() {
-    Vector2 mouse = getMousePosition();
-    if (mMode == MapEditorMode::PEN || isShowPal && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    Vector2 mouse = GetMousePosition();
+    if (mMode == MapEditorMode::PEN && showPalette && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         
         int tilesPerRow = getTilesPerRow();
         if (CheckCollisionPointRec(mouse, palRect)) {
@@ -276,14 +394,12 @@ void MapEditor::paletteHandle() {
             // Figure out which tile index was clicked
             int tX = localX / SCALED_TILE_SIZE;
             int tY = localY / SCALED_TILE_SIZE;
-            selectedTile = {palRect.x+localX, palRect.y+localY, SCALED_TILE_SIZE, SCALED_TILE_SIZE};
+            selectedTile = {palRect.x+tX*SCALED_TILE_SIZE, palRect.y+tY*SCALED_TILE_SIZE, SCALED_TILE_SIZE, SCALED_TILE_SIZE};
             int index = tY * tilesPerRow + tX;
             if (mPalette == Palette::COINS) index += 23;
             else if (mPalette == Palette::FOLIAGE1) index += 8*tilesPerRow;
             else if (mPalette == Palette::FOLIAGE2) index += 20*tilesPerRow;
-            if (index >= 0 && index < tileCount) {
-                selected = index;
-            }
+            selected = index;
         }
     }
 }
@@ -294,26 +410,36 @@ void MapEditor::drawUI() {
     mContainer.draw();
     switch (mMode) {
         case MapEditorMode::VIEW:
-            
             mContainer_view.draw();
             break;
         case MapEditorMode::EDIT:
-            
             mContainer_edit.draw();
             break;
         case MapEditorMode::PEN:
             mContainer_pen.draw();
+            if (isDropDown) {
+                DrawRectangleRec(dropdownRect, {113,67,25,200});
+                mContainer_dropdown.draw();
+            }
             break;
         case MapEditorMode::ERASE:
             mContainer_erase.draw();
             break;
         case MapEditorMode::CONFIRM:
-            mContainer_confirm.draw();
+        {    
+            //std::cout << "cfmode" << std::endl;
+            DrawRectangle(0,0,1440,900,Fade({83,83,83,255}, 0.7f));
+            Texture2D cfbox = Resource::mTexture.get(TextureIdentifier::CONFIRM_BOX);
+            DrawTexture(cfbox, 426, 257, WHITE);;
+            if (!cfReset) mContainer_confirm.draw();
+            else mContainer_reset.draw();
             break;
+        }
         case MapEditorMode::RENAME:
             mContainer_rename.draw();
             break;
     }
+    
 }
 
 void MapEditor::drawMapPreview() {
@@ -335,11 +461,12 @@ void MapEditor::drawMapPreview() {
             DrawTextureRec(brickTiles, srcRect, dest, WHITE);
         }
     }
+
     for (int y = 0; y < mItems.size(); ++y) {
         for (int x = 0; x < mItems[y].size(); ++x) {
             int tileID = mItems[y][x];
             if (tileID < 0) continue;
-
+            ///std::cout << "Drawing item with tileID" << tileID << std::endl;
             int tx = tileID % 36;
             int ty = tileID / 36;
             Rectangle srcRect = { tx * TILE_SIZE, ty * TILE_SIZE, TILE_SIZE, TILE_SIZE };
@@ -350,16 +477,22 @@ void MapEditor::drawMapPreview() {
 
     //ghost preview at cursor
     if (mMode == MapEditorMode::PEN && selected >= 0) {
-        Texture2D tileset;
-        if (mPalette != Palette::ITEMS) tileset = brickTiles;
-        else tileset = items;
+        Texture2D tileset = items;
+        int tilesPerRow = TILES_PER_ROW_ITEMS;
+        if (mPalette != Palette::ITEMS) {
+            tileset = brickTiles;
+            tilesPerRow = TILES_PER_ROW_BLOCKS;
+        }
         int tx = selected % tilesPerRow;
         int ty = selected / tilesPerRow;
         Rectangle srcRect = { tx * TILE_SIZE, ty * TILE_SIZE, TILE_SIZE, TILE_SIZE };
         Vector2 dest = { static_cast<float>(tileX * TILE_SIZE), static_cast<float>(tileY * TILE_SIZE) };
         DrawTextureRec(tileset, srcRect, dest, Fade(WHITE, 0.5f)); 
+    } else if (mMode == MapEditorMode::ERASE) {
+        DrawRectangle(tileX*TILE_SIZE, tileY*TILE_SIZE, TILE_SIZE, TILE_SIZE, Fade(BLACK, 0.2f));
     }
-    if (showGrid) drawGrid(workspaceWidth, workspaceHeight, TILE_SIZE);
+
+    if (showGrid) drawGrid(mMap[0].size(), mMap.size(), TILE_SIZE);
     EndMode2D();
     EndScissorMode();
 }
@@ -367,43 +500,42 @@ void MapEditor::drawPalette() {
     Texture2D pal = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);;
     if (mPalette != Palette::ITEMS) pal = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
 
-    if (isShowPal) {
-        Rectangle toDraw;
-        Rectangle srcDraw;
+    if (showPalette) {
+        DrawRectangleRec(palRect, Fade({113, 67, 25}, 0.7f));
+        Texture2D toDraw;
         switch (mPalette) {
-            case Palette::BLOCKS:
-                toDraw = {337, 376, 1104, 384};
-                srcDraw = {0, 0, 1104, 384};
+            case Palette::ITEMS:
+                toDraw = Resource::mTexture.get(TextureIdentifier::PAL1);
+                DrawTexture(toDraw, 1200, 328, WHITE);
                 break;
             case Palette::FOLIAGE1:
-                toDraw = {240, 184, 1200, 576};
-                srcDraw = {0, 384, 1200, 576};
+                toDraw = Resource::mTexture.get(TextureIdentifier::PAL2);
+                DrawTexture(toDraw, 240, 184, WHITE);
                 break;
             case Palette::FOLIAGE2:
-                toDraw = {912, 376, 528, 384};
-                srcDraw = {0, 960, 528, 384};
+                toDraw = Resource::mTexture.get(TextureIdentifier::PAL3);
+                DrawTexture(toDraw, 912, 376, WHITE);
                 break;
             case Palette::COINS:
-                toDraw = {1248, 376, 192, 384};
-                srcDraw = {1104, 0, 192, 384};
+                toDraw = Resource::mTexture.get(TextureIdentifier::PAL4);
+                DrawTexture(toDraw, 1248, 376, WHITE);
                 break;
-            case Palette::ITEMS: {
-                toDraw = {1200, 328, 240, 432};
-                srcDraw = {0, 0, 240, 432};
+            case Palette::BLOCKS: {
+                toDraw = Resource::mTexture.get(TextureIdentifier::PAL5);
+                DrawTexture(toDraw, 337, 376, WHITE);
                 break;
             }
         }
-        DrawRectangleRec(palRect, Fade({113, 67, 25}, 0.7f));
-        DrawTexturePro(pal, srcDraw, toDraw, {0,0}, 0, WHITE);
         if (selected >= 0) DrawRectangleRec(selectedTile, Fade(YELLOW, 0.8f));
     }
 }
-void MapEditor::drawGrid(int width, int height, int tileSize, Color lineColor = Fade(GRAY, 0.5f)) {
-    if (x % 10 == 0) lineColor = Fade(DARKGRAY, 0.8f);
+void MapEditor::drawGrid(int width, int height, int tileSize, Color lineColor) {
     for (int y = 0; y <= height; y++) {
+        //if (y % 10 == 0) lineColor = Fade(DARKGRAY, 0.8f);
         DrawLine(0, y * tileSize, width * tileSize, y * tileSize, lineColor);
     }
     for (int x = 0; x <= width; x++) {
+        //if (x % 10 == 0) lineColor = Fade(DARKGRAY, 0.8f);
         DrawLine(x * tileSize, 0, x * tileSize, height * tileSize, lineColor);
     }
 }
@@ -422,15 +554,16 @@ bool MapEditor::update(float dt) {
     switch (mMode) {
         case MapEditorMode::VIEW:
             currentMode->changeText("VIEWING MODE");
-            subtext->changeText("MAP NAME: ");
+            subtext->changeText("Navigate using WASD");
             break;
         case MapEditorMode::EDIT:
             currentMode->changeText("EDIT MODE");
             subtext->changeText("PRESS B TO EXIT EDIT MODE");
             break;
-        case MapEditorMode::VIEW:
-            currentMode->changeText("VIEWING MODE");
-            subtext->changeText("MAP NAME: ");
+        case MapEditorMode::ERASE:
+            if (showGrid) currentMode->changeText("EDIT MODE - ERASER | GRID: ON");
+            else currentMode->changeText("EDIT MODE - ERASER | GRID: OFF");
+            subtext->changeText("PRESS B TO EXIT ERASER MODE");
             break;
         case MapEditorMode::PEN:
             if (mPalette == Palette::NONE) currentMode->changeText("EDIT MODE - PEN | PALETTE: NONE");
@@ -445,11 +578,10 @@ bool MapEditor::update(float dt) {
 
     if (!hasChanges) save->changeTexture(TextureIdentifier::INACTIVE_BUTTON_MEDIUM);
     else save->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    
+    display->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     switch (mPalette) {
         case Palette::BLOCKS:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-            display->changeText("");
             palRect = {337, 376, 1104, 384};
             break;
         case Palette::FOLIAGE1:
@@ -466,16 +598,19 @@ bool MapEditor::update(float dt) {
             break;
         case Palette::ITEMS:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+
             palRect = {1200, 328, 240, 432};
             break;
         case Palette::NONE:
             display->changeTexture(TextureIdentifier::INACTIVE_BUTTON_MEDIUM);
             break;
     }
-    if (isDropDown) pals->changeTexture(TextureIdentifier::HOVERED_BUTTON_MEDIUM);
+    if (isDropDown) {
+        pals->changeTexture(TextureIdentifier::HOVERED_BUTTON_MEDIUM); 
+    }
     else pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
 
-    if (isShowPal) display->changeText("HIDE");
+    if (showPalette) display->changeText("HIDE");
     else display->changeText("DISPLAY");
     return false;
 }
@@ -499,26 +634,34 @@ bool MapEditor::handle() {
             mContainer_erase.handle();
             break;
         case MapEditorMode::CONFIRM:
-            mContainer_confirm.handle();
+            if (!cfReset) mContainer_confirm.handle();
+            else mContainer_reset.handle();
             break;
         case MapEditorMode::RENAME:
             mContainer_rename.handle();
             break;
     }
+    Vector2 mouse = GetMousePosition();
     if (!isDropDown) {
-        paletteHandle();
-        stampingHandle();
+        if (showPalette) {
+            paletteHandle();
+            if (!CheckCollisionPointRec(mouse, palRect)) stampingHandle();
+        } else {
+            stampingHandle();
+        }
+        
+    } else {
+        if(!CheckCollisionPointRec(mouse, dropdownRect) && IsKeyPressed(MOUSE_BUTTON_LEFT)) isDropDown = false;
     }
-
-    if (mMode == MapEditorMode::PEN || mMode == MapEditorMode::ERASE && isKeyPressed(KEY_B)) mMode = MapEditorMode::EDIT;
-    if (mMode == MapEditorMode::EDIT && isKeyPressed(KEY_B)) mMode = MapEditorMode::VIEW;
+    if ((mMode == MapEditorMode::PEN || mMode == MapEditorMode::ERASE) && IsKeyPressed(KEY_B)) mMode = MapEditorMode::EDIT;
+    if (mMode == MapEditorMode::EDIT && IsKeyPressed(KEY_B)) mMode = MapEditorMode::VIEW;
     return false;
 }
 
 void MapEditor::stampingHandle() {
     BeginScissorMode(0,0,workspaceWidth,workspaceHeight);
     BeginMode2D(mCamera);
-    Vector2D mouse = GetScreenToWorld2D(GetMousePosition(), mCamera);
+    Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), mCamera);
     cameraHandle();
     tileX = mouse.x / TILE_SIZE;
     tileY = mouse.y / TILE_SIZE;
@@ -526,8 +669,8 @@ void MapEditor::stampingHandle() {
     bool inBounds = tileX >= 0 && tileX < mMap[0].size() && tileY >= 0 && tileY < mMap.size();
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && inBounds && mMode == MapEditorMode::PEN && !isDropDown) {
-        if (mPalette != Palette::ITEMS || mPalette != Palette::COINS) mMap[tileY][tileX] = selectedTile;
-        else mItems[tileY][tileX] = selectedTile;
+        if (mPalette == Palette::ITEMS) mItems[tileY][tileX] = selected;
+        else mMap[tileY][tileX] = selected;
         hasChanges = true;
     } else if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && inBounds && mMode == MapEditorMode::ERASE) {
         mMap[tileY][tileX] = -1;

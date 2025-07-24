@@ -4,6 +4,11 @@ MenuState::MenuState(StateStack& stack): State(stack) {
     Button* muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
+    muteButton->changeCallback(
+        [this]() {
+            
+        }
+    );
     mContainer.pack(muteButton);
     
     Label* subtext = new Label();
@@ -25,17 +30,17 @@ MenuState::MenuState(StateStack& stack): State(stack) {
     );
     mContainer.pack(playButton);
 
-    Button* loadButton = new Button();
-    loadButton->changShape({93,429,245,65});
-    loadButton->changeText("LOAD GAME");
-    loadButton->changeCallback(
+    Button* mapButton = new Button();
+    mapButton->changShape({93,429,245,65});
+    mapButton->changeFontSize(15);
+    mapButton->changeText("CREATE-A-LEVEL");
+    mapButton->changeCallback(
         [this]() {
             requestStackPop();
-            requestStackPush(StateIdentifier::LEVEL);
+            requestStackPush(StateIdentifier::MAPEDITOR);
         }
     );
-    //loadButton->changeToggle(false);
-    mContainer.pack(loadButton);
+    mContainer.pack(mapButton);
 
     Button* instructionButton = new Button();
     instructionButton->changShape({93,539,245,65});
