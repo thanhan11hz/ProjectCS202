@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Observer/Observer.hpp"
+#include "World/Observer.hpp"
 
 class BaseComponent {
     public:

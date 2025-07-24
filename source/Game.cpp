@@ -34,9 +34,9 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::NEXT_WHITE, "resource\\Texture\\Button\\nextWhite.png");
     Resource::mTexture.load(TextureIdentifier::PREVIOUS_WHITE, "resource\\Texture\\Button\\prevwhite.png");
     Resource::mTexture.load(TextureIdentifier::CHAR_SELECT_BACKGROUND, "resource\\Texture\\Background\\charselectbg.png");
-    Resource::mTexture.load(TextureIdentifier::CHARACTER_MARIO, "resource\\Texture\\StateAsset\\marioart.png");
-    Resource::mTexture.load(TextureIdentifier::CHARACTER_LUIGI, "resource\\Texture\\StateAsset\\luigiart.png");
-    Resource::mTexture.load(TextureIdentifier::CHARACTER_POINTER, "resource\\Texture\\StateAsset\\uppointer.png");
+    Resource::mTexture.load(TextureIdentifier::Character_MARIO, "resource\\Texture\\StateAsset\\marioart.png");
+    Resource::mTexture.load(TextureIdentifier::Character_LUIGI, "resource\\Texture\\StateAsset\\luigiart.png");
+    Resource::mTexture.load(TextureIdentifier::Character_POINTER, "resource\\Texture\\StateAsset\\uppointer.png");
     Resource::mTexture.load(TextureIdentifier::BRICKS_TEXTURE, "resource\\Texture\\StateAsset\\brickstexture.png");
     Resource::mTexture.load(TextureIdentifier::CONFIRM_BOX, "resource\\Texture\\StateAsset\\confirmbox.png");
     Resource::mTexture.load(TextureIdentifier::PREVIEW, "resource\\Texture\\StateAsset\\thumbnail.png");
@@ -70,6 +70,15 @@ Game::Game() {
     mStateStack.registerState<GameState>(StateIdentifier::GAME1);
     
     mStateStack.pushState(StateIdentifier::MENU);
+
+    mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");
+    mWorld.loadMap("resource\\Map\\02 - Underground Area (1-2)");
+    mWorld.loadMap("resource\\Map\\03 - Desert Area (2-3 & 4-1)");
+    mWorld.loadMap("resource\\Map\\04 - Snowy Area (5-2)");
+    mWorld.loadMap("resource\\Map\\05 - Castle (1-4)");
+    mWorld.loadMap("resource\\Map\\06 - Sky Area (1-3)");
+    mWorld.loadMap("resource\\Map\\07 - Mushroom Area (4-3)");
+    mWorld.loadMap("resource\\Map\\08 - Sea Area (2-2)");
 
 }
 

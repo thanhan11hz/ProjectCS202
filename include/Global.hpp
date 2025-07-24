@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 #include <iostream>
-#include <vector>
+#include <map>
 
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
@@ -44,6 +44,6 @@ enum class Action {
     DOWN
 };
 
-extern std::vector<std::pair<KeyboardKey, Action>> mKeyBinding;
+extern std::map<Action, KeyboardKey> mKeyBinding;
 
 extern Music mPlayingMusic;

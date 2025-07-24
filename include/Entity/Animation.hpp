@@ -7,7 +7,7 @@
 
 class Animation {
     public:
-        explicit Animation(Texture2D* texture, float frameW, float frameH, float dur = 1.0f, bool repeat = true);
+        Animation(Texture2D* texture, float frameW, float frameH, float dur = 1.0f, bool repeat = true);
         void setTexture(Texture2D* texture, float frameW, float frameH);
         void setFrameDuration(float dt);
         void setRepeating(bool flag, bool restartWhenEnable);
@@ -15,7 +15,8 @@ class Animation {
         bool isRepeating() const;
         void restart();
         void update(float dt);
-        void draw(Vector2 position, float scale = 1.0f, float rotation = 0.0f, bool flipX = false, Color tint = WHITE);
+        void draw(Vector2 position, float scale = 1.0f, float rotation = 0.0f, bool flipX = false, bool colorBlink = false, Color tint = WHITE);
+        void setFrameSize(Vector2 size);
         Vector2 getFrameSize() const;
     
     private:
@@ -27,5 +28,6 @@ class Animation {
         float mDuration;
         float mElapsed;
         bool mRepeat;
+        int mCurrentColor;
         void init();
 };

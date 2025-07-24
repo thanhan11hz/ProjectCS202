@@ -11,16 +11,16 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     Label* header = new Label();
     header->changeShape({405, 168, 630, 30});
     header->changeSize(30);
-    header->changeText("SELECT YOUR CHARACTER");
+    header->changeText("SELECT YOUR Character");
     header->changeColor(WHITE);
     mContainer.pack(header);
 
-    // Label* character = new Label();
-    // character->changeShape({515, 648, 85, 17});
-    // character->changeSize(17);
-    // character->changeText("MARIO");
-    // character->changeColor(WHITE);
-    // mContainer.pack(character);
+    // Label* Character = new Label();
+    // Character->changeShape({515, 648, 85, 17});
+    // Character->changeSize(17);
+    // Character->changeText("MARIO");
+    // Character->changeColor(WHITE);
+    // mContainer.pack(Character);
 
     Button* muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
@@ -60,11 +60,11 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
 void CharSelectState::draw() {
     Texture2D background = Resource::mTexture.get(TextureIdentifier::CHAR_SELECT_BACKGROUND);
     DrawTexture(background, 0, 0, WHITE);
-    Texture2D mario = Resource::mTexture.get(TextureIdentifier::CHARACTER_MARIO);
+    Texture2D mario = Resource::mTexture.get(TextureIdentifier::Character_MARIO);
     DrawTexture(mario, 474, 308, WHITE);
-    Texture2D luigi = Resource::mTexture.get(TextureIdentifier::CHARACTER_LUIGI);
+    Texture2D luigi = Resource::mTexture.get(TextureIdentifier::Character_LUIGI);
     DrawTexture(luigi, 796, 276, WHITE);
-    Texture2D pointer = Resource::mTexture.get(TextureIdentifier::CHARACTER_POINTER);
+    Texture2D pointer = Resource::mTexture.get(TextureIdentifier::Character_POINTER);
     if (selectedCharacter == 0) {
         DrawTexture(pointer, 533, 599, WHITE);
         DrawTextEx(Resource::mFont.get(FontIdentifier::PressStart2P), "MARIO", {515, 648}, 17, 0, WHITE);

@@ -5,8 +5,7 @@
 #include <string>
 
 #include "World/TileMap.hpp"
-#include "Entity/Mario.hpp"
-#include "Entity/Luigi.hpp"
+#include "Entity/Character.hpp"
 
 class World {
 
@@ -15,7 +14,8 @@ class World {
         void operator=(const World&) = delete;
         static World& getInstance();
         static void destroyInstance();
-        void setCharater(int character);
+        void setCharater(int Character);
+        void loadMap(const std::string folder);
         void handle();
         void update(float dt);
         void draw();
@@ -26,11 +26,10 @@ class World {
         static World* instance;
 
     private:
-        std::vector<TileMap*> mMap;
-        size_t mCurrent;
-        Character* mChar;
+        std::vector<std::unique_ptr<TileMap>> mMap;
+        size_t mCurrent = 7;
+        std::unique_ptr<Character> mCharacter;
         Camera2D mCam;
-        void loadMap(const std::string fileName);
         bool isLevelComplete();
         bool hasNextMap();
         void nextMap();

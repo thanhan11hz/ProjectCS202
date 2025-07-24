@@ -26,6 +26,5 @@ class Game {
         void draw();
 
     private:
-        InputHandler mInput;
         StateStack mStateStack;
 };

@@ -1,52 +1,20 @@
 #pragma once
 
-#include <raylib.h>
-#include <raymath.h>
-#include <algorithm>  
-#include <cmath>
-#include <iostream>
+#include "Entity/Physics.hpp"
+#include "Entity/Collide.hpp"
 
 class Entity {
     public:
-        explicit Entity(int hitPoint = 1);
 
-        void setPosition(Vector2 postion);
-        Vector2 getPosition() const;
+        Physics mPhysics;
+        Collide mCollide;
 
-        void setVelocity(Vector2 velocity);
-        void setVelocity(float vx, float vy);
-        Vector2 getVelocity() const;
+        virtual void update(float dt);
+        virtual void handle() = 0;
+        virtual void draw() = 0;
 
-        void accelerate(Vector2 dv);
-        void accelerate(float vx, float vy);
+        virtual void die() = 0;
 
-        void repair(int points);
-        void damage(int points);
-        void destroy();
-        int getHitPoints();
-        bool isDestroy();
-
-        void startJump();
-        void endJump();
-
-    protected:
-
-        bool mIsJump;
-        bool mIsGround;
-        virtual void updateCurrent(float dt);
-        bool isRunning();
-        bool isRest();
-        bool isRising();
-
-    private:
-        Vector2 mPosition;
-        Vector2 mVelocity;
-        int mHitPoint;
-
-        static constexpr float Gravity  = 950.f;
-        static constexpr float Friction = 30.f;
-        static constexpr float AirDrag  = 40.f;
-        static constexpr float Eps      = 5.f;
-        void applyGravity(float dt);
-        void applyDrag(float dt);
+        virtual void handleCollision(Side side, Category other) = 0;
+        virtual Vector2 getSize() = 0;
 };

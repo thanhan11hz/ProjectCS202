@@ -1,7 +1,7 @@
-#include "Entity/Animation.hpp"
+#include "Animation.hpp"
 
 Animation::Animation(Texture2D* texture, float frameW, float frameH, float dur, bool repeat) 
-    : mTexture(texture), mFrameSize{frameW, frameH}, mDuration(dur), mRepeat(repeat) {
+    : mTexture(texture), mFrameSize{frameW, frameH}, mDuration(dur), mRepeat(repeat), mCurrentColor(0) {
         if (texture) init();
     }
 
@@ -43,7 +43,7 @@ void Animation::update(float dt) {
     else mCurrentFrames = (newFrame < mFrameCount) ? newFrame : mFrameCount - 1;
 }
 
-void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, Color tint) {
+void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, bool colorBlink, Color tint) {
     if (!mTexture) return;
     Rectangle src = {
         (float) (mCurrentFrames % mCol) * mFrameSize.x,
@@ -62,7 +62,44 @@ void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, 
         mFrameSize.x * scale,
         mFrameSize.y * scale
     };
+    if (colorBlink) {
+        switch (mCurrentColor) {
+        case 0:
+            tint = WHITE;
+            break;
+        case 1:
+            tint = RED;
+            break;
+        case 2:
+            tint = ORANGE;
+            break; 
+        case 3:
+            tint = YELLOW;
+            break;
+        case 4:
+            tint = GREEN;
+            break;
+        case 5:
+            tint = BLUE;
+            break;
+        case 6:
+            tint = PURPLE;
+            break;
+        case 7:
+            tint = VIOLET;
+            break;
+        default:
+            break;
+        }
+
+        mCurrentColor = (mCurrentColor + 1) % 8;
+    } 
+    
     DrawTexturePro(*mTexture, src, dst, {dst.width / 2.0f, dst.height / 2.0f}, rotation, tint);
+}
+
+void Animation::setFrameSize(Vector2 size) {
+    mFrameSize = size;
 }
 
 Vector2 Animation::getFrameSize() const {

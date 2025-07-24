@@ -13,16 +13,16 @@ SoundHolder& Resource::mSound = SoundHolder::getInstance(LoadSound, UnloadSound)
 
 MusicHolder& Resource::mMusic = MusicHolder::getInstance(LoadMusicStream, UnloadMusicStream);
 
-World& mWorld;
+World& mWorld = World::getInstance();
 
-std::vector<std::pair<KeyboardKey, Action>> mKeyBinding = {
-    {KEY_P, Action::PAUSE},
-    {KEY_M, Action::MUTE},
-    {KEY_LEFT_SHIFT, Action::FIRE},
-    {KEY_W, Action::JUMP},
-    {KEY_S, Action::DOWN},
-    {KEY_A, Action::LEFT},
-    {KEY_D, Action::RIGHT}
+std::map<Action, KeyboardKey> mKeyBinding = {
+    {Action::PAUSE, KEY_P},
+    {Action::MUTE, KEY_M},
+    {Action::FIRE, KEY_LEFT_SHIFT},
+    {Action::JUMP, KEY_W},
+    {Action::DOWN, KEY_S},
+    {Action::LEFT, KEY_A},
+    {Action::RIGHT, KEY_D}
 };
 
 Music mPlayingMusic;
