@@ -87,4 +87,5 @@ bool Physics::onGround() {
 
 void Physics::setOnGround(bool flag) {
     mIsGround = flag;
+    mVelocity.y = 0;
 }

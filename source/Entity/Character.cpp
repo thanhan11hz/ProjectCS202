@@ -5,20 +5,17 @@ Character::Character(int length, int high) : mAnim(nullptr, 16, 16, 1.0f, true),
 }
 
 void Character::handle() {
-    if (IsKeyDown(mKey[Action::DOWN])) setMove(Move::CROUCH);
     if (mMove == Move::CROUCH) {
         if (IsKeyReleased(mKey[Action::DOWN])) {
             if (!mPhysics.onGround()) setMove(Move::JUMP);
             else setMove(Move::IDLE);
         }
     } else {
-        if (IsKeyPressed(mKey[Action::LEFT])) {
-            std::cout << "aaaaaaa";
-            mPhysics.accelerate({-mLength, 0});
-        }
+        if (IsKeyDown(mKey[Action::DOWN])) setMove(Move::CROUCH);
+        if (IsKeyDown(mKey[Action::LEFT])) mPhysics.accelerate({-mLength, 0});
         if (IsKeyDown(mKey[Action::RIGHT])) mPhysics.accelerate({mLength, 0});
     }
-    if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) mPhysics.startJump(mHigh);
+    if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) mPhysics.startJump(mHigh + getSize().y / 96.0f);
     if (IsKeyReleased(mKey[Action::JUMP])) mPhysics.endJump();
 }
         
@@ -30,8 +27,9 @@ void Character::draw() {
 void Character::update(float dt) {
     if (mMove == Move::DEAD) return;
     Entity::update(dt);
-    if (mPhysics.getPosition().y > 672){
-        mPhysics.setPosition({mPhysics.getPosition().x, 672});
+    // std::cout << mPhysics.getPosition().y << " ";
+    if (mPhysics.getPosition().y + getSize().y > 720) {
+        mPhysics.setPosition({mPhysics.getPosition().x, 720 - getSize().y});
         mPhysics.setOnGround(true);
     }
     updateMove();
@@ -76,9 +74,9 @@ void Character::setMove(Move move) {
 
     if (mForm == Form::FIRE || mForm == Form::SUPER) {
         if (mMove == Move::CROUCH) {
-            mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 30});
-        } else if (move == Move::CROUCH) {
             mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y - 30});
+        } else if (move == Move::CROUCH) {
+            mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 30});
         }
     }
 
@@ -118,7 +116,7 @@ void Character::setForm(Form form) {
 }
 
 std::unique_ptr<Character> Character::spawnMario() {
-    std::unique_ptr<Character> mChar = std::make_unique<Character>(100, 192);
+    std::unique_ptr<Character> mChar = std::make_unique<Character>(200, 4);
     mChar->mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
@@ -136,7 +134,7 @@ std::unique_ptr<Character> Character::spawnMario() {
 }
         
 std::unique_ptr<Character> Character::spawnLuigi() {
-    std::unique_ptr<Character> mChar = std::make_unique<Character>(80, 240);
+    std::unique_ptr<Character> mChar = std::make_unique<Character>(180, 5);
     mChar->mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_JUMP);
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_IDLE);

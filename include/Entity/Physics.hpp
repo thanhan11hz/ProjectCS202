@@ -4,6 +4,7 @@
 #include <raymath.h>
 #include <algorithm>  
 #include <cmath>
+#include <iostream>
 
 class Physics {
     public:
@@ -24,6 +25,7 @@ class Physics {
         bool isRest();
         bool isRising();
         bool isRight();
+        void setDensity(float density);
         void update(float dt);
 
     private:
@@ -32,6 +34,7 @@ class Physics {
         Vector2 mVelocity;
         bool mIsGround;
         bool mIsRight;
+        float mDensity = 1.0f;
         static constexpr float Gravity  = 950.0f;
         static constexpr float Friction = 30.0f;
         static constexpr float AirDrag  = 40.0f;
