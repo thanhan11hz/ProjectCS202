@@ -12,7 +12,7 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
     }
     if (block.getType(block.calType()) == TileType::OwInitialTile && CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
         if(block.isDoneAnimation){
-            block.setVelocity({0, 192.5f});
+            block.mPhysics.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;
             block.aniTime = 0.0f;
             block.bumped = true;
@@ -20,19 +20,19 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
     }
     if(block.bumped) bump(block, dt);
     if (block.getType(block.calType()) == TileType::OwInitialTile && CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
-        block.frag[0]->setVelocity({-10.0f, block.frag[0]->calculateVec(0.2f, 10)});
+        block.frag[0]->mPhysics.setVelocity({-10.0f, block.frag[0]->calculateVec(0.2f, 10)});
         block.frag[0]->setOn(true);
         block.frag[0]->setAnimation();
 
-        block.frag[1]->setVelocity({10.0f, block.frag[1]->calculateVec(0.2f, 10)});
+        block.frag[1]->mPhysics.setVelocity({10.0f, block.frag[1]->calculateVec(0.2f, 10)});
         block.frag[1]->setOn(true);
         block.frag[1]->setAnimation();
 
-        block.frag[2]->setVelocity({-10.0f, block.frag[2]->calculateVec(0.2f, 5)});
+        block.frag[2]->mPhysics.setVelocity({-10.0f, block.frag[2]->calculateVec(0.2f, 5)});
         block.frag[2]->setOn(true);
         block.frag[2]->setAnimation();
 
-        block.frag[3]->setVelocity({10.0f, block.frag[3]->calculateVec(0.2f, 5)});
+        block.frag[3]->mPhysics.setVelocity({10.0f, block.frag[3]->calculateVec(0.2f, 5)});
         block.frag[3]->setOn(true);
         block.frag[3]->setAnimation();
 
@@ -52,17 +52,12 @@ void SimpleBlockBehavior::onHit(TileBlock& block, float dt) {
 }
 void SimpleBlockBehavior::bump(TileBlock& block, float dt) {
     if (block.isDoneAnimation) return;
-
-    block.aniTime += dt;
-    //float velocity = mVelocity.y - Gravity * aniTime;
-
-    float displacement = block.mVelocity.y * block.aniTime - 0.5f * TileBlock::Gravity * block.aniTime * block.aniTime;
     float startY = block.mRect.y;
+    block.mPhysics.accelerate({0, -TileBlock::Gravity * dt});
+    block.mPhysics.setPosition({block.mPhysics.getPosition().x, block.mPhysics.getPosition().y - block.mPhysics.getVelocity().y * dt});
 
-    block.aniRect.y = startY - displacement;
-
-    if (block.aniRect.y >= startY) {
-        block.aniRect.y = startY;
+    if (block.mPhysics.getPosition().y >= startY) {
+        block.mPhysics.setPosition({block.mPhysics.getPosition().x, startY});
         block.isDoneAnimation = true;
         block.aniTime = 0.0f;
     }
@@ -73,13 +68,12 @@ void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
     if (block.isDoneAnimation) return;
     block.aniTime += dt;
     if(block.aniTime < 100.0f){
-        //std::cout << "\n" << aniTime << "\n";
         for (int i = 0; i < 4; i++){
             block.frag[i]->update(dt);
         }
     }
     else{
-        block.mType = 0;
+        block.mType = -1;
     }
 }
 
