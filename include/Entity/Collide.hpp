@@ -7,6 +7,7 @@ enum Category {
     FIRE_MARIO,
     SUPER_MARIO,
     COIN,
+    BLOCK,
 };
 
 enum class Side {

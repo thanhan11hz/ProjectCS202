@@ -44,7 +44,9 @@ TileItem TileObject::getType() {
 }
 void TileObject::draw(Texture2D& background, Texture2D& object){
     if (mType != -1 && !isDestroyed && isOn) {
-        {DrawTexturePro(object, mSource, aniRect, {0, 0}, 0.0f, WHITE);}
+        float posX = mPhysics.getPosition().x;
+        float posY = mPhysics.getPosition().y;
+        {DrawTexturePro(object, mSource, {posX, posY, 48, 48}, {0, 0}, 0.0f, WHITE);}
     }
 }
 

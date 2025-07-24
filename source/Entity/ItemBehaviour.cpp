@@ -7,8 +7,10 @@ void FragmentBehavior::update(TileObject& item, float dt) {
     //std::cout << "FragmentBehavior update called" << std::endl;
     if (item.isDoneAnimation) return;
     item.aniTime += dt;
-    item.aniRect.x +=  item.mVelocity.x * item.aniTime;
-    item.aniRect.y -= item.mVelocity.y * item.aniTime - (0.5f * TileBlock::Gravity * item.aniTime * item.aniTime);
+    float offsetX = item.mPhysics.getVelocity().x * item.aniTime;
+    item.mPhysics.accelerate({0, -TileBlock::Gravity * dt});
+    item.mPhysics.setPosition({item.mPhysics.getPosition().x + offsetX, item.mPhysics.getPosition().y - item.mPhysics.getVelocity().y * dt});
+
 }
 
 void FlowerBehavior::update(TileObject& item, float dt) {
@@ -17,24 +19,25 @@ void FlowerBehavior::update(TileObject& item, float dt) {
     if(CheckCollisionPointRec(mousePos, item.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
         item.setOn(true);
         item.setAnimation();
-        item.setVelocity({0, 96.0f});
+        item.mPhysics.setVelocity({0, 96.0f});
     }
-    if(item.isDoneAnimation) ;
+    if(!item.isDoneAnimation && !item.isUp) {
+        moveUp(item, dt);
+    } 
 }
 
-void FlowerBehavior::moveUp(TileObject& item, float dt) { //xử lý lại để không có animation nào
+void FlowerBehavior::moveUp(TileObject& item, float dt) { 
     if (item.isDoneAnimation) return;
-
     item.aniTime += dt;
-
-    float displacement = item.mVelocity.y * item.aniTime;
+    if(item.aniTime < 0.2f) return;
     float startY = item.mRect.y-48.0f;
 
-    item.aniRect.y = startY - displacement;
+    item.mPhysics.setPosition({item.mPhysics.getPosition().x, item.mPhysics.getPosition().y - item.mPhysics.getVelocity().y * dt});
 
-    if (item.aniRect.y <= startY) {
-        item.aniRect.y = startY;
+    if (item.mPhysics.getPosition().y <= startY) {
+        item.mPhysics.setPosition({item.mPhysics.getPosition().x, startY});
         item.isDoneAnimation = true;
         item.aniTime = 0.0f;
+        item.isUp = true;
     }
 }
