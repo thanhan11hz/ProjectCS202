@@ -237,6 +237,13 @@ void TileBlock::draw() {}
 
 void TileBlock::handle() {}
 
+Vector2 TileBlock::getSize(){
+    if(!isDestroyed) {
+        return {48.0f, 48.0f};
+    }
+    return {0, 0};
+}
+
 void TileBlock::handleCollision(Side side, Category other) {
     if(mBehavior) {
         mBehavior->setSide(side);
