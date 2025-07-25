@@ -25,8 +25,8 @@ class Goomba : public Entity {
         Texture2D mRun;
         Texture2D mDie;
 
-        static std::unique_ptr<Goomba> spawnBrownGoomba();
-        static std::unique_ptr<Goomba> spawnBlueGoomba();
+        static std::unique_ptr<Goomba> spawnGoomba1();
+        static std::unique_ptr<Goomba> spawnGoomba2();
 
     private:
         Move mMove;
@@ -34,6 +34,6 @@ class Goomba : public Entity {
         static constexpr float mDeadTime = 1.0f;
         float mDeadTimer = 0;
         bool mIsDead = false;
-        void updateDead(float dt);
+        float mSpeed = 100.0f;
         void setMove(Move move);
 };

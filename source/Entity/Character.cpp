@@ -178,5 +178,8 @@ Vector2 Character::getSize() {
 void Character::handleCollision(Side side, Category other) {
     if (side == Side::BOTTOM && other == Category::BLOCK) {
         mPhysics.setOnGround(true);
-    } 
+    }
+    if (side == Side::TOP && other == Category::BLOCK) {
+        mPhysics.setVelocity({mPhysics.getVelocity().x, 0});
+    }
 }

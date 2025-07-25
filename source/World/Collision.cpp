@@ -1,6 +1,6 @@
 #include "World/Collision.hpp"
 
-static int count = 0;
+static bool check = false;
 
 Collision::Collision() : mCharacter(nullptr) {
 
@@ -52,14 +52,18 @@ bool Collision::checkBroadPhase(Collide A, Collide B) {
 std::pair<Side,Side> Collision::checkNarrowPhase(Collide A, Collide B) {
     Rectangle hitBoxA = A.getHitBox();
     Rectangle hitBoxB = B.getHitBox();
+    if (hitBoxB.x == 816 && hitBoxB.y == 528) {
+        std::cout << hitBoxA.x << " " << hitBoxA.y;
+        //exit(0);
+    }
     Rectangle intersection = {
         fmax(hitBoxA.x, hitBoxB.x),
         fmax(hitBoxA.y, hitBoxB.y),
         fmin(hitBoxA.x + hitBoxA.width, hitBoxB.x + hitBoxB.width) - fmax(hitBoxA.x, hitBoxB.x),
         fmin(hitBoxA.y + hitBoxA.height, hitBoxB.y + hitBoxB.height) - fmax(hitBoxA.y, hitBoxB.y),
     };
-    std::cout << "Collision" << hitBoxA.x << " " << hitBoxA.y << " " << hitBoxA.width << " " << hitBoxA.height << " " << hitBoxB.x << " " << hitBoxB.y << " " << hitBoxB.width << " " << hitBoxB.height << " "
-    << intersection.x << " " << intersection.y << " " << intersection.width << " " << intersection.height << "\n";
+    // std::cout << "Collision" << hitBoxA.x << " " << hitBoxA.y << " " << hitBoxA.width << " " << hitBoxA.height << " " << hitBoxB.x << " " << hitBoxB.y << " " << hitBoxB.width << " " << hitBoxB.height << " "
+    // << intersection.x << " " << intersection.y << " " << intersection.width << " " << intersection.height << "\n";
     return {getCollisionSide(hitBoxA, intersection), getCollisionSide(hitBoxB, intersection)};
 }
         
@@ -101,15 +105,14 @@ Side Collision::getCollisionSide(Rectangle hitBox, Rectangle intersection) {
     float top = fabs(hitBox.y - intersection.y);
     float bottom = fabs((hitBox.y + hitBox.height) - (intersection.y + intersection.height));
     float left = fabs(hitBox.x - intersection.x);
-    float right = fabs((hitBox.x + hitBox.width) - (intersection.y + intersection.width));
+    float right = fabs((hitBox.x + hitBox.width) - (intersection.x + intersection.width));
     float overlapX = (left < right) ? left : -right;
     float overlapY = (top < bottom) ? top : -bottom;
-    std::cout << "Collision2" << top << " " << bottom << "\n";
-    count++;
-    //if (count == 20) exit(0);
+
     if (fabs(overlapX) < fabs(overlapY) || (fabs(overlapX) == fabs(overlapY) && intersection.width < intersection.height)) {
-        return (overlapX > 0) ? Side::LEFT : Side::RIGHT;
+        return (overlapX > 0 || (overlapX == 0 && left == 0)) ? Side::LEFT : Side::RIGHT;
     } else {
-        return (overlapY > 0) ? Side::TOP : Side::BOTTOM;
+        return (overlapY > 0 || (overlapY == 0 && top == 0)) ? Side::TOP : Side::BOTTOM;
     }
+
 }

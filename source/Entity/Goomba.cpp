@@ -5,11 +5,13 @@ Goomba::Goomba() : mAnim(nullptr, 16, 16, 1.0f, true) {
 }
 
 void Goomba::update(float dt) {
+    if (isDie) return;
     if (mMove == Move::DEAD) {
-        updateDead(dt);
+        if (mDeadTimer < mDeadTime) mDeadTimer += dt;
+        else setDie(true);
         return;
     }
-    mPhysics.accelerate(Vector2{mPhysics.isRight() ? 100.0f : -100.0f, 0});
+    mPhysics.accelerate(Vector2{mSpeed, 0});
 }
 
 void Goomba::handle() {
@@ -17,23 +19,21 @@ void Goomba::handle() {
 }
         
 void Goomba::draw() {
+    if (isDie) return;
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f);
 }
 
 void Goomba::handleCollision(Side side, Category other) {
-
+    if (side == Side::TOP && (other == Category::NORMAL_MARIO || other == Category::SUPER_MARIO || other == Category::FIRE_MARIO))
+        setMove(Move::DEAD);
+    if ((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK) {
+        mSpeed *= -1;
+    }
 }
         
 Vector2 Goomba::getSize() {
     if (mMove == Move::RUN) return {48, 48};
     return {48, 24};
-}
-
-void Goomba::updateDead(float dt) {
-    if (mMove == Move::DEAD) {
-        if (mDeadTimer < mDeadTime) mDeadTimer += dt;
-        else setDie(true);
-    }
 }
 
 void Goomba::setMove(Move move) {
@@ -55,7 +55,7 @@ void Goomba::setMove(Move move) {
     }
 }
 
-std::unique_ptr<Goomba> Goomba::spawnBrownGoomba() {
+std::unique_ptr<Goomba> Goomba::spawnGoomba1() {
     std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
     mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA_RUN);
     mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA_DIE);
@@ -63,7 +63,7 @@ std::unique_ptr<Goomba> Goomba::spawnBrownGoomba() {
     return std::move(mGoomba);
 }
         
-std::unique_ptr<Goomba> Goomba::spawnBlueGoomba() {
+std::unique_ptr<Goomba> Goomba::spawnGoomba2() {
     std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
     mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA2_RUN);
     mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA2_DIE);

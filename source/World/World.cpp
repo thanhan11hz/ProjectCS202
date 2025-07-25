@@ -26,8 +26,8 @@ World::~World() {
 }
         
 void World::update(float dt) {
-    Rectangle rec = mCharacter->mCollide.getHitBox();
-    std::cout << "Before update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
+    // Rectangle rec = mCharacter->mCollide.getHitBox();
+    // std::cout << "Before update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
     mMap[mCurrent]->update(dt);
     mCam.target = mCharacter->mPhysics.getPosition();
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
@@ -35,9 +35,11 @@ void World::update(float dt) {
     // if (mCam.target.y < targetHeight / 2.0f) mCam.target.y = targetHeight / 2.0f;
     // if (mCam.target.y > 1584 - targetHeight / 2.0f) mCam.target.y = 1584 - targetHeight / 2.0f;
     mCharacter->update(dt);
+    // std::cout << "Before" << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
     mCollision.handleCollision();
-    rec = mCharacter->mCollide.getHitBox();
-    std::cout << "After update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
+    // std::cout << "After" << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
+    // rec = mCharacter->mCollide.getHitBox();
+    // std::cout << "After update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
 }
         
 void World::draw() {

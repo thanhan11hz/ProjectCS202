@@ -5,7 +5,6 @@
 #include <cmath>
 
 #include "Global.hpp"
-#include "InputHandler.hpp"
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
 #include "State/StateStack.hpp"

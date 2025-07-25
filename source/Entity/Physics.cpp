@@ -1,6 +1,6 @@
 #include "Entity/Physics.hpp"
 
-Physics::Physics() : mVelocity({0,0}), mPosition({0,0}), mIsGround(false), mIsRight(true) {}
+Physics::Physics() : mVelocity({0,0}), mPosition({200,200}), mIsGround(false), mIsRight(true) {}
 
 void Physics::setPosition(Vector2 position) {
     mPosition = position;
@@ -32,8 +32,8 @@ void Physics::accelerate(float vx, float vy) {
         
 void Physics::applyGravity(float dt) {
     if (!mIsGround) {
-        accelerate(0, Gravity * dt);
     }
+    accelerate(0, Gravity * dt * mDensity);
 }
 
 void Physics::applyDrag(float dt) {
@@ -47,6 +47,7 @@ void Physics::applyDrag(float dt) {
 void Physics::update(float dt) {
     applyGravity(dt);
     applyDrag(dt);
+    //std::cout << mVelocity.y << "\n";
     mPosition += mVelocity * dt;
     if (mIsGround) {
         if (mVelocity.x >= Eps) mIsRight = true;
@@ -88,4 +89,8 @@ bool Physics::onGround() {
 void Physics::setOnGround(bool flag) {
     mIsGround = flag;
     mVelocity.y = 0;
+}
+
+void Physics::setDensity(float density) {
+    mDensity = density;
 }
