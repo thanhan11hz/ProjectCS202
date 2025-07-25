@@ -6,6 +6,7 @@
 
 #include "World/TileMap.hpp"
 #include "Entity/Character.hpp"
+#include "World/Collision.hpp"
 
 class World {
 
@@ -19,6 +20,7 @@ class World {
         void handle();
         void update(float dt);
         void draw();
+        void reset();
         ~World();
 
     protected:
@@ -30,9 +32,9 @@ class World {
         size_t mCurrent = 0;
         std::unique_ptr<Character> mCharacter;
         Camera2D mCam;
+        Collision mCollision;
         bool isLevelComplete();
         bool hasNextMap();
         void nextMap();
         void backMap();
-        void reset();
 };

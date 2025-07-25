@@ -9,7 +9,7 @@ class Collision {
 
         Collision();
         void addItem();
-        void addBlock();
+        void addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& block);
         void addCharacter(Character* character);
         void handleCollision();
 

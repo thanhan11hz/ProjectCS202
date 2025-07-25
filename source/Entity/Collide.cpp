@@ -1,7 +1,7 @@
 #include "Entity/Collide.hpp"
 
 Collide::Collide(Entity* owner) : mOwner(owner) {
-
+    
 }
 
 void Collide::setStatic(bool flag) {

@@ -4,7 +4,7 @@ World* World::instance = nullptr;
 
 World::World() {
     mCam.offset = {targetWidth / 2.0f, targetHeight / 2.0f};
-    mCam.target = {0, 0};
+    mCam.target = {0, 400};
     mCam.zoom     = 1.0f;
     mCam.rotation = 0.0f;
 }
@@ -26,13 +26,18 @@ World::~World() {
 }
         
 void World::update(float dt) {
+    Rectangle rec = mCharacter->mCollide.getHitBox();
+    std::cout << "Before update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
     mMap[mCurrent]->update(dt);
     mCam.target = mCharacter->mPhysics.getPosition();
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
-    if (mCam.target.y < targetHeight / 2.0f) mCam.target.y = targetHeight / 2.0f;
-    if (mCam.target.y > 1584 - targetHeight / 2.0f) mCam.target.y = 1584 - targetHeight / 2.0f;
+    // if (mCam.target.y < targetHeight / 2.0f) mCam.target.y = targetHeight / 2.0f;
+    // if (mCam.target.y > 1584 - targetHeight / 2.0f) mCam.target.y = 1584 - targetHeight / 2.0f;
     mCharacter->update(dt);
+    mCollision.handleCollision();
+    rec = mCharacter->mCollide.getHitBox();
+    std::cout << "After update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
 }
         
 void World::draw() {
@@ -84,4 +89,10 @@ void World::nextMap() {
         
 void World::backMap() {
     mCurrent = (mCurrent - 1 + mMap.size()) % mMap.size();
+}
+
+void World::reset() {
+    mCollision.addCharacter(mCharacter.get());
+    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
+    mCollision.addBlock(mBlock);
 }

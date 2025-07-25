@@ -69,7 +69,14 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::LUIGI_S_RUN, "resource\\Texture\\Spritesheet\\Luigi_S_Run.png");
     Resource::mTexture.load(TextureIdentifier::LUIGI_S_JUMP, "resource\\Texture\\Spritesheet\\Luigi_S_Jump.png");
     Resource::mTexture.load(TextureIdentifier::LUIGI_S_CROUCH, "resource\\Texture\\Spritesheet\\Luigi_S_Crouch.png");
-
+    Resource::mTexture.load(TextureIdentifier::GOOMBA_RUN, "resource\\Texture\\Spritesheet\\Goomba_Run.png");
+    Resource::mTexture.load(TextureIdentifier::GOOMBA_DIE, "resource\\Texture\\Spritesheet\\Goomba_Die.png");
+    Resource::mTexture.load(TextureIdentifier::GOOMBA2_RUN, "resource\\Texture\\Spritesheet\\Goomba2_Run.png");
+    Resource::mTexture.load(TextureIdentifier::GOOMBA2_DIE, "resource\\Texture\\Spritesheet\\Goomba2_Die.png");
+    Resource::mTexture.load(TextureIdentifier::PIRANHA_MOVE, "resource\\Texture\\Spritesheet\\Piranha_Move.png");
+    Resource::mTexture.load(TextureIdentifier::PIRANHA_ATTACK, "resource\\Texture\\Spritesheet\\Piranha_Attack.png");
+    Resource::mTexture.load(TextureIdentifier::PIRANHA2_MOVE, "resource\\Texture\\Spritesheet\\Piranha2_Move.png");
+    Resource::mTexture.load(TextureIdentifier::PIRANHA2_ATTACK, "resource\\Texture\\Spritesheet\\Piranha_Attack.png");
 
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");

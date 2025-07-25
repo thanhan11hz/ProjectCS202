@@ -57,6 +57,7 @@ GameState::GameState(StateStack& stack) : State(stack) {
     items->changeColor(WHITE);
     mContainer.pack(items);
     //mMap.loadFromFile("resource\\Map\\01 - Field Area (1-1)");
+    mWorld.reset();
 }
 
 void GameState::draw() {

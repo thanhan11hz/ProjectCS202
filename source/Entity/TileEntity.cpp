@@ -39,6 +39,8 @@ TileBlock::TileBlock(int type, int col, int row)
         } 
         mCollide.setStatic(true);
         mCollide.setLabel(Category::BLOCK);
+        mCollide.setFiler(Category::NONE);
+        mCollide.setStatic(true);
         mPhysics.setPosition({mRect.x, mRect.y});
     }
     aniRect=mRect;
@@ -64,6 +66,7 @@ void TileBlock::draw( Texture2D& background, Texture2D& object) {
             frag[i]->draw( background, object);
         }
     }
+    DrawRectangleLines(mCollide.getHitBox().x, mCollide.getHitBox().y, mCollide.getHitBox().width, mCollide.getHitBox().height, mColor);
 
 }
 
@@ -217,8 +220,8 @@ void TileBlock::update(float dt){
     Vector2 postion = mPhysics.getPosition();
     Vector2 size = getSize();
     mCollide.setHitBox({
-        postion.x - size.x / 2.0f,
-        postion.y - size.y / 2.0f,
+        postion.x,
+        postion.y,
         size.x,
         size.y
     });
@@ -249,6 +252,7 @@ void TileBlock::handleCollision(Side side, Category other) {
         mBehavior->setSide(side);
         mBehavior->setOther(other);
     }
+    mColor = RED;
 }
 TileBlock::~TileBlock(){}
 

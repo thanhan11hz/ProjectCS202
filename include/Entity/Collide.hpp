@@ -3,6 +3,7 @@
 #include <raylib.h>
 
 enum Category {
+    NONE,
     NORMAL_MARIO,
     FIRE_MARIO,
     SUPER_MARIO,

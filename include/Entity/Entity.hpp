@@ -14,8 +14,12 @@ class Entity {
         virtual void handle() = 0;
         virtual void draw() = 0;
 
-        //virtual void die() = 0;
+        void setDie(bool flag);
+        bool isDie();
 
         virtual void handleCollision(Side side, Category other) = 0;
         virtual Vector2 getSize() = 0;
+
+    private:
+        bool mIsDie = false;
 };

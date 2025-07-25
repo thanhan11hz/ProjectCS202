@@ -118,7 +118,7 @@ protected:
     float aniTime = 0.0f;
     IBlockBehavior* mBehavior = nullptr;
     std::vector<std::unique_ptr<TileObject>> frag;
-
+    Color mColor = BLACK;
 };
 
 

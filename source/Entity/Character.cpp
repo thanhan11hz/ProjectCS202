@@ -1,7 +1,8 @@
 #include "Entity/Character.hpp"
 
 Character::Character(int length, int high) : mAnim(nullptr, 16, 16, 1.0f, true), mKey(mKeyBinding), mLength(length), mHigh(high) {
-
+    mCollide.setFiler(Category::NONE);
+    mCollide.setStatic(false);
 }
 
 void Character::handle() {
@@ -22,16 +23,34 @@ void Character::handle() {
 void Character::draw() {
     if (mMove == Move::DEAD) return;
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f, !mPhysics.isRight(), mIsImmortal);
+    DrawRectangleLines(mCollide.getHitBox().x, mCollide.getHitBox().y, mCollide.getHitBox().width, mCollide.getHitBox().height, BLACK);
 }
         
 void Character::update(float dt) {
     if (mMove == Move::DEAD) return;
     Entity::update(dt);
-    // std::cout << mPhysics.getPosition().y << " ";
-    if (mPhysics.getPosition().y + getSize().y > 720) {
-        mPhysics.setPosition({mPhysics.getPosition().x, 720 - getSize().y});
-        mPhysics.setOnGround(true);
+    // if (mPhysics.getPosition().y + getSize().y > 725) {
+    //     mPhysics.setPosition({mPhysics.getPosition().x, 725 - getSize().y});
+    //     mPhysics.setOnGround(true);
+    // }
+    
+    switch (mForm) {
+        case Form::NORMAL:
+            mCollide.setLabel(Category::NORMAL_MARIO);
+            break;
+
+        case Form::SUPER:
+            mCollide.setLabel(Category::SUPER_MARIO);
+            break;
+
+        case Form::FIRE:
+            mCollide.setLabel(Category::FIRE_MARIO);
+            break;
+    
+        default:
+            break;
     }
+
     updateMove();
     updateImmortal(dt);
     mAnim.update(dt);
@@ -53,7 +72,6 @@ void Character::updateMove() {
         
 void Character::setMove(Move move) {
     Texture2D* texture = nullptr;
-    // bool repeat = true;
 
     switch (mForm) {
         case Form::NORMAL :
@@ -158,5 +176,7 @@ Vector2 Character::getSize() {
 }
 
 void Character::handleCollision(Side side, Category other) {
-
+    if (side == Side::BOTTOM && other == Category::BLOCK) {
+        mPhysics.setOnGround(true);
+    } 
 }

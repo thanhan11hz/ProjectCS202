@@ -15,3 +15,11 @@ void Entity::update(float dt) {
         size.y
     });
 }
+
+void Entity::setDie(bool flag) {
+    mIsDie = flag;
+}
+
+bool Entity::isDie() {
+    return mIsDie;
+}

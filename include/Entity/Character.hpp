@@ -28,7 +28,6 @@ class Character : public Entity {
         virtual void handle();
         virtual void draw();
         virtual void update(float dt);
-    
 
         static std::unique_ptr<Character> spawnMario();
         static std::unique_ptr<Character> spawnLuigi();
