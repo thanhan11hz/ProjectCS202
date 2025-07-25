@@ -17,6 +17,7 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
             block.aniTime = 0.0f;
             block.bumped = true;
         }
+        std::cout << "Block hit!" << std::endl;
     }
     if(block.bumped) bump(block, dt);
     if (block.getType(block.calType()) == TileType::OwInitialTile && CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
@@ -96,7 +97,7 @@ void CoinBlockBehavior::update(TileBlock& block, float dt) {
         block.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE}; 
         block.mSource = {block.posTile.x, block.posTile.y, TileBlock::TILE_SIZE, TileBlock::TILE_SIZE}; 
     }
-    else if(block.mType!=26){
+    else if(block.mType!=26 && block.mType!=556){
         if(block.aniTime <= 0.2f){
             block.aniTime+=dt;
         }
