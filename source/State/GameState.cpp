@@ -78,7 +78,6 @@ GameState::GameState(StateStack& stack) : State(stack) {
     items->changeText("ACTIVE POWER-UPS:");
     items->changeColor(WHITE);
     mContainer.pack(items);
-
     mWorld.reset();
 }
 

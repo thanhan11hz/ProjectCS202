@@ -35,7 +35,7 @@ class Label: public Component {
         Color mColor = BLACK;
         Rectangle mShape;
         std::function<void(Label *label)> mCallback = nullptr; 
-        int mFontSize = 20;
+        int mFontSize;
         bool isBlink = false;
         bool isDisplay = true;
 };

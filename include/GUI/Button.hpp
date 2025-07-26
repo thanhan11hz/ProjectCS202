@@ -23,6 +23,7 @@ class Button : public Component {
         void changeTextSize(int size);
         void changeTextColor(Color color);
         void changeFont(FontIdentifier id);
+        void changeFontSize(int size);
         
     private:
         std::function<void()> mCallback;
@@ -32,7 +33,7 @@ class Button : public Component {
 
         std::string mText = "";
         FontIdentifier mFont;
-        int mFontSize = 20;
+        int mFontSize;
         Color mColor;
         
 };

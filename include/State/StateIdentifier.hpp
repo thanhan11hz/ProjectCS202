@@ -8,6 +8,7 @@ enum class StateIdentifier {
     SETTINGS,
     INSTRUCTIONS,
     CHARSELECT,
+    MAPEDITOR,
     GAME1,
     GAME2,
     GAME3,
