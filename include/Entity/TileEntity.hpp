@@ -19,7 +19,7 @@ enum TileType {
     OwPipeBottom1=261,
     OwPipeBottom2=262,
     OWBridge = 32,
-    OwPole = 277,
+    OwPole = 277, //Hitbox khác thường
     BrownCube = 29,
     GrassPlatform1 = 237,
     GrassPlatform2 = 238,
@@ -38,6 +38,7 @@ enum TileType {
  extern std::vector<int> tileItemValues; 
 enum TileItem {
     mushroom = 0, //Underground,... +=n*9
+    greenMushroom = 1,
     flower = 72,
     star = 108,
     normalCoin = 180,
