@@ -5,7 +5,7 @@ Goomba::Goomba() : mAnim(nullptr, 16, 16, 1.0f, true) {
 }
 
 void Goomba::update(float dt) {
-    if (isDie) return;
+    if (isDie()) return;
     if (mMove == Move::DEAD) {
         if (mDeadTimer < mDeadTime) mDeadTimer += dt;
         else setDie(true);
@@ -19,7 +19,7 @@ void Goomba::handle() {
 }
         
 void Goomba::draw() {
-    if (isDie) return;
+    if (isDie()) return;
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f);
 }
 

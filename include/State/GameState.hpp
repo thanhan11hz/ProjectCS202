@@ -13,7 +13,6 @@ class GameState: public State {
         
     private:
         Container mContainer;
-        TileMap mMap;
         virtual void draw();
         virtual bool update(float dt);
         virtual bool handle();

@@ -21,6 +21,13 @@ class World {
         void update(float dt);
         void draw();
         void reset();
+        void restart();
+        float getRestTime();
+        size_t getRestLive();
+        size_t getCoinCollected();
+        size_t getCurrentMap();
+        void receiveCoin();
+        void damage();
         ~World();
 
     protected:
@@ -33,6 +40,9 @@ class World {
         std::unique_ptr<Character> mCharacter;
         Camera2D mCam;
         Collision mCollision;
+        float mTimer = 300.0f;
+        size_t mLives = 3;
+        size_t mCoins = 0;
         bool isLevelComplete();
         bool hasNextMap();
         void nextMap();

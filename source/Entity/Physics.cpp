@@ -1,6 +1,6 @@
 #include "Entity/Physics.hpp"
 
-Physics::Physics() : mVelocity({0,0}), mPosition({200,200}), mIsGround(false), mIsRight(true) {}
+Physics::Physics() : mVelocity({0,0}), mPosition({0,0}), mIsGround(false), mIsRight(true) {}
 
 void Physics::setPosition(Vector2 position) {
     mPosition = position;

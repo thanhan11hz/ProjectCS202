@@ -74,7 +74,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
 void MenuState::draw() {
     Texture2D background = Resource::mTexture.get(TextureIdentifier::MENU_BACKGROUND);
     DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
-    DrawRectangle(0, 0, 432, 900, {177, 146, 146, 190});
+    DrawRectangle(0, 0, 432, 912, {177, 146, 146, 190});
     Texture2D gameLogo = Resource::mTexture.get(TextureIdentifier::LOGO);
     DrawTexture(gameLogo, 51, 75, WHITE);
     mContainer.draw();

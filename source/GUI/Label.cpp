@@ -20,6 +20,9 @@ void Label::draw() {
         
 void Label::handle() {
     if (isBlink) isDisplay = !isDisplay;
+    if (mCallback) {
+        mCallback(this);
+    }
 }
         
 bool Label::isSelectable() {
@@ -50,4 +53,8 @@ void Label::changeFont(FontIdentifier id) {
 
 void Label::changeBlink(bool flag) {
     isBlink = flag;
+}
+
+void Label::changeCallback(std::function<void(Label *label)> callback) {
+    mCallback = callback;
 }

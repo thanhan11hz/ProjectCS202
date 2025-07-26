@@ -4,7 +4,7 @@ World* World::instance = nullptr;
 
 World::World() {
     mCam.offset = {targetWidth / 2.0f, targetHeight / 2.0f};
-    mCam.target = {0, 400};
+    mCam.target = {0, 500};
     mCam.zoom     = 1.0f;
     mCam.rotation = 0.0f;
 }
@@ -29,7 +29,7 @@ void World::update(float dt) {
     // Rectangle rec = mCharacter->mCollide.getHitBox();
     // std::cout << "Before update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
     mMap[mCurrent]->update(dt);
-    mCam.target = mCharacter->mPhysics.getPosition();
+    mCam.target.x = mCharacter->mPhysics.getPosition().x;
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
     // if (mCam.target.y < targetHeight / 2.0f) mCam.target.y = targetHeight / 2.0f;
@@ -40,6 +40,7 @@ void World::update(float dt) {
     // std::cout << "After" << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
     // rec = mCharacter->mCollide.getHitBox();
     // std::cout << "After update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
+    mTimer -= dt;
 }
         
 void World::draw() {
@@ -97,4 +98,37 @@ void World::reset() {
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
+    mTimer = 300.0f;
+    mLives = 3;
+    mCoins = 0;
+}
+
+void World::restart() {
+    mCollision.addCharacter(mCharacter.get());
+    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
+    mCollision.addBlock(mBlock);
+}
+
+size_t World::getCurrentMap() {
+    return mCurrent;
+}
+
+float World::getRestTime() {
+    return mTimer;
+}
+
+size_t World::getRestLive() {
+    return mLives;
+}
+
+size_t World::getCoinCollected() {
+    return mCoins;
+}
+
+void World::receiveCoin() {
+    mCoins ++;
+}
+        
+void World::damage() {
+    mLives --;
 }

@@ -59,7 +59,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
 
 void CharSelectState::draw() {
     Texture2D background = Resource::mTexture.get(TextureIdentifier::CHAR_SELECT_BACKGROUND);
-    DrawTexture(background, 0, 0, WHITE);
+    DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
     Texture2D mario = Resource::mTexture.get(TextureIdentifier::Character_MARIO);
     DrawTexture(mario, 474, 308, WHITE);
     Texture2D luigi = Resource::mTexture.get(TextureIdentifier::Character_LUIGI);

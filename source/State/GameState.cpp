@@ -25,7 +25,7 @@ GameState::GameState(StateStack& stack) : State(stack) {
     Label* lvl = new Label();
     lvl->changeShape({23,794,187, 17});
     lvl->changeSize(17);
-    lvl->changeText("LEVEL 1 - 1");
+    lvl->changeText("LEVEL " + std::to_string(mWorld.getCurrentMap() / 3 + 1) + " - " + std::to_string(mWorld.getCurrentMap() % 3 + 1));
     lvl->changeColor(WHITE);
     mContainer.pack(lvl);
 
@@ -34,6 +34,17 @@ GameState::GameState(StateStack& stack) : State(stack) {
     time->changeSize(17);
     time->changeText("TIME: 00:00");
     time->changeColor(WHITE);
+    time->changeCallback([this](Label* label) {
+        int time = (int)mWorld.getRestTime();
+        int minute = time / 60;
+        int second = time % 60;
+        std::string text = "TIME: ";
+        if (minute < 10) text += "0";
+        text += std::to_string(minute) + ":";
+        if (second < 10) text += "0";
+        text += std::to_string(second);
+        label->changeText(text);
+    });
     mContainer.pack(time);
 
     Label* hp = new Label();
@@ -41,6 +52,10 @@ GameState::GameState(StateStack& stack) : State(stack) {
     hp->changeSize(17);
     hp->changeText("LIVES:  x3");
     hp->changeColor(WHITE);
+    hp->changeCallback([this](Label* label) {
+        size_t live = mWorld.getRestLive();
+        label->changeText("LIVES: x" + std::to_string(live));
+    });
     mContainer.pack(hp);
 
     Label* coins = new Label();
@@ -48,6 +63,13 @@ GameState::GameState(StateStack& stack) : State(stack) {
     coins->changeSize(17);
     coins->changeText("COINS 00000000");
     coins->changeColor(WHITE);
+    coins->changeCallback([this](Label* label) {
+        size_t coin = mWorld.getCoinCollected();
+        std::string text = std::to_string(coin);
+        while (text.size() < 8) text = "0" + text;
+        text = "COINS " + text; 
+        label->changeText(text);
+    });
     mContainer.pack(coins);
 
     Label* items = new Label();
@@ -56,7 +78,7 @@ GameState::GameState(StateStack& stack) : State(stack) {
     items->changeText("ACTIVE POWER-UPS:");
     items->changeColor(WHITE);
     mContainer.pack(items);
-    //mMap.loadFromFile("resource\\Map\\01 - Field Area (1-1)");
+
     mWorld.reset();
 }
 
@@ -70,7 +92,7 @@ void GameState::draw() {
     // mMap.drawMain();
 
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
-    DrawTexture(bricksTexture, 0, 760, WHITE);
+    DrawTexture(bricksTexture, -10, 772, WHITE);
     mContainer.draw();
 }
 

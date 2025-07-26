@@ -1,7 +1,7 @@
 #include "Global.hpp"
 #include "World/World.hpp"
 
-int targetWidth = 1440, targetHeight = 900;
+int targetWidth = 1440, targetHeight = 912;
 
 float timePerFrame = 1.0f/60;
 

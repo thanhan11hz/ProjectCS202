@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 #include "GUI/Component.hpp"
 #include "Resource/ResourceHolder.hpp"
@@ -26,12 +27,14 @@ class Label: public Component {
         void changeFont(FontIdentifier id);
         void changeSize(int fontSize);
         void changeBlink(bool flag);
+        void changeCallback(std::function<void(Label *label)> callback);
     private:
         std::string mText = "";
         FontIdentifier mFont;
         Alignment mAlignment;
         Color mColor = BLACK;
         Rectangle mShape;
+        std::function<void(Label *label)> mCallback = nullptr; 
         int mFontSize = 20;
         bool isBlink = false;
         bool isDisplay = true;
