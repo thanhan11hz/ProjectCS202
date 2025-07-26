@@ -20,7 +20,7 @@ std::vector<int> tileItemValues = {
     29,         // BrownCube
     237, 238, 239, // GrassPlatform1..3
     266, 267, 268, 277, // GreenDotPlatform1..3
-    234, 263,      // HoriPipe1..2
+    234, 263, 556,      // HoriPipe1..2
     60            // UnderTile
 };
 TileBlock::TileBlock(int type, int col, int row)
@@ -36,18 +36,19 @@ TileBlock::TileBlock(int type, int col, int row)
 
         if(getType(calType())!= TileType::Empty) {
             solid = true;
+            if(mType!= 556) isOn = true;
+            mCollide.setLabel(Category::BLOCK);
         } 
+        else {mCollide.setLabel(Category::BACKGROUND);}
         mCollide.setStatic(true);
-        mCollide.setLabel(Category::BLOCK);
         mCollide.setFiler(Category::NONE);
-        mCollide.setStatic(true);
         mPhysics.setPosition({mRect.x, mRect.y});
     }
     aniRect=mRect;
 
 }
 void TileBlock::createBehavior()  {
-    if(getType(calType()) == TileType::OwCoinBlock1 ) {
+    if(getType(calType()) == TileType::OwCoinBlock1||getType(calType()) == TileType::HiddenBox ) {
         mBehavior = new CoinBlockBehavior();
     } 
     else if(getType(calType()) == TileType::OwInitialTile || getType(calType()) == TileType::UnderTile) {
@@ -56,7 +57,7 @@ void TileBlock::createBehavior()  {
 }
 
 void TileBlock::draw( Texture2D& background, Texture2D& object) {
-    if (mType != -1 && !isDestroyed) {
+    if (mType != -1 && !isDestroyed && isOn) {
         float posX = mPhysics.getPosition().x;
         float posY = mPhysics.getPosition().y;
         {DrawTexturePro(background, mSource, {posX, posY, 48, 48}, {0, 0}, 0.0f, WHITE);}
@@ -113,6 +114,8 @@ int TileBlock::calType() {
 
         case BrownCube:
             return TileType::BrownCube;
+        case HiddenBox:
+            return TileType::HiddenBox;
 
         default:
             break;
@@ -133,20 +136,40 @@ int TileBlock::calType() {
 
 TileType TileBlock::getType(int n) {
     switch (n) {
-        case OwGround: return TileType::OwGround;
-        case OwInitialTile: return TileType::OwInitialTile;
-        case OwCoinBlock1: return TileType::OwCoinBlock1;
-        case OwCoinBlock2: return TileType::OwCoinBlock1;
-        case OwCoinBlock3: return TileType::OwCoinBlock1;
-        case OwAfterHitBlock: return TileType::OwAfterHitBlock;
-        case OwPipeTop1: return TileType::OwPipeTop1;
-        case OwPipeTop2: return TileType::OwPipeTop2;
-        case OwPipeBottom1: return TileType::OwPipeBottom1;
-        case OwPipeBottom2: return TileType::OwPipeBottom2;
-        case HoriPipe1: return TileType::HoriPipe1;
-        case HoriPipe2: return TileType::HoriPipe2;
-        case UnderTile: return TileType::UnderTile;
-        default: return TileType::Empty;
+        case OwCoinBlock1:
+        case OwCoinBlock2:
+        case OwCoinBlock3:
+            return TileType::OwCoinBlock1;
+
+        case OwGround:           return TileType::OwGround;
+        case OwInitialTile:     return TileType::OwInitialTile;
+        case OwAfterHitBlock:   return TileType::OwAfterHitBlock;
+        case OwPipeTop1:        return TileType::OwPipeTop1;
+        case OwPipeTop2:        return TileType::OwPipeTop2;
+        case OwPipeBottom1:     return TileType::OwPipeBottom1;
+        case OwPipeBottom2:     return TileType::OwPipeBottom2;
+        case HoriPipe1:         return TileType::HoriPipe1;
+        case HoriPipe2:         return TileType::HoriPipe2;
+        case UnderTile:         return TileType::UnderTile;
+
+
+        case GrassPlatform1:
+        case GrassPlatform2:
+        case GrassPlatform3:
+            return TileType::GrassPlatform1;
+
+
+        case GreenDotPlatForm1:
+        case GreenDotPlatForm2:
+        case GreenDotPlatForm3:
+            return TileType::GreenDotPlatForm1;
+
+        case BrownCube:
+            return TileType::BrownCube;
+        case HiddenBox:
+            return TileType::HiddenBox;
+        default:
+             return TileType::Empty;
     }
 }
 
@@ -205,6 +228,7 @@ void TileBlock::addFragment() {
             Vector2 fragTilePos = { baseTilePos.x + (i % 2) * texSize, baseTilePos.y + (i / 2) * texSize };
             auto f = std::make_unique<TileObject>(static_cast<TileItem>(pos), 0, 0);
             f->setRect({ fragWorldPos.x, fragWorldPos.y, fragSize, fragSize });
+            f->mPhysics.setPosition({fragWorldPos.x, fragWorldPos.y});
             f->setPostile(fragTilePos);
             f->setSource({ fragTilePos.x, fragTilePos.y, texSize, texSize });
             frag.push_back(std::move(f));
@@ -219,12 +243,16 @@ void TileBlock::update(float dt){
     if (mType == -1) return;  
     Vector2 postion = mPhysics.getPosition();
     Vector2 size = getSize();
+    if(getType(calType())!= TileType::Empty && isSolid()) {
     mCollide.setHitBox({
         postion.x,
         postion.y,
         size.x,
         size.y
-    });
+        });
+    } else {
+        mCollide.setHitBox({0, 0, 0, 0});
+    }   
     if (mBehavior) {
         mBehavior->update(*this, dt);
     }

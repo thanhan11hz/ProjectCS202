@@ -9,6 +9,8 @@ enum Category {
     SUPER_MARIO,
     COIN,
     BLOCK,
+    BACKGROUND,
+    ITEM,
 };
 
 enum class Side {

@@ -29,6 +29,7 @@ enum TileType {
     GreenDotPlatForm3 = 268,
     HoriPipe1 = 234,
     HoriPipe2 = 263,
+    HiddenBox = 556,
 
     UnderTile = 60,
 };
@@ -43,6 +44,7 @@ enum TileItem {
     specialCoin = 216,
     fragment = 4,
     underfragment = 13,
+    underCoin = 189,
     invalidItem = -1,
 };
 class TileBlock;
@@ -61,14 +63,15 @@ public:
     virtual void setOther(Category other) { this->other = other; }
 };
 class TileBlock : public Entity{
-public:
+    public:
     TileBlock(int type, int row, int col);
     void draw() override;
     void handle() override;
     void handleCollision(Side side, Category other) override;
     Vector2 getSize() override;
     virtual void update(float dt) override;
-
+    float calculateVec(float duration, float dis);
+    
 
     virtual void draw(Texture2D& background, Texture2D& object);
     void print();
@@ -101,7 +104,6 @@ private:
     void setRect(Rectangle rect);
     void setPostile(Vector2 pos);
     void setSource(Rectangle source);
-    float calculateVec(float duration, float dis);
     virtual void createBehavior();
 protected:
     int mType;
@@ -111,6 +113,7 @@ protected:
     Vector2 mVelocity;
     Rectangle aniRect;
     bool printed;
+    bool isOn = false;
     bool isDoneAnimation = true;
     bool bumped = false;
     bool isDestroyed = false;
