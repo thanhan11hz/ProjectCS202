@@ -36,7 +36,6 @@ public:
     void draw(Texture2D& background, Texture2D& object) override;
     void update(float dt) override;
     void setOn(bool on) { isOn = on; };
-    void collect(); // Calls behavior->onCollect(*this)
     friend class FragmentBehavior;
     friend class FlowerBehavior;
 protected:

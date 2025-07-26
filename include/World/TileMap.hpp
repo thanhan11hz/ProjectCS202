@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Global.hpp"
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
@@ -21,6 +22,7 @@ public:
     void drawMain();
     void update(float dt);
     void setTexture(Texture2D tileBlock, Texture2D tileObject) {tileTexture = tileBlock; objectTexture = tileObject;};
+    std::vector<std::vector<Btr>>& getMain() {return mMain;}
 
 private:
     std::vector<std::vector<Btr>> mMain;

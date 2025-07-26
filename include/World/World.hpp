@@ -5,25 +5,36 @@
 #include <string>
 
 #include "World/TileMap.hpp"
-#include "Entity/Mario.hpp"
-#include "World/Physics.hpp"
+#include "Entity/Character.hpp"
+#include "World/Collision.hpp"
 
 class World {
+
     public:
-        World();
+        World(const World& other) = delete;
+        void operator=(const World&) = delete;
+        static World& getInstance();
+        static void destroyInstance();
+        void setCharater(int Character);
+        void loadMap(const std::string folder);
+        void handle();
         void update(float dt);
         void draw();
+        void reset();
+        ~World();
+
+    protected:
+        World();
+        static World* instance;
 
     private:
-        std::vector<TileMap*> mMap;
-        size_t mCurrentMap;
-        Mario* mMario;
-        Physics mPhysics;
-        void loadMap(const std::string fileName);
-        void loadCharater(const std::string character);
+        std::vector<std::unique_ptr<TileMap>> mMap;
+        size_t mCurrent = 0;
+        std::unique_ptr<Character> mCharacter;
+        Camera2D mCam;
+        Collision mCollision;
         bool isLevelComplete();
         bool hasNextMap();
-        bool nextMap();
-        bool backMap();
-        void reset();
+        void nextMap();
+        void backMap();
 };

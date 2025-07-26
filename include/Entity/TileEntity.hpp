@@ -1,4 +1,5 @@
 #pragma once
+#include "Entity.hpp"
 #include <raylib.h>
 #include <vector>
 #include <memory>
@@ -41,41 +42,48 @@ enum TileItem {
     normalCoin = 180,
     specialCoin = 216,
     fragment = 4,
+    underfragment = 13,
     invalidItem = -1,
 };
 class TileBlock;
 class TileObject;
 
-class IBlockBehavior {
+class IBlockBehavior{
+
+public:
+    Side side;
+    Category other;
 public:
     virtual void onHit(TileBlock& block, float dt) = 0;
-
     virtual void update(TileBlock& block, float dt) = 0;
     virtual ~IBlockBehavior() = default;
+    virtual void setSide(Side side) { this->side = side; }
+    virtual void setOther(Category other) { this->other = other; }
 };
-class TileBlock {
+class TileBlock : public Entity{
 public:
     TileBlock(int type, int row, int col);
-    virtual void draw(Texture2D& background, Texture2D& object);
+    void draw() override;
+    void handle() override;
+    void handleCollision(Side side, Category other) override;
+    Vector2 getSize() override;
+    virtual void update(float dt) override;
 
+
+    virtual void draw(Texture2D& background, Texture2D& object);
     void print();
     TileType getType(int type = -2);
     int calType();
     const Rectangle& getRect() const { return mRect; }
+    const Rectangle& getSource() const { return aniRect; }
 
-    virtual void update(float dt);
-    //virtual int calType();
-    //void moveUp(float dt);
-    //void destroy(float dt);
-    
-    //void destroyAnimation(float dt);
     void setVelocity(Vector2 velocity);
     void applyGravity(float dt);
     void addFragment();
     void setAnimation();
     void setState();
     bool isSolid();
-    void hit(); // Calls behavior->onHit(*this)
+
     virtual ~TileBlock();
 
 
@@ -110,7 +118,7 @@ protected:
     float aniTime = 0.0f;
     IBlockBehavior* mBehavior = nullptr;
     std::vector<std::unique_ptr<TileObject>> frag;
-
+    Color mColor = BLACK;
 };
 
 

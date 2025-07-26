@@ -17,6 +17,12 @@ ResourceHolder<Resource, Identifier>& ResourceHolder<Resource, Identifier>::getI
 }
 
 template <typename Resource, typename Identifier>
+void ResourceHolder<Resource, Identifier>::destroyInstance() {
+    delete instance;
+    instance = nullptr;
+}
+
+template <typename Resource, typename Identifier>
 void ResourceHolder<Resource, Identifier>::load(Identifier id, const char* fileName) {
     Resource resource = mLoader(fileName);
     //assert(isValid(resource) && "Failed to load resource");
@@ -26,7 +32,6 @@ void ResourceHolder<Resource, Identifier>::load(Identifier id, const char* fileN
 
 template <typename Resource, typename Identifier>
 Resource& ResourceHolder<Resource, Identifier>::get(Identifier id) {
-    // std::cout << "Trying to get resource with ID: " << static_cast<int>(id) << std::endl;
     auto found = mResourceMap.find(id);
     assert(found != mResourceMap.end() && "Resource not found" );
     return found->second;

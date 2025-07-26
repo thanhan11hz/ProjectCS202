@@ -10,8 +10,8 @@
 class GameState: public State {
     public:
         GameState(StateStack& stack);
-    private:
         
+    private:
         Container mContainer;
         TileMap mMap;
         virtual void draw();

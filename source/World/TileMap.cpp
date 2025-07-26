@@ -38,7 +38,7 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
         }
     }
     else if(choice == 2){ //main
-        std::cout << "Load Main" << "'\n";
+        std::cout << "Load Main" << "\n";
         for(int i = 0; i < matrix.size(); i++){
             for (int j = 0; j < matrix[i].size(); j++){
                 int num = matrix[i][j];
@@ -98,10 +98,11 @@ void TileMap::drawBackground() {
     for (int i = 0; i < mBackground.size(); i++) {
         for (int j = 0; j < mBackground[i].size(); j++) {
             const Rectangle& rect = mBackground[i][j]->getRect(); 
-            if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-                rect.y + rect.height >= 0 && rect.y <= screenH) {
-                mBackground[i][j]->draw(tileTexture, objectTexture);
-            }
+            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
+            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
+            //     mBackground[i][j]->draw(tileTexture, objectTexture);
+            // }
+            mBackground[i][j]->draw(tileTexture, objectTexture);
         }
     }
 }
@@ -110,10 +111,11 @@ void TileMap::drawItem() {
     for (int i = 0; i < mItem.size(); i++) {
         for (int j = 0; j < mItem[i].size(); j++) {
             const Rectangle& rect = mItem[i][j]->getRect(); 
-            if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-                rect.y + rect.height >= 0 && rect.y <= screenH) {
-                mItem[i][j]->draw(tileTexture, objectTexture);
-            }
+            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
+            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
+            //     mItem[i][j]->draw(tileTexture, objectTexture);
+            // }
+            mItem[i][j]->draw(tileTexture, objectTexture);
         }
     }
 }
@@ -122,10 +124,11 @@ void TileMap::drawMain() {
     for (int i = 0; i < mMain.size(); i++) {
         for (int j = 0; j < mMain[i].size(); j++) {
             const Rectangle& rect = mMain[i][j]->getRect(); 
-            if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-                rect.y + rect.height >= 0 && rect.y <= screenH) {
-                mMain[i][j]->draw(tileTexture, objectTexture);
-            }
+            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
+            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
+            //     mMain[i][j]->draw(tileTexture, objectTexture);
+            // }
+            mMain[i][j]->draw(tileTexture, objectTexture);
         }
     }
 }
@@ -135,13 +138,15 @@ void TileMap::update(float dt){
     for (int i = 0; i < mBackground.size(); i++) {
         for (int j = 0; j < mBackground[i].size(); j++) {
             const Rectangle& rect = mBackground[i][j]->getRect(); 
-            if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-                rect.y + rect.height >= 0 && rect.y <= screenH) {
-                mBackground[i][j]->update(dt);
-                mItem[i][j]->update(dt);
-                mMain[i][j]->update(dt);
-            }
-
+            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
+            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
+            //     mBackground[i][j]->update(dt);
+            //     mItem[i][j]->update(dt);
+            //     mMain[i][j]->update(dt);
+            // }
+            mBackground[i][j]->update(dt);
+            mItem[i][j]->update(dt);
+            mMain[i][j]->update(dt);
         }
 
     }

@@ -57,7 +57,6 @@ void Button::changeFontSize(int size) {
 }
 
 void Button::draw() {
-    // std::cout << "Button drawing with TextureIdentifier: " << static_cast<int>(mID) << std::endl;
     Color color = WHITE;
     if (mIsSelected) color = Fade(color,0.9);
     Texture2D& texture = Resource::mTexture.get(mID);

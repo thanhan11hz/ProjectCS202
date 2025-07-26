@@ -33,9 +33,15 @@ TileBlock::TileBlock(int type, int col, int row)
         mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE };  
         addFragment();
         createBehavior();
+
         if(getType(calType())!= TileType::Empty) {
             solid = true;
         } 
+        mCollide.setStatic(true);
+        mCollide.setLabel(Category::BLOCK);
+        mCollide.setFiler(Category::NONE);
+        mCollide.setStatic(true);
+        mPhysics.setPosition({mRect.x, mRect.y});
     }
     aniRect=mRect;
 
@@ -51,13 +57,16 @@ void TileBlock::createBehavior()  {
 
 void TileBlock::draw( Texture2D& background, Texture2D& object) {
     if (mType != -1 && !isDestroyed) {
-        {DrawTexturePro(background, mSource, aniRect, {0, 0}, 0.0f, WHITE);}
+        float posX = mPhysics.getPosition().x;
+        float posY = mPhysics.getPosition().y;
+        {DrawTexturePro(background, mSource, {posX, posY, 48, 48}, {0, 0}, 0.0f, WHITE);}
     }
     else if(mType != -1 && isDestroyed ) {
         for(int i =0; i < 4; i++){
             frag[i]->draw( background, object);
         }
     }
+    DrawRectangleLines(mCollide.getHitBox().x, mCollide.getHitBox().y, mCollide.getHitBox().width, mCollide.getHitBox().height, mColor);
 
 }
 
@@ -174,17 +183,27 @@ void TileBlock::setAnimation(){
 }
 
 void TileBlock::addFragment() {
+    int pos =0;
+    bool isfrag = false;
     if (getType(calType()) == TileType::OwInitialTile ) {
+        isfrag = true;
+        pos =4;
+    }
+    else if (getType(calType()) == TileType::OwAfterHitBlock) {
+        isfrag = true;
+        pos = 13;
+    }
+    if(isfrag){
         frag.clear();
         const float fragSize = 24.0f;
         const float texSize = 8.0f;
-        Vector2 baseTilePos = {4 * 16.0f, 0.0f};
+        Vector2 baseTilePos = {pos * 16.0f, 0.0f};
         for (int i = 0; i < 4; ++i) {
             float offsetX = (i % 2) * fragSize;
             float offsetY = (i / 2) * fragSize;
             Vector2 fragWorldPos = { mRect.x + offsetX, mRect.y + offsetY };
             Vector2 fragTilePos = { baseTilePos.x + (i % 2) * texSize, baseTilePos.y + (i / 2) * texSize };
-            auto f = std::make_unique<TileObject>(TileItem::fragment, 0, 0);
+            auto f = std::make_unique<TileObject>(static_cast<TileItem>(pos), 0, 0);
             f->setRect({ fragWorldPos.x, fragWorldPos.y, fragSize, fragSize });
             f->setPostile(fragTilePos);
             f->setSource({ fragTilePos.x, fragTilePos.y, texSize, texSize });
@@ -198,110 +217,42 @@ void TileBlock::addFragment() {
 void TileBlock::update(float dt){
     Vector2 mousePos = GetMousePosition();
     if (mType == -1) return;  
+    Vector2 postion = mPhysics.getPosition();
+    Vector2 size = getSize();
+    mCollide.setHitBox({
+        postion.x,
+        postion.y,
+        size.x,
+        size.y
+    });
     if (mBehavior) {
         mBehavior->update(*this, dt);
     }
-    // if (getType()==TileType::OwCoinBlock1){
-    //     if(CheckCollisionPointRec(mousePos, mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
-    //         mType = 26;
-    //         int x = (mType) % 29;
-    //         int y = (mType) / 29;
-    //         posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
-    //         mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE }; 
-    //     }
-    //     else if(mType!=26){
-    //         if(aniTime <= 0.1f){
-    //             aniTime+=dt;
-    //         }
-    //         else{
-    //             if(mType==23) mType = 24;
-    //             else if (mType == 24) mType=25;
-    //             else mType = 23;
-    //             int x = (mType) % 29;
-    //             int y = (mType) / 29;
-    //             posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
-    //             mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE };  
-    //             aniTime = 0.0f;
-    //         }
-    //     }
-    // }
-    // if (getType() == TileType::OwInitialTile && CheckCollisionPointRec(mousePos, mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-    //     if(isDoneAnimation){
-    //         setVelocity({0, 192.5f});
-    //         isDoneAnimation = false;
-    //         aniTime = 0.0f;
-    //         bumped = true;
-    //     }
-    // }
-    // if(bumped) moveUp(dt);
-    // if (getType() == TileType::OwInitialTile && CheckCollisionPointRec(mousePos, mRect) && IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
-    //     frag[0]->setVelocity({-10.0f, frag[0]->calculateVec(0.2f, 10)});
-
-    //     frag[0]->setAnimation();
-
-    //     frag[1]->setVelocity({10.0f, frag[1]->calculateVec(0.2f, 10)});
-     
-    //     frag[1]->setAnimation();
-
-    //     frag[2]->setVelocity({-10.0f, frag[2]->calculateVec(0.2f, 5)});
-
-    //     frag[2]->setAnimation();
-
-    //     frag[3]->setVelocity({10.0f, frag[3]->calculateVec(0.2f, 5)});
-  
-    //     frag[3]->setAnimation();
-
-    //     isDestroyed = true;
-    //     isDoneAnimation = false;
-    //     aniTime = 0.0f;
-    // }
-    // if(isDestroyed) destroy(dt);
+    
 }
 
-// void TileBlock::moveUp(float dt) {
-//     if (isDoneAnimation) return;
-
-//     aniTime += dt;
-//     //float velocity = mVelocity.y - Gravity * aniTime;
-
-//     float displacement = mVelocity.y * aniTime - 0.5f * Gravity * aniTime * aniTime;
-//     float startY = mRect.y;
-
-//     aniRect.y = startY - displacement;
-
-//     if (aniRect.y >= startY) {
-//         aniRect.y = startY;
-//         isDoneAnimation = true;
-//         aniTime = 0.0f;
-//     }
-// }
-
-
-// void TileBlock::destroy(float dt){
-//     if (isDoneAnimation) return;
-//     aniTime += dt;
-//     if(aniTime < 100.0f){
-//         //std::cout << "\n" << aniTime << "\n";
-//         for (int i = 0; i < 4; i++){
-//             frag[i]->destroyAnimation(dt);
-//         }
-//     }
-//     else{
-//         mType = 0;
-//     }
-// }
 
 bool TileBlock::isSolid(){
     return solid && !isDestroyed;
 }
 
+void TileBlock::draw() {}
 
+void TileBlock::handle() {}
+
+Vector2 TileBlock::getSize(){
+    if(!isDestroyed) {
+        return {48.0f, 48.0f};
+    }
+    return {0, 0};
+}
+
+void TileBlock::handleCollision(Side side, Category other) {
+    if(mBehavior) {
+        mBehavior->setSide(side);
+        mBehavior->setOther(other);
+    }
+    mColor = RED;
+}
 TileBlock::~TileBlock(){}
-
-// void TileBlock::destroyAnimation(float dt) {
-//     if (isDoneAnimation) return;
-//     aniTime += dt;
-//     aniRect.x +=  mVelocity.x * aniTime;
-//     aniRect.y -= mVelocity.y * aniTime - (0.5f * Gravity * aniTime * aniTime);
-// }
 
