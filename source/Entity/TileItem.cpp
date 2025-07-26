@@ -1,7 +1,7 @@
 #include "Entity/TileItem.hpp"
 
 TileObject::TileObject(int type, int row, int col) : TileBlock(type, row, col){
-    if(type > 0){
+    if(type > -1){
         int x = (type) % 35;
         int y = (type) / 35;
         posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
@@ -9,6 +9,7 @@ TileObject::TileObject(int type, int row, int col) : TileBlock(type, row, col){
         mPhysics.setPosition({mRect.x, mRect.y});
         mCollide.setStatic(false);
         createBehavior();
+        //isOn = true;
         if(getType() != normalCoin|| getType() != underCoin ) {
             isOn = false;
         }
@@ -27,6 +28,9 @@ void TileObject::createBehavior()  {
     else if(getType() == TileItem::mushroom) {
         mBehavior = new MushroomBehavior();
     } 
+    else if(getType() == TileItem::greenMushroom) {
+        mBehavior = new MushroomBehavior();
+    }
     else if(getType() == TileItem::star) {
         mBehavior = new StarBehavior();
     } 
@@ -57,7 +61,7 @@ void TileObject::draw(Texture2D& background, Texture2D& object){
     if (mType != -1 && !isDestroyed && isOn) {
         float posX = mPhysics.getPosition().x;
         float posY = mPhysics.getPosition().y;
-        {DrawTexturePro(object, mSource, {posX, posY, 48, 48}, {0, 0}, 0.0f, WHITE);}
+        {DrawTexturePro(object, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);}
     }
 }
 
@@ -65,13 +69,14 @@ void TileObject::update(float dt) {
     Vector2 postion = mPhysics.getPosition();
     Vector2 size = getSize();
     if(getType()!= TileItem::invalidItem) {
-    mCollide.setHitBox({
-        postion.x ,
-        postion.y,
-        size.x,
-        size.y
+        mCollide.setHitBox({
+            postion.x ,
+            postion.y,
+            size.x,
+            size.y
         });
     } else {
+        
         mCollide.setHitBox({0, 0, 0, 0});
     } 
     if (mBehavior) {

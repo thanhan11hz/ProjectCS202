@@ -11,8 +11,11 @@
 
 class TileMap {
 public:
-    using Btr = std::unique_ptr<TileBlock>;
-
+    using Btr = std::unique_ptr<TileBlock>; //thêm hàm reset item, map
+                                            //hàm getBounds
+                                            //setActive cho enemy
+                                            //sửa hiệu ứng vỡ gạch
+                                            //warp, movingblock, lửa, rìu, hiệu ứng rút cầu
     TileMap(){};
     void loadFromFile(const std::string& directory);
     std::vector<std::vector<int>> loadMatrixFromCSV(const std::string& filepath);
@@ -28,7 +31,8 @@ private:
     std::vector<std::vector<Btr>> mMain;
     std::vector<std::vector<Btr>> mBackground;
     std::vector<std::vector<Btr>> mItem;
-    std::vector<Btr> magItem;
+    std::vector<std::vector<Btr>> mBackground2;
+    std::vector<TileObject*> Items;
     Texture2D tileTexture;
     Texture2D objectTexture;
 };

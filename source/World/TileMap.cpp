@@ -5,8 +5,7 @@
 #include <iostream>
 #include <sstream>
 using namespace std;
-int screenW = 1440;
-int screenH = 900;
+
 void TileMap::loadFromFile(const std::string& directory) {
     std::string folderName = std::filesystem::path(directory).filename().string();
     std::string prefix =  folderName.substr(0, 2) + "_";
@@ -20,6 +19,10 @@ void TileMap::loadFromFile(const std::string& directory) {
         } else if (stem == prefix + "Items") {
             createMap(3, matrix);
         }
+        else if( stem == prefix + "Background1") {
+            createMap(4, matrix);
+        }
+        
     }
 }
 
@@ -52,7 +55,7 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
         }
     }
 
-    else{ //item
+    else if(choice == 3){ //item
         for(int i = 0; i < matrix.size(); i++){
             for (int j = 0; j < matrix[i].size(); j++){
                 int num = matrix[i][j];
@@ -62,6 +65,19 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                 row.emplace_back(std::move(block));
             }
             mItem.emplace_back(std::move(row));
+            row.clear();
+        }
+    }
+    else {
+        for(int i = 0; i < matrix.size(); i++){
+            for (int j = 0; j < matrix[i].size(); j++){
+                int num = matrix[i][j];
+                int tileId = num;
+                int col =  j;              
+                Btr block = std::make_unique<TileBlock>(tileId, j, i);
+                row.emplace_back(std::move(block));
+            }
+            mBackground2.emplace_back(std::move(row)); //có thể cân nhắc đưa vào mItem 
             row.clear();
         }
     }
@@ -103,6 +119,7 @@ void TileMap::drawBackground() {
             //     mBackground[i][j]->draw(tileTexture, objectTexture);
             // }
             mBackground[i][j]->draw(tileTexture, objectTexture);
+            if ( mBackground2.size() > 0) mBackground2[i][j]->draw(tileTexture, objectTexture);
         }
     }
 }
