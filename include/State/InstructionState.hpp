@@ -17,7 +17,7 @@ class InstructionState : public State {
         virtual bool handle();
         virtual bool update(float dt);
         Container mContainer;
-
+        Button* muteButton;
         Label* tracker;
         Label* description;
 };

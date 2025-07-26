@@ -15,4 +15,5 @@ class MenuState : public State {
         virtual bool update(float dt);
         virtual bool handle();
         Container mContainer;
+        Button* muteButton;
 };

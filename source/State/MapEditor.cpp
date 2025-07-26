@@ -5,15 +5,16 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mItems = std::vector<std::vector<int>>(DEFAULT_MAP_HEIGHT, std::vector<int>(DEFAULT_MAP_WIDTH, -1));
     name = "CustomMap";
     setupCamera();
-    dropdownRect = {885,247,284,519};
+    dropdownRect = {885,259,284,519};
     
-    Button* muteButton = new Button();
+    muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer_view.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            //toggleMute();
+            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            else ResumeMusicStream(mPlayingMusic);
         }
     );
 
@@ -69,7 +70,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     );
 
     currentMode = new Label();
-    currentMode->changeShape({23,794,530,17});
+    currentMode->changeShape({23,806,530,17});
     currentMode->changeSize(17);
     currentMode->changeAlignment(Alignment::LEFT);
     currentMode->changeText("VIEWING MODE");
@@ -77,7 +78,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer.pack(currentMode);
 
     subtext = new Label();
-    subtext->changeShape({23,842,530,17});
+    subtext->changeShape({23,854,530,17});
     subtext->changeSize(17);
     subtext->changeAlignment(Alignment::LEFT);
     subtext->changeText("Navigate using WASD");
@@ -85,7 +86,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer.pack(subtext);
 
     Button* edit = new Button();
-    edit->changShape({463, 800, 211, 56});
+    edit->changShape({463, 812, 211, 56});
     edit->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     edit->changeText("EDIT");
     edit->changeCallback([this]() {
@@ -95,7 +96,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_view.pack(edit);
 
     Button* rename = new Button();
-    rename->changShape({696, 800, 211, 56});
+    rename->changShape({696, 812, 211, 56});
     rename->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     rename->changeText("RENAME");
     rename->changeCallback([this]() {
@@ -106,7 +107,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_view.pack(rename);
 
     Button* reset = new Button();
-    reset->changShape({929, 800, 211, 56});
+    reset->changShape({929, 812, 211, 56});
     reset->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     reset->changeText("RESET");
     reset->changeCallback([this]() {
@@ -117,7 +118,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_view.pack(reset);
 
     save = new Button();
-    save->changShape({1162, 800, 211, 56});
+    save->changShape({1162, 812, 211, 56});
     save->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     save->changeText("SAVE");
     save->changeCallback([this]() {
@@ -213,7 +214,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
 
     //edit mode
     Button* pen = new Button();
-    pen->changShape({929, 800, 211, 56});
+    pen->changShape({929, 812, 211, 56});
     pen->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pen->changeText("PEN");
     pen->changeCallback([this]() {
@@ -226,7 +227,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_edit.pack(pen);
 
     Button* eraser = new Button();
-    eraser->changShape({1162, 800, 211, 56});
+    eraser->changShape({1162, 812, 211, 56});
     eraser->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     eraser->changeText("ERASER");
     eraser->changeCallback([this]() {
@@ -237,7 +238,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_edit.pack(eraser);
 
     display = new Button();
-    display->changShape({696, 800, 211, 56});
+    display->changShape({696, 812, 211, 56});
     display->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     display->changeText("DISPLAY");
     display->changeCallback([this]() {
@@ -247,17 +248,18 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_pen.pack(display);
 
     pals = new Button();
-    pals->changShape({929, 800, 211, 56});
+    pals->changShape({929, 812, 211, 56});
     pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pals->changeText("PALETTES");
     pals->changeCallback([this]() {
             isDropDown = !isDropDown;
+            showPalette = false;
         }
     );
     mContainer_pen.pack(pals);
 
     Button* eraserPen = new Button();
-    eraserPen->changShape({1162, 800, 211, 56});
+    eraserPen->changShape({1162, 812, 211, 56});
     eraserPen->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     eraserPen->changeText("ERASER");
     eraserPen->changeCallback([this]() {
@@ -269,62 +271,67 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_pen.pack(eraserPen);
 
     Button* pal_items = new Button(); 
-    pal_items->changShape({920, 279, 211, 56});
+    pal_items->changShape({920, 291, 211, 56});
     pal_items->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pal_items->changeText("ITEMS");
     pal_items->changeCallback([this]() {
             isDropDown = false;
+            selected = -1;
             mPalette = Palette::ITEMS;
         }
     );
     mContainer_dropdown.pack(pal_items);
 
     Button* pal_fol1 = new Button(); 
-    pal_fol1->changShape({920, 360, 211, 56});
+    pal_fol1->changShape({920, 372, 211, 56});
     pal_fol1->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pal_fol1->changeText("FOLIAGE1");
     pal_fol1->changeCallback([this]() {
             isDropDown = false;
+            if (mPalette == Palette::ITEMS) selected = -1;
             mPalette = Palette::FOLIAGE1;
         }
     );
     mContainer_dropdown.pack(pal_fol1);
 
     Button* pal_fol2 = new Button(); 
-    pal_fol2->changShape({920, 441, 211, 56});
+    pal_fol2->changShape({920, 453, 211, 56});
     pal_fol2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pal_fol2->changeText("FOLIAGE2");
     pal_fol2->changeCallback([this]() {
             isDropDown = false;
+            if (mPalette == Palette::ITEMS) selected = -1;
             mPalette = Palette::FOLIAGE2;
         }
     );
     mContainer_dropdown.pack(pal_fol2);
 
     Button* pal_coins = new Button(); 
-    pal_coins->changShape({920, 522, 211, 56});
+    pal_coins->changShape({920, 534, 211, 56});
     pal_coins->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pal_coins->changeText("COINS");
     pal_coins->changeCallback([this]() {
             isDropDown = false;
+            if (mPalette == Palette::ITEMS) selected = -1;
             mPalette = Palette::COINS;
         }
     );
     mContainer_dropdown.pack(pal_coins);
 
     Button* pal_blocks = new Button(); 
-    pal_blocks->changShape({920, 603, 211, 56});
+    pal_blocks->changShape({920, 615, 211, 56});
     pal_blocks->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pal_blocks->changeText("BLOCKS");
     pal_blocks->changeCallback([this]() {
             isDropDown = false;
+            if (mPalette == Palette::ITEMS) selected = -1;
             mPalette = Palette::BLOCKS;
         }
     );
     mContainer_dropdown.pack(pal_blocks);
 
     Button* pal_clr = new Button(); 
-    pal_clr->changShape({920, 684, 211, 56});
+    pal_clr->changShape({920, 696, 211, 56});
     pal_clr->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     pal_clr->changeText("CLEAR");
     pal_clr->changeCallback([this]() {
@@ -336,7 +343,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_dropdown.pack(pal_clr);
 
     Button* grid = new Button();
-    grid->changShape({929, 800, 211, 56});
+    grid->changShape({929, 812, 211, 56});
     grid->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     grid->changeText("GRID");
     grid->changeCallback([this]() {
@@ -346,7 +353,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_erase.pack(grid); 
 
     Button* penEraser = new Button();
-    penEraser->changShape({1162, 800, 211, 56});
+    penEraser->changShape({1162, 812, 211, 56});
     penEraser->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     penEraser->changeText("PEN");
     penEraser->changeCallback([this]() {
@@ -459,7 +466,7 @@ void MapEditor::stampingHandle() {
 
 void MapEditor::drawUI() {
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
-    DrawTexture(bricksTexture, 0, 760, WHITE);
+    DrawTexture(bricksTexture, 0, 772, WHITE);
     mContainer.draw();
     switch (mMode) {
         case MapEditorMode::VIEW:
@@ -564,23 +571,23 @@ void MapEditor::drawPalette() {
         switch (mPalette) {
             case Palette::ITEMS:
                 toDraw = Resource::mTexture.get(TextureIdentifier::PAL1);
-                DrawTexture(toDraw, 1200, 328, WHITE);
+                DrawTexture(toDraw, 1200, 340, WHITE);
                 break;
             case Palette::FOLIAGE1:
                 toDraw = Resource::mTexture.get(TextureIdentifier::PAL2);
-                DrawTexture(toDraw, 240, 184, WHITE);
+                DrawTexture(toDraw, 240, 196, WHITE);
                 break;
             case Palette::FOLIAGE2:
                 toDraw = Resource::mTexture.get(TextureIdentifier::PAL3);
-                DrawTexture(toDraw, 912, 376, WHITE);
+                DrawTexture(toDraw, 912, 388, WHITE);
                 break;
             case Palette::COINS:
                 toDraw = Resource::mTexture.get(TextureIdentifier::PAL4);
-                DrawTexture(toDraw, 1248, 376, WHITE);
+                DrawTexture(toDraw, 1248, 388, WHITE);
                 break;
             case Palette::BLOCKS: {
                 toDraw = Resource::mTexture.get(TextureIdentifier::PAL5);
-                DrawTexture(toDraw, 337, 376, WHITE);
+                DrawTexture(toDraw, 337, 388, WHITE);
                 break;
             }
         }
@@ -672,6 +679,10 @@ void MapEditor::saveMap() {
 }
 
 bool MapEditor::handle() {
+    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+        else ResumeMusicStream(mPlayingMusic);
+    }
     switch (mMode) {
         case MapEditorMode::VIEW:
             mContainer.handle();
@@ -718,6 +729,8 @@ bool MapEditor::handle() {
 }
 
 bool MapEditor::update(float dt) {
+    if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
+    else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     switch (mMode) {
         case MapEditorMode::VIEW:
             currentMode->changeText("VIEWING MODE");
@@ -749,24 +762,24 @@ bool MapEditor::update(float dt) {
     switch (mPalette) {
         case Palette::BLOCKS:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-            palRect = {337, 376, 1104, 384};
+            palRect = {337, 388, 1104, 384};
             break;
         case Palette::FOLIAGE1:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-            palRect = {240, 184, 1200, 576};
+            palRect = {240, 196, 1200, 576};
             break;
         case Palette::FOLIAGE2:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-            palRect = {912, 376, 528, 384};
+            palRect = {912, 388, 528, 384};
             break;
         case Palette::COINS:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-            palRect = {1248, 376, 192, 384};
+            palRect = {1248, 388, 192, 384};
             break;
         case Palette::ITEMS:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
 
-            palRect = {1200, 328, 240, 432};
+            palRect = {1200, 340, 240, 432};
             break;
         case Palette::NONE:
             display->changeTexture(TextureIdentifier::INACTIVE_BUTTON_MEDIUM);

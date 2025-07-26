@@ -36,7 +36,7 @@ const int DEFAULT_MAP_WIDTH = 30;
 const int TILE_SIZE = 16;
 const int SCALED_TILE_SIZE = 48;
 const int workspaceWidth = 1440;
-const int workspaceHeight = 750; 
+const int workspaceHeight = 762; 
 
 class MapEditor : public State {
     public:
@@ -79,6 +79,7 @@ class MapEditor : public State {
         Button* save;
         Button* pals;
         Button* display;
+        Button* muteButton;
         TextBox* txt;
         Rectangle dropdownRect;
         Rectangle palRect;

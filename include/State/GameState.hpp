@@ -13,6 +13,7 @@ class GameState: public State {
         
     private:
         Container mContainer;
+        Button* muteButton;
         virtual void draw();
         virtual bool update(float dt);
         virtual bool handle();

@@ -83,7 +83,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
 }
 
 void PauseState::draw() {
-    DrawRectangle(0, 0, 1440, 900, {83,83,83,100});
+    DrawRectangle(0, 0, 1440, 912, {83,83,83,100});
     Texture2D confirm = Resource::mTexture.get(TextureIdentifier::CONFIRM_BOX);
     DrawTexture(confirm, 426, 257, WHITE);
     
@@ -99,6 +99,10 @@ bool PauseState::update(float dt) {
 }
 
 bool PauseState::handle() {
+    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+        else ResumeMusicStream(mPlayingMusic);
+    }
     if (!confirmMode) mContainer.handle();
     else mConfirmContainer.handle();
     return false;
