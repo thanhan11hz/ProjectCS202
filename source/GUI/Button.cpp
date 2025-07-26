@@ -52,6 +52,10 @@ void Button::changeFont(FontIdentifier id) {
     mFont = id;
 }
 
+void Button::changeFontSize(int size) {
+    mFontSize = size;
+}
+
 void Button::draw() {
     Color color = WHITE;
     if (mIsSelected) color = Fade(color,0.9);

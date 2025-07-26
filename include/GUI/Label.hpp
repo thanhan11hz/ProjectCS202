@@ -32,7 +32,7 @@ class Label: public Component {
         Alignment mAlignment;
         Color mColor = BLACK;
         Rectangle mShape;
-        int mFontSize = 20;
+        int mFontSize;
         bool isBlink = false;
         bool isDisplay = true;
 };

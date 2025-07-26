@@ -51,6 +51,13 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION9, "resource\\Texture\\StateAsset\\Instructions\\ins9.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION10, "resource\\Texture\\StateAsset\\Instructions\\ins10.png");
     Resource::mTexture.load(TextureIdentifier::KEYBOARD, "resource\\Texture\\StateAsset\\keybinds.png");
+
+    Resource::mTexture.load(TextureIdentifier::PAL1, "resource\\Texture\\StateAsset\\Palettes\\ITEMS.png");
+    Resource::mTexture.load(TextureIdentifier::PAL2, "resource\\Texture\\StateAsset\\Palettes\\FOLIAGE1.png");
+    Resource::mTexture.load(TextureIdentifier::PAL3, "resource\\Texture\\StateAsset\\Palettes\\FOLIAGE2.png");
+    Resource::mTexture.load(TextureIdentifier::PAL4, "resource\\Texture\\StateAsset\\Palettes\\COINS.png");
+    Resource::mTexture.load(TextureIdentifier::PAL5, "resource\\Texture\\StateAsset\\Palettes\\BLOCKS.png");
+  
     Resource::mTexture.load(TextureIdentifier::MARIO_N_IDLE, "resource\\Texture\\Spritesheet\\Mario_N_Idle.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_N_RUN, "resource\\Texture\\Spritesheet\\Mario_N_Run.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_N_JUMP, "resource\\Texture\\Spritesheet\\Mario_N_Jump.png");
@@ -94,7 +101,8 @@ Game::Game() {
     mStateStack.registerState<PauseState>(StateIdentifier::PAUSE);
     mStateStack.registerState<CharSelectState>(StateIdentifier::CHARSELECT);
     mStateStack.registerState<GameState>(StateIdentifier::GAME1);
-    
+    mStateStack.registerState<MapEditor>(StateIdentifier::MAPEDITOR);
+
     mStateStack.pushState(StateIdentifier::MENU);
 
     mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");
