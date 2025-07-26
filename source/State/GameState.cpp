@@ -57,7 +57,7 @@ GameState::GameState(StateStack& stack) : State(stack) {
     items->changeText("ACTIVE POWER-UPS:");
     items->changeColor(WHITE);
     mContainer.pack(items);
-    mMap.loadFromFile("resource\\Map\\01 - Field Area (1-1)");
+    mMap.loadFromFile("resource\\Map\\Custom\\02_TestDraw");
 }
 
 void GameState::draw() {

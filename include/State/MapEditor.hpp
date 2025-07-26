@@ -7,6 +7,7 @@
 #include "GUI/Container.hpp"
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
+#include "GUI/TextBox.hpp"
 #include "Resource/ResourceHolder.hpp"
 
 enum class MapEditorMode {
@@ -30,6 +31,8 @@ enum class Palette {
 
 const int TILES_PER_ROW_BLOCKS = 29;
 const int TILES_PER_ROW_ITEMS = 36; 
+const int DEFAULT_MAP_HEIGHT = 19;
+const int DEFAULT_MAP_WIDTH = 30;
 const int TILE_SIZE = 16;
 const int SCALED_TILE_SIZE = 48;
 const int workspaceWidth = 1440;
@@ -52,12 +55,14 @@ class MapEditor : public State {
         void drawMapPreview();
         void drawPalette();
         void drawGrid(int width, int height, int tileSize, Color lineColor = Fade(GRAY, 0.5f));
-        void initMap(const std::string& name);
+        void createMap();
         int getTilesPerRow();
 
         std::vector<std::vector<int>> mMap;
         std::vector<std::vector<int>> mItems;
-
+        void saveMap();
+                
+        std::string name;
         MapEditorMode mMode;
         Palette mPalette;
         bool showPalette;
@@ -70,9 +75,15 @@ class MapEditor : public State {
 
         Label* currentMode;
         Label* subtext;
+        Label* mapName;
         Button* save;
         Button* pals;
         Button* display;
+        TextBox* txt;
+        Rectangle dropdownRect;
+        Rectangle palRect;
+        Rectangle selectedTile;
+
         Container mContainer;
         Container mContainer_selection;
         Container mContainer_view;
@@ -87,11 +98,6 @@ class MapEditor : public State {
         Camera2D mCamera;
         int tileX;
         int tileY;
-        Rectangle dropdownRect;
-        Rectangle palRect;
-        Rectangle selectedTile;
-        int palX;
-        int palY;
         int selected;
         
 };
