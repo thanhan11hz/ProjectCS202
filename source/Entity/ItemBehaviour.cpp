@@ -15,7 +15,6 @@ void FragmentBehavior::update(TileObject& item, float dt) {
 
 void SimpleBehavior::update(TileObject& item, float dt) {
     Vector2 mousePos = GetMousePosition();
-
     if(CheckCollisionPointRec(mousePos, item.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
         item.setOn(true);
         item.setAnimation();
@@ -77,23 +76,22 @@ void SpecialCoinBehavior::onCollect(TileObject& item) {
 
 void SpecialCoinBehavior::update(TileObject& item, float dt) {
     Vector2 mousePos = GetMousePosition();
-
     if(CheckCollisionPointRec(mousePos, item.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && !item.isAbsorbed) {
         item.bumped = true;
         item.setOn(true);
         item.setAnimation();
-        item.mPhysics.setVelocity({0, item.calculateVec(0.3f, 144.0f)});
+        item.mPhysics.setVelocity({0, item.calculateVec(0.3f, 96.0f)});
     }
     else if(!item.isAbsorbed){
-        if(item.aniTime <= 0.1f){
+        if(item.aniTime <= 0.05f){
             item.aniTime+=dt;
         }
         else{
             if(item.mType==216 ) item.mType +=1 ;
             else if (item.mType == 217) item.mType+=1;
             else item.mType -= 2;
-            int x = (item.mType) % 35;
-            int y = (item.mType) / 35;
+            int x = (item.mType) % 36;
+            int y = (item.mType) / 36;
             item.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE };
             item.mSource = {item.posTile.x, item.posTile.y, TileBlock::TILE_SIZE, TileBlock::TILE_SIZE };
             item.aniTime = 0.0f;

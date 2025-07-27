@@ -27,4 +27,5 @@ class LevelState : public State {
         Button* level3;
         Label* header_lv4;
         Button* level4;
+        Button* muteButton;
 };

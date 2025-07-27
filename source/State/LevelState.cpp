@@ -1,13 +1,14 @@
 #include "State/LevelState.hpp"
 
 LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxPage(2) {
-    Button* muteButton = new Button();
+    muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            //toggleMute();
+            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            else ResumeMusicStream(mPlayingMusic);
         }
     );
 
@@ -204,11 +205,17 @@ void LevelState::draw() {
 }
 
 bool LevelState::handle() {
+    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+        else ResumeMusicStream(mPlayingMusic);
+    }
     mContainer.handle();
     return true;
 }
 
 bool LevelState::update(float dt) {
+    if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
+    else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     //mMap.update(dt);
     return true;
 }

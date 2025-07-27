@@ -1,22 +1,24 @@
 #include "State/SettingState.hpp"
 
-SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(3), changeMade(false) {
-    
+SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(3), changeMade(false), mReassigned(nullptr), isReassigning(false) {
+    mLocalKeybinds = mKeyBinding;
+
     Label* title = new Label();
     title->changeShape({560, 92, 320, 40});
     title->changeSize(40);
     title->changeText("SETTINGS");
     title->changeColor(WHITE);
     mContainer.pack(title);
-
-    Button* muteButton = new Button();
+   
+    muteButton = new Button();
     muteButton->changeToggle(true);
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            //toggleMute();
+            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            else ResumeMusicStream(mPlayingMusic);
         }
     );
 
@@ -46,7 +48,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     cancel->changeToggle(true);
     cancel->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
     cancel->changeText("CANCEL");
-    cancel->changShape({442,765,245,65});
+    cancel->changShape({442,777,245,65});
     mContainer.pack(cancel);
     cancel->changeCallback(
         [this]() {
@@ -54,14 +56,15 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         }
     );
 
-    Button* save = new Button();
-    save->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
+    save = new Button();
+    save->changeTexture(TextureIdentifier::INACTIVE_BUTTON);
     save->changeText("SAVE");
-    save->changShape({753,765,245,65});
+    save->changShape({753,777,245,65});
     mContainer.pack(save);
-    cancel->changeCallback(
+    save->changeCallback(
         [this]() {
-            //saveSettings();
+            changeMade = false;
+            mKeyBinding = mLocalKeybinds;
             requestStackPop();
         }
     );
@@ -142,38 +145,41 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mute->changeColor(WHITE);
     mContainer_general.pack(mute);
 
-    Button* fireKey = new Button();
-    fireKey->changeText("LSHIFT");
+    fireKey = new Button();
+    fireKey->changeText(mapKeyToChar(mKeyBinding[Action::FIRE]));
     fireKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     fireKey->changeTextColor(WHITE);
     fireKey->changShape({498, 253, 170, 45});
     mContainer_general.pack(fireKey);
     fireKey->changeCallback(
         [this]() {
-            //changeKeybind(KeybindIdentifier::FIRE);
+            mReassigned = fireKey;
+            changeKeybind(Action::FIRE);
         }
     );
 
-    Button* pauseKey = new Button();
-    pauseKey->changeText("P");
+    pauseKey = new Button();
+    pauseKey->changeText(mapKeyToChar(mKeyBinding[Action::PAUSE]));
     pauseKey->changeTextColor(WHITE);
     pauseKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     pauseKey->changShape({498, 369, 170, 45});
     mContainer_general.pack(pauseKey);
     pauseKey->changeCallback(
         [this]() {
-            //changeKeybind(KeybindIdentifier::PAUSE);
+            mReassigned = pauseKey;
+            changeKeybind(Action::PAUSE);
         }
     );
-    Button* muteKey = new Button();
-    muteKey->changeText("M");
+    muteKey = new Button();
+    muteKey->changeText(mapKeyToChar(mKeyBinding[Action::MUTE]));
     muteKey->changeTextColor(WHITE);
     muteKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     muteKey->changShape({498, 485, 170, 45});
     mContainer_general.pack(muteKey);
     muteKey->changeCallback(
         [this]() {
-            //changeKeybind(KeybindIdentifier::MUTE);
+            mReassigned = muteKey;
+            changeKeybind(Action::MUTE);
         }
     );
 
@@ -193,15 +199,16 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     upLabel->changeColor(WHITE);
     mContainer_movement.pack(upLabel);
 
-    Button* up = new Button();
-    up->changeText("W");
+    up = new Button();
+    up->changeText(mapKeyToChar(mKeyBinding[Action::JUMP]));
     up->changeTextColor(WHITE);
     up->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     up->changShape({391, 265, 170, 45});
     mContainer_movement.pack(up);
     up->changeCallback(
         [this]() {
-            //changeKeybind(KeybindIdentifier::UP);
+            mReassigned = up;
+            changeKeybind(Action::JUMP);
         }
     );
 
@@ -212,15 +219,16 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     downLabel->changeColor(WHITE);
     mContainer_movement.pack(downLabel);
 
-    Button* down = new Button();
-    down->changeText("S");
+    down = new Button();
+    down->changeText(mapKeyToChar(mKeyBinding[Action::DOWN]));
     down->changeTextColor(WHITE);
     down->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     down->changShape({612, 569, 170, 45});
     mContainer_movement.pack(down);
     down->changeCallback(
         [this]() {
-            //changeKeybind(KeybindIdentifier::DOWN);
+            mReassigned = down;
+            changeKeybind(Action::DOWN);
         }
     );
 
@@ -231,15 +239,16 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     leftLabel->changeColor(WHITE);
     mContainer_movement.pack(leftLabel);
 
-    Button* left = new Button();
-    left->changeText("A");
+    left = new Button();
+    left->changeText(mapKeyToChar(mKeyBinding[Action::LEFT]));
     left->changeTextColor(WHITE);
     left->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     left->changShape({225, 572, 170, 45});
     mContainer_movement.pack(left);
     left->changeCallback(
         [this]() {
-            //changeKeybind(KeybindIdentifier::LEFT);
+            mReassigned = left;
+            changeKeybind(Action::LEFT);
         }
     );
 
@@ -250,21 +259,23 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     rightLabel->changeColor(WHITE);
     mContainer_movement.pack(rightLabel);
 
-    Button* right = new Button();
-    right->changeText("D");
+    right = new Button();
+    right->changeText(mapKeyToChar(mKeyBinding[Action::RIGHT]));
     right->changeTextColor(WHITE);
     right->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     right->changShape({1000, 579, 170, 45});
     mContainer_movement.pack(right);
     right->changeCallback(
         [this]() {
-            //changeKeybind(KeybindIdentifier::RIGHT);
+            mReassigned = right;
+            changeKeybind(Action::RIGHT);
         }
     );
+
 }
 
 void SettingState::draw() {
-    DrawRectangle(0, 0, 1440, 900, {113,67,25,255});
+    DrawRectangle(0, 0, 1440, 912, {113,67,25,255});
     mContainer.draw();
     if (mCurrentPage == 1) {
         mContainer_sound.draw();
@@ -275,9 +286,22 @@ void SettingState::draw() {
         DrawTexture(keys, 394, 288, WHITE);
         mContainer_movement.draw();
     }
+
+    if (isReassigning && mReassigned) {
+        mReassigned->changeText("");
+        mReassigned->changeTexture(TextureIdentifier::HOVERED_BUTTON_SMALL);
+    } else if (mReassigned) {
+        mReassigned->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+        mReassigned = nullptr;
+    }
 }
 
 bool SettingState::handle() {
+    if (IsKeyPressed(mKeyBinding[Action::MUTE]) && !isReassigning) {
+        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+        else ResumeMusicStream(mPlayingMusic);
+    }
+
     mContainer.handle();
     
     if (mCurrentPage == 1) {
@@ -287,19 +311,134 @@ bool SettingState::handle() {
     } else if (mCurrentPage == 3) {
         mContainer_movement.handle();
     }
+
+    if (isReassigning && mReassigned) {
+        KeyboardKey key = (KeyboardKey)GetKeyPressed();
+        if (key != 0) {
+            mLocalKeybinds[mReassigningKey] = key;
+            mReassigned->changeText(mapKeyToChar(key));
+            changeMade = true;
+            isReassigning = false;
+        }
+    }
     return false;
 }
 
 bool SettingState::update(float dt) {
-    // if (mCurrentPage == 1) {
-    //     previous->changeToggle(false);
-    //     next->changeToggle(true);
-    // } else if (mCurrentPage == 2) {
-    //     previous->changeToggle(true);
-    //     next->changeToggle(true);
-    // } else if (mCurrentPage == 3) {
-    //     previous->changeToggle(true);
-    //     next->changeToggle(false);
-    // }
+    if (changeMade) save->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
+    else save->changeTexture(TextureIdentifier::INACTIVE_BUTTON);
+    if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
+    else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     return false;
+}
+
+void SettingState::changeKeybind(Action action) {
+    isReassigning = true;
+    mReassigningKey = action;
+}
+
+std::string SettingState::mapKeyToChar(KeyboardKey key) {
+    switch(key) {
+        case KEY_APOSTROPHE: return "'"; break;
+        case KEY_COMMA: return ","; break;
+        case KEY_MINUS: return "-"; break;
+        case KEY_PERIOD: return "."; break;
+        case KEY_SLASH: return "/"; break;
+        case KEY_ZERO: return "0"; break;
+        case KEY_ONE: return "1"; break;
+        case KEY_TWO: return "2"; break;
+        case KEY_THREE: return "3"; break;
+        case KEY_FOUR: return "4"; break;
+        case KEY_FIVE: return "5"; break;
+        case KEY_SIX: return "6"; break;
+        case KEY_SEVEN: return "7"; break;
+        case KEY_EIGHT: return "8"; break;
+        case KEY_NINE: return "9"; break;
+        case KEY_SEMICOLON: return ";"; break;
+        case KEY_EQUAL: return "="; break;
+        case KEY_A: return "A"; break;
+        case KEY_B: return "B"; break;
+        case KEY_C: return "C"; break;
+        case KEY_D: return "D"; break;
+        case KEY_E: return "E"; break;
+        case KEY_F: return "F"; break;
+        case KEY_G: return "G"; break;
+        case KEY_H: return "H"; break;
+        case KEY_I: return "I"; break;
+        case KEY_J: return "J"; break;
+        case KEY_K: return "K"; break;
+        case KEY_L: return "L"; break;
+        case KEY_M: return "M"; break;
+        case KEY_N: return "N"; break;
+        case KEY_O: return "O"; break;
+        case KEY_P: return "P"; break;
+        case KEY_Q: return "Q"; break;
+        case KEY_R: return "R"; break;
+        case KEY_S: return "S"; break;
+        case KEY_T: return "T"; break;
+        case KEY_U: return "U"; break;
+        case KEY_V: return "V"; break;
+        case KEY_W: return "W"; break;
+        case KEY_X: return "X"; break;
+        case KEY_Y: return "Y"; break;
+        case KEY_Z: return "Z"; break;
+        case KEY_LEFT_BRACKET: return "["; break;
+        case KEY_BACKSLASH: return "\\"; break;
+        case KEY_RIGHT_BRACKET: return "]"; break;
+        case KEY_GRAVE: return "`"; break;
+        case KEY_SPACE: return "SPACE"; break;
+        case KEY_KP_0: return "0"; break;
+        case KEY_KP_1: return "1"; break;
+        case KEY_KP_2: return "2"; break;
+        case KEY_KP_3: return "3"; break;
+        case KEY_KP_4: return "4"; break;
+        case KEY_KP_5: return "5"; break;
+        case KEY_KP_6: return "6"; break;
+        case KEY_KP_7: return "7"; break;
+        case KEY_KP_8: return "8"; break;
+        case KEY_KP_9: return "9"; break;
+        case KEY_KP_DECIMAL: return "."; break;
+        case KEY_KP_DIVIDE: return "/"; break;
+        case KEY_KP_MULTIPLY: return "*"; break;
+        case KEY_KP_SUBTRACT: return "-"; break;
+        case KEY_KP_ADD: return "+"; break;
+        case KEY_KP_EQUAL: return "="; break;
+        case KEY_F1: return "F1"; break;
+        case KEY_F2: return "F2"; break;
+        case KEY_F3: return "F3"; break;
+        case KEY_F4: return "F4"; break;
+        case KEY_F5: return "F5"; break;
+        case KEY_F6: return "F6"; break;
+        case KEY_F7: return "F7"; break;
+        case KEY_F8: return "F8"; break;
+        case KEY_F9: return "F9"; break;
+        case KEY_F10: return "F10"; break;
+        case KEY_F11: return "F11"; break;
+        case KEY_F12: return "F12"; break;
+        case KEY_ESCAPE: return "ESC"; break;
+        case KEY_ENTER: return "ENTER"; break;
+        case KEY_TAB: return "TAB"; break;
+        case KEY_BACKSPACE: return "BACKSPACE"; break;
+        case KEY_INSERT: return "INSERT"; break;
+        case KEY_DELETE: return "DELETE"; break;
+        case KEY_RIGHT: return "ARROW_RIGHT"; break;
+        case KEY_LEFT: return "ARROW_LEFT"; break;
+        case KEY_DOWN: return "ARROW_DOWN"; break;
+        case KEY_UP: return "ARROW_UP"; break;
+        case KEY_PAGE_UP: return "PAGEUP"; break;
+        case KEY_PAGE_DOWN: return "PAGEDOWN"; break;
+        case KEY_HOME: return "HOME"; break;
+        case KEY_END: return "END"; break;
+        case KEY_CAPS_LOCK: return "CAPSLOCK"; break;
+        case KEY_NUM_LOCK: return "NUMLOCK"; break;
+        case KEY_PRINT_SCREEN: return "PRTSCRN"; break;
+        case KEY_LEFT_SHIFT: return "LSHIFT"; break;
+        case KEY_LEFT_CONTROL: return "LCTRL"; break;
+        case KEY_LEFT_ALT: return "LALT"; break;
+        case KEY_RIGHT_SHIFT: return "RSHIFT"; break;
+        case KEY_RIGHT_CONTROL: return "RCTRL"; break;
+        case KEY_RIGHT_ALT: return "RALT"; break;
+
+        default: return ""; break; // Non-character keys (e.g., ESC, F1, arrows) return empty string
+    }
 }

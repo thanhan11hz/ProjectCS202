@@ -22,20 +22,21 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     // Character->changeColor(WHITE);
     // mContainer.pack(Character);
 
-    Button* muteButton = new Button();
+    muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23, 22, 41, 41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            //toggleMute();
+            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            else ResumeMusicStream(mPlayingMusic);
         }
     );
 
     Button* back = new Button();
     back->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     back->changeText("BACK");
-    back->changShape({84, 793, 211, 56});
+    back->changShape({84, 805, 211, 56});
     mContainer.pack(back);
     back->changeCallback(
         [this]() {
@@ -46,7 +47,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     Button* confirm = new Button();
     confirm->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     confirm->changeText("CONFIRM");
-    confirm->changShape({1145, 793, 211, 56});
+    confirm->changShape({1145, 805, 211, 56});
     mContainer.pack(confirm);
     confirm->changeCallback(
         [this]() {
@@ -77,15 +78,21 @@ void CharSelectState::draw() {
 }
 
 bool CharSelectState::update(float dt) {
+    if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
+    else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     return false;
 }
 
 bool CharSelectState::handle() {
     mContainer.handle();
+    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+        else ResumeMusicStream(mPlayingMusic);
+    }
     if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
         if (selectedCharacter == 0) selectedCharacter = (selectedCharacter + 1) % 2;
     } else if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
-        if (selectedCharacter == 1) selectedCharacter = (selectedCharacter - 1 + 1) % 2;
+        if (selectedCharacter == 1) selectedCharacter = (selectedCharacter - 1 + 2) % 2;
     }
     return false;
 }

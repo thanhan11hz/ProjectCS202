@@ -23,14 +23,15 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
     description->changeFont(FontIdentifier::PixelifySans);
     mContainer.pack(description);
 
-    Button* muteButton = new Button();
+    muteButton = new Button();
     // muteButton->changeToggle(true);
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            //toggleMute();
+            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            else ResumeMusicStream(mPlayingMusic);
         }
     );
 
@@ -148,7 +149,7 @@ void InstructionState::setupPage(int page) {
 }
 
 void InstructionState::draw() {
-    DrawRectangle(0, 0, 1440, 900, {113,67,25,255});
+    DrawRectangle(0, 0, 1440, 912, {113,67,25,255});
     switch (mCurrentPage) {
         case 1: {
             Texture2D illustration = Resource::mTexture.get(TextureIdentifier::INSTRUCTION1);
@@ -205,10 +206,16 @@ void InstructionState::draw() {
 }
 
 bool InstructionState::handle() {
+    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+        else ResumeMusicStream(mPlayingMusic);
+    }
     mContainer.handle();
     return true;
 }
 
 bool InstructionState::update(float dt) {
+    if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
+    else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     return true;
 }

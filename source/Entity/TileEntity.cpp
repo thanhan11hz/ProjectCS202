@@ -36,10 +36,12 @@ TileBlock::TileBlock(int type, int col, int row)
 
         if(getType(calType())!= TileType::Empty) {
             solid = true;
-            if(mType!= 556) isOn = true;
             mBodyCollide.setLabel(Category::BLOCK);
         } 
-        else {mBodyCollide.setLabel(Category::BACKGROUND);}
+        else {
+            //std::cout << mType << "\n";
+            mBodyCollide.setLabel(Category::BACKGROUND);}
+        if(mType!= 556) isOn = true;
         mBodyCollide.setStatic(true);
         mBodyCollide.setFilter(Category::NONE);
         mPhysics.setPosition({mRect.x, mRect.y});
@@ -217,6 +219,7 @@ void TileBlock::addFragment() {
         pos = 13;
     }
     if(isfrag){
+        std::cout << "Add fragment for " << pos << "\n";
         frag.clear();
         const float fragSize = 24.0f;
         const float texSize = 8.0f;

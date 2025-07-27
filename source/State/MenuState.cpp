@@ -1,12 +1,13 @@
 #include "State/MenuState.hpp"
 
 MenuState::MenuState(StateStack& stack): State(stack) {
-    Button* muteButton = new Button();
+    muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     muteButton->changeCallback(
         [this]() {
-            
+            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            else ResumeMusicStream(mPlayingMusic);
         }
     );
     mContainer.pack(muteButton);
@@ -86,10 +87,16 @@ void MenuState::draw() {
 }
 
 bool MenuState::update(float dt) {
+    if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
+    else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     return true;
 }
 
 bool MenuState::handle() {
+    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+        else ResumeMusicStream(mPlayingMusic);
+    }
     mContainer.handle();
     return true;
 }
