@@ -35,9 +35,9 @@ class Physics {
         bool mIsGround;
         bool mIsRight;
         float mDensity = 1.0f;
-        static constexpr float Gravity  = 850.0f;
+        static constexpr float Gravity  = 800.0f;
         static constexpr float Friction = 30.0f;
-        static constexpr float AirDrag  = 40.0f;
+        static constexpr float AirDrag  = 35.0f;
         static constexpr float Eps      = 5.0f;
         void applyGravity(float dt);
         void applyDrag(float dt);

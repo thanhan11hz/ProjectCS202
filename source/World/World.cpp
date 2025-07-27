@@ -26,20 +26,13 @@ World::~World() {
 }
         
 void World::update(float dt) {
-    // Rectangle rec = mCharacter->mCollide.getHitBox();
-    // std::cout << "Before update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
     mMap[mCurrent]->update(dt);
     mCam.target.x = mCharacter->mPhysics.getPosition().x;
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
-    // if (mCam.target.y < targetHeight / 2.0f) mCam.target.y = targetHeight / 2.0f;
-    // if (mCam.target.y > 1584 - targetHeight / 2.0f) mCam.target.y = 1584 - targetHeight / 2.0f;
     mCharacter->update(dt);
-    // std::cout << "Before" << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
+    mGoomba->update(dt);
     mCollision.handleCollision();
-    // std::cout << "After" << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
-    // rec = mCharacter->mCollide.getHitBox();
-    // std::cout << "After update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
     mTimer -= dt;
 }
         
@@ -52,15 +45,13 @@ void World::draw() {
     mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawMain();
     mCharacter->draw();
+    mGoomba->draw();
     EndMode2D();
 }
 
 void World::handle() {
-    // if (IsKeyDown(KEY_LEFT)) mCam.target.x -= 100;
-    // if (IsKeyDown(KEY_RIGHT)) mCam.target.x += 100;
-    // if (IsKeyDown(KEY_UP)) mCam.target.y -= 100;
-    // if (IsKeyDown(KEY_DOWN)) mCam.target.y += 100;
     mCharacter->handle();
+    mGoomba->handle();
 }
 
 void World::loadMap(const std::string folder) {
@@ -98,15 +89,23 @@ void World::reset() {
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
+    mGoomba = Goomba::spawnGoomba1();
+    mCollision.addEnemy(mGoomba.get());
+    mGoomba->mPhysics.setPosition({200, 672});
     mTimer = 300.0f;
     mLives = 3;
     mCoins = 0;
+    mCam.target = {0, 500};
+
 }
 
 void World::restart() {
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
+    mGoomba = Goomba::spawnGoomba1();
+    mCollision.addEnemy(mGoomba.get());
+    mCam.target = {0, 500};
 }
 
 size_t World::getCurrentMap() {
@@ -131,4 +130,8 @@ void World::receiveCoin() {
         
 void World::damage() {
     mLives --;
+}
+
+Camera2D& World::getCamera() {
+    return mCam;
 }

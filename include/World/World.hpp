@@ -7,6 +7,7 @@
 #include "World/TileMap.hpp"
 #include "Entity/Character.hpp"
 #include "World/Collision.hpp"
+#include "Entity/Goomba.hpp"
 
 class World {
 
@@ -26,6 +27,7 @@ class World {
         size_t getRestLive();
         size_t getCoinCollected();
         size_t getCurrentMap();
+        Camera2D& getCamera();
         void receiveCoin();
         void damage();
         ~World();
@@ -38,6 +40,7 @@ class World {
         std::vector<std::unique_ptr<TileMap>> mMap;
         size_t mCurrent = 0;
         std::unique_ptr<Character> mCharacter;
+        std::unique_ptr<Goomba> mGoomba;
         Camera2D mCam;
         Collision mCollision;
         float mTimer = 300.0f;

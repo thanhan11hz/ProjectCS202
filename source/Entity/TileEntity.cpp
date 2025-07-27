@@ -37,11 +37,11 @@ TileBlock::TileBlock(int type, int col, int row)
         if(getType(calType())!= TileType::Empty) {
             solid = true;
             if(mType!= 556) isOn = true;
-            mCollide.setLabel(Category::BLOCK);
+            mBodyCollide.setLabel(Category::BLOCK);
         } 
-        else {mCollide.setLabel(Category::BACKGROUND);}
-        mCollide.setStatic(true);
-        mCollide.setFiler(Category::NONE);
+        else {mBodyCollide.setLabel(Category::BACKGROUND);}
+        mBodyCollide.setStatic(true);
+        mBodyCollide.setFilter(Category::NONE);
         mPhysics.setPosition({mRect.x, mRect.y});
     }
     aniRect=mRect;
@@ -67,7 +67,7 @@ void TileBlock::draw( Texture2D& background, Texture2D& object) {
             frag[i]->draw( background, object);
         }
     }
-    DrawRectangleLines(mCollide.getHitBox().x, mCollide.getHitBox().y, mCollide.getHitBox().width, mCollide.getHitBox().height, mColor);
+    DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, mColor);
 
 }
 
@@ -244,14 +244,14 @@ void TileBlock::update(float dt){
     Vector2 postion = mPhysics.getPosition();
     Vector2 size = getSize();
     if(getType(calType())!= TileType::Empty && isSolid()) {
-    mCollide.setHitBox({
+    mBodyCollide.setHitBox({
         postion.x,
         postion.y,
         size.x,
         size.y
         });
     } else {
-        mCollide.setHitBox({0, 0, 0, 0});
+        mBodyCollide.setHitBox({0, 0, 0, 0});
     }   
     if (mBehavior) {
         mBehavior->update(*this, dt);
@@ -275,10 +275,10 @@ Vector2 TileBlock::getSize(){
     return {0, 0};
 }
 
-void TileBlock::handleCollision(Side side, Category other) {
+void TileBlock::handleCollision(Side side, Collide other) {
     if(mBehavior) {
         mBehavior->setSide(side);
-        mBehavior->setOther(other);
+        mBehavior->setOther(other.getLabel());
     }
     mColor = RED;
 }

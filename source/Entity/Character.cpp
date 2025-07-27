@@ -1,8 +1,11 @@
 #include "Entity/Character.hpp"
 
-Character::Character(int length, int high) : mAnim(nullptr, 16, 16, 1.0f, true), mKey(mKeyBinding), mLength(length), mHigh(high) {
-    mCollide.setFiler(Category::NONE);
-    mCollide.setStatic(false);
+Character::Character(int length, int high) : MovingEntity(), mKey(mKeyBinding), mLength(length), mHigh(high) {
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setStatic(false);
+    mAnim.setFrameSize({16, 16});
+    mAnim.setFrameDuration(0.8f);
+    mBodyCollide.setLabel(Category::MARIO);
 }
 
 void Character::handle() {
@@ -16,44 +19,32 @@ void Character::handle() {
         if (IsKeyDown(mKey[Action::LEFT])) mPhysics.accelerate({-mLength, 0});
         if (IsKeyDown(mKey[Action::RIGHT])) mPhysics.accelerate({mLength, 0});
     }
-    if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) mPhysics.startJump(mHigh + getSize().y / 96.0f);
+    if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) {
+        mPhysics.startJump(mHigh + getSize().y / 96.0f);
+        if (mForm == Form::NORMAL) PlaySound(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP));
+        else PlaySound(Resource::mSound.get(SoundIdentifier::SUPER_JUMP));
+    }
     if (IsKeyReleased(mKey[Action::JUMP])) mPhysics.endJump();
+    if (mForm == Form::FIRE) {
+        if (IsKeyPressed(mKey[Action::FIRE])) fire();
+    }
 }
         
 void Character::draw() {
     if (mMove == Move::DEAD) return;
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f, !mPhysics.isRight(), mIsImmortal);
-    DrawRectangleLines(mCollide.getHitBox().x, mCollide.getHitBox().y, mCollide.getHitBox().width, mCollide.getHitBox().height, BLACK);
+    DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
+    DrawRectangleLines(mFootCollide.getHitBox().x, mFootCollide.getHitBox().y, mFootCollide.getHitBox().width, mFootCollide.getHitBox().height, BLACK);
+
 }
         
 void Character::update(float dt) {
     if (mMove == Move::DEAD) return;
-    Entity::update(dt);
-    // if (mPhysics.getPosition().y + getSize().y > 725) {
-    //     mPhysics.setPosition({mPhysics.getPosition().x, 725 - getSize().y});
-    //     mPhysics.setOnGround(true);
-    // }
-    
-    switch (mForm) {
-        case Form::NORMAL:
-            mCollide.setLabel(Category::NORMAL_MARIO);
-            break;
-
-        case Form::SUPER:
-            mCollide.setLabel(Category::SUPER_MARIO);
-            break;
-
-        case Form::FIRE:
-            mCollide.setLabel(Category::FIRE_MARIO);
-            break;
-    
-        default:
-            break;
-    }
-
+    MovingEntity::update(dt);
     updateMove();
     updateImmortal(dt);
     mAnim.update(dt);
+    mPhysics.setOnGround(false);
 }
 
 void Character::updateMove() {
@@ -133,8 +124,12 @@ void Character::setForm(Form form) {
     setMove(mMove);
 }
 
+void Character::fire() {
+    
+}
+
 std::unique_ptr<Character> Character::spawnMario() {
-    std::unique_ptr<Character> mChar = std::make_unique<Character>(200, 4);
+    std::unique_ptr<Character> mChar = std::make_unique<Character>(300, 4);
     mChar->mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
@@ -152,7 +147,7 @@ std::unique_ptr<Character> Character::spawnMario() {
 }
         
 std::unique_ptr<Character> Character::spawnLuigi() {
-    std::unique_ptr<Character> mChar = std::make_unique<Character>(180, 5);
+    std::unique_ptr<Character> mChar = std::make_unique<Character>(250, 5);
     mChar->mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_JUMP);
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_IDLE);
@@ -175,11 +170,33 @@ Vector2 Character::getSize() {
     return {48, 96};
 }
 
-void Character::handleCollision(Side side, Category other) {
-    if (side == Side::BOTTOM && other == Category::BLOCK) {
-        mPhysics.setOnGround(true);
-    }
-    if (side == Side::TOP && other == Category::BLOCK) {
+void Character::handleCollision(Side side, Collide other) {
+    Category otherLabel = other.getLabel();
+    if (side == Side::TOP && otherLabel == Category::BLOCK) {
         mPhysics.setVelocity({mPhysics.getVelocity().x, 0});
     }
+    if ((side == Side::LEFT || side == Side::RIGHT) && otherLabel == Category::BLOCK) {
+        
+    }
 }
+
+std::string Character::getTag() {
+    switch (mForm) {
+        case Form::NORMAL:
+            return "Normal";
+            break;
+
+        case Form::SUPER:
+            return "Super";
+            break;
+
+        case Form::FIRE:
+            return "Fire";
+            break;
+        
+        default:
+            return "";
+            break;
+    }
+}
+

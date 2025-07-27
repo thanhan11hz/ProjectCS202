@@ -3,14 +3,14 @@
 #include <raylib.h>
 
 enum Category {
-    NONE,
-    NORMAL_MARIO,
-    FIRE_MARIO,
-    SUPER_MARIO,
-    COIN,
-    BLOCK,
-    BACKGROUND,
-    ITEM,
+    NONE = 0,
+    MARIO = 1 << 0,
+    COIN = 1 << 1,
+    BLOCK = 1 << 2,
+    ITEM = 1 << 3,
+    ENEMY = 1 << 4,
+    FOOT = 1 << 5,
+    BACKGROUND = 1 << 6
 };
 
 enum class Side {
@@ -30,7 +30,7 @@ class Collide {
         void setStatic(bool flag);
         bool isStatic() const;
         void setLabel(Category label);
-        void setFiler(Category filter);
+        void setFilter(Category filter);
         void setHitBox(Rectangle hitBox);
         Category getLabel() const;
         Rectangle getHitBox() const;

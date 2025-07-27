@@ -1,14 +1,14 @@
 #include "Entity/Entity.hpp"
 
-Entity::Entity() : mCollide(this) {
-
+Entity::Entity() : mBodyCollide(this) {
+    mBodyCollide.setFilter(Category::FOOT);
 }
 
 void Entity::update(float dt) {
     mPhysics.update(dt);
     Vector2 postion = mPhysics.getPosition();
     Vector2 size = getSize();
-    mCollide.setHitBox({
+    mBodyCollide.setHitBox({
         postion.x,
         postion.y,
         size.x,
@@ -16,10 +16,10 @@ void Entity::update(float dt) {
     });
 }
 
-void Entity::setDie(bool flag) {
-    mIsDie = flag;
+std::string Entity::getTag() {
+    return "Entity";
 }
 
-bool Entity::isDie() {
-    return mIsDie;
+void Entity::handleFootCollision() {
+    
 }

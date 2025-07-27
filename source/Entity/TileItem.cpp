@@ -7,12 +7,12 @@ TileObject::TileObject(int type, int row, int col) : TileBlock(type, row, col){
         posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
         mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE };  
         mPhysics.setPosition({mRect.x, mRect.y});
-        mCollide.setStatic(false);
+        mBodyCollide.setStatic(false);
         createBehavior();
         if(getType() != normalCoin|| getType() != underCoin ) {
             isOn = false;
         }
-        mCollide.setLabel(Category::ITEM);
+        mBodyCollide.setLabel(Category::ITEM);
     }
     aniRect=mRect;
 }
@@ -65,14 +65,14 @@ void TileObject::update(float dt) {
     Vector2 postion = mPhysics.getPosition();
     Vector2 size = getSize();
     if(getType()!= TileItem::invalidItem) {
-    mCollide.setHitBox({
+    mBodyCollide.setHitBox({
         postion.x ,
         postion.y,
         size.x,
         size.y
         });
     } else {
-        mCollide.setHitBox({0, 0, 0, 0});
+        mBodyCollide.setHitBox({0, 0, 0, 0});
     } 
     if (mBehavior) {
         mBehavior->update(*this, dt);

@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "Entity/Entity.hpp"
+#include "Entity/Enemy.hpp"
 #include "Entity/Animation.hpp"
 #include "Global.hpp"
 
-class Goomba : public Entity {
+class Goomba : public Enemy {
     public:
         enum class Move {
             RUN,
@@ -19,8 +19,10 @@ class Goomba : public Entity {
         virtual void handle();
         virtual void draw();
 
-        virtual void handleCollision(Side side, Category other);
+        virtual void handleCollision(Side side, Collide other);
         virtual Vector2 getSize();
+
+        virtual std::string getTag();
 
         Texture2D mRun;
         Texture2D mDie;
@@ -30,10 +32,9 @@ class Goomba : public Entity {
 
     private:
         Move mMove;
-        Animation mAnim;
-        static constexpr float mDeadTime = 1.0f;
-        float mDeadTimer = 0;
+        static constexpr float mDeadTime = 5.0f;
+        float mDeadTimer = 0.f;
         bool mIsDead = false;
-        float mSpeed = 100.0f;
+        float mSpeed = 50.0f;
         void setMove(Move move);
 };

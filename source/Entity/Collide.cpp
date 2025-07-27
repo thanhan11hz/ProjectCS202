@@ -16,7 +16,7 @@ void Collide::setLabel(Category label) {
     mLabel = label;
 }
         
-void Collide::setFiler(Category filter) {
+void Collide::setFilter(Category filter) {
     mFilter = filter;
 }
 
@@ -37,5 +37,5 @@ Entity* Collide::getOwner() const {
 }
 
 bool Collide::canOverlap(Collide other) {
-    return (mLabel & other.mFilter) != 0 && (mFilter & other.mLabel) != 0;
+    return (mLabel & other.mFilter) != 0 || (mFilter & other.mLabel) != 0;
 }

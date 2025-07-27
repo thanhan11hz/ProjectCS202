@@ -3,11 +3,11 @@
 #include <memory>
 #include <map>
 
-#include "Entity/Entity.hpp"
+#include "Entity/MovingEntity.hpp"
 #include "Entity/Animation.hpp"
 #include "Global.hpp"
 
-class Character : public Entity {
+class Character : public MovingEntity {
     public:
         enum class Move {
             IDLE, 
@@ -38,7 +38,9 @@ class Character : public Entity {
         std::map<Move,Texture2D> mFire;
         std::map<Move,Texture2D> mSuper;
 
-        virtual void handleCollision(Side side, Category other);
+        virtual void handleCollision(Side side, Collide other);
+
+        virtual std::string getTag();
 
     private:
         Move mMove = Move::IDLE;
@@ -51,8 +53,7 @@ class Character : public Entity {
         void updateImmortal(float dt);
         void setImmortal(bool flag);
         void setForm(Form form);
-
-        Animation mAnim;
+        void fire();
 
         float mHigh;
         float mLength;

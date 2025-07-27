@@ -32,8 +32,8 @@ void Physics::accelerate(float vx, float vy) {
         
 void Physics::applyGravity(float dt) {
     if (!mIsGround) {
+        accelerate(0, Gravity * dt * mDensity);
     }
-    accelerate(0, Gravity * dt * mDensity);
 }
 
 void Physics::applyDrag(float dt) {
@@ -47,7 +47,6 @@ void Physics::applyDrag(float dt) {
 void Physics::update(float dt) {
     applyGravity(dt);
     applyDrag(dt);
-    //std::cout << mVelocity.y << "\n";
     mPosition += mVelocity * dt;
     if (mIsGround) {
         if (mVelocity.x >= Eps) mIsRight = true;
@@ -88,7 +87,7 @@ bool Physics::onGround() {
 
 void Physics::setOnGround(bool flag) {
     mIsGround = flag;
-    mVelocity.y = 0;
+    if (flag) mVelocity.y = 0;
 }
 
 void Physics::setDensity(float density) {

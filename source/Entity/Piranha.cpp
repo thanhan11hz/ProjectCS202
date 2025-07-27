@@ -21,8 +21,9 @@ void Piranha::draw() {
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f);
 }
 
-void Piranha::handleCollision(Side side, Category other) {
-    if (side == Side::TOP && (other == Category::FIRE_MARIO || other == Category::SUPER_MARIO || other == Category::NORMAL_MARIO)) {
+void Piranha::handleCollision(Side side, Collide other) {
+    Category otherLabel = other.getLabel();
+    if (side == Side::TOP && otherLabel == MARIO) {
         setDie(true);
     } 
 }
@@ -80,4 +81,8 @@ std::unique_ptr<Piranha> Piranha::spawnPiranha2() {
 void Piranha::setFixedPoint(Vector2 point) {
     mPhysics.setPosition(point);
     mFixedPoint = point;
+}
+
+std::string Piranha::getTag() {
+    return "Piranha";
 }

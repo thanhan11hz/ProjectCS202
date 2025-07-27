@@ -19,7 +19,7 @@ class Koopa : public Entity {
         virtual void handle();
         virtual void draw();
 
-        virtual void handleCollision(Side side, Category other);
+        virtual void handleCollision(Side side, Collide other);
         virtual Vector2 getSize();
 
         Texture2D mRun;

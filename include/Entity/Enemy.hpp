@@ -1,22 +1,24 @@
 #pragma once
 
-#include "Entity/Physics.hpp"
-#include "Entity/Collide.hpp"
+#include "Entity/MovingEntity.hpp"
+#include "Global.hpp"
 
-class Entity {
+class Enemy : public MovingEntity {
     public:
-        Entity();
-
-        Physics mPhysics;
-        Collide mBodyCollide;
+        Enemy();
 
         virtual void update(float dt);
         virtual void handle() = 0;
         virtual void draw() = 0;
 
         virtual void handleCollision(Side side, Collide other) = 0;
-        virtual void handleFootCollision();
         virtual Vector2 getSize() = 0;
 
         virtual std::string getTag();
+
+        void setActive(bool flag);
+        bool isActive();
+    private:
+        bool mIsActive = false;
+
 };

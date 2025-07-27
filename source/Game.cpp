@@ -84,9 +84,12 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::PIRANHA_ATTACK, "resource\\Texture\\Spritesheet\\Piranha_Attack.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA2_MOVE, "resource\\Texture\\Spritesheet\\Piranha2_Move.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA2_ATTACK, "resource\\Texture\\Spritesheet\\Piranha_Attack.png");
-
+    
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");
+
+    Resource::mSound.load(SoundIdentifier::NORMAL_JUMP, "resource\\Sound\\jumpNormal.wav");
+    Resource::mSound.load(SoundIdentifier::SUPER_JUMP, "resource\\Sound\\jumpSuper.wav");
 
     Resource::mMusic.load(MusicIdentifier::BACKGROUND_MUSIC, "resource\\Music\\backgroundMusic.ogg");
     SetMusicVolume(Resource::mMusic.get(MusicIdentifier::BACKGROUND_MUSIC), 1.0f);

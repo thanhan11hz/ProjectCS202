@@ -35,7 +35,8 @@ enum class FontIdentifier {
 };
 
 enum class SoundIdentifier {
-
+    NORMAL_JUMP,
+    SUPER_JUMP
 };
 
 enum class MusicIdentifier {

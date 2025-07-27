@@ -67,7 +67,7 @@ class TileBlock : public Entity{
     TileBlock(int type, int row, int col);
     void draw() override;
     void handle() override;
-    void handleCollision(Side side, Category other) override;
+    void handleCollision(Side side, Collide other) override;
     Vector2 getSize() override;
     virtual void update(float dt) override;
     float calculateVec(float duration, float dis);

@@ -20,6 +20,10 @@ void Collision::addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& b
         mMain.push_back(mRow);
     }
 }
+
+void Collision::addEnemy(Enemy* enemy) {
+    mEnemy.push_back(enemy);
+}
         
 void Collision::addCharacter(Character* character) {
     mCharacter = character;
@@ -29,18 +33,40 @@ void Collision::handleCollision() {
     if (mCharacter) {
         for (int i = 0; i < mMain.size(); ++i) {
             for (int j = 0; j < mMain[i].size(); ++j) {
-                checkCollision(mCharacter->mCollide, mMain[i][j]->mCollide);
+                checkCollision(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
+                checkFootCollision(mCharacter->mFootCollide, mMain[i][j]->mBodyCollide);
             }
         }
     }
+
+    for (int i = 0; i < mMain.size(); ++i) {
+        for (int j = 0; j < mMain[i].size(); ++j) {
+            for (int k = 0; k < mEnemy.size(); ++k) {
+                checkCollision(mEnemy[k]->mBodyCollide, mMain[i][j]->mBodyCollide);
+                checkFootCollision(mEnemy[k]->mFootCollide, mMain[i][j]->mBodyCollide);
+            }
+        }
+    }
+
+    if (mCharacter) {
+        for (int i = 0; i < mEnemy.size(); ++i) {
+            checkCollision(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
 }
         
 void Collision::checkCollision(Collide A, Collide B) {
     if (!checkBroadPhase(A, B)) return;
     std::pair<Side,Side> side = checkNarrowPhase(A, B);
     if (!A.canOverlap(B)) separate(A, B, side.first, side.second);
-    A.getOwner()->handleCollision(side.first, B.getLabel());
-    B.getOwner()->handleCollision(side.second, A.getLabel());
+    A.getOwner()->handleCollision(side.first, B);
+    B.getOwner()->handleCollision(side.second, A);
+}
+
+void Collision::checkFootCollision(Collide A, Collide B) {
+    if (!checkBroadPhase(A, B)) return;
+    A.getOwner()->handleFootCollision();
 }
 
 bool Collision::checkBroadPhase(Collide A, Collide B) {
@@ -52,18 +78,12 @@ bool Collision::checkBroadPhase(Collide A, Collide B) {
 std::pair<Side,Side> Collision::checkNarrowPhase(Collide A, Collide B) {
     Rectangle hitBoxA = A.getHitBox();
     Rectangle hitBoxB = B.getHitBox();
-    if (hitBoxB.x == 816 && hitBoxB.y == 528) {
-        std::cout << hitBoxA.x << " " << hitBoxA.y;
-        //exit(0);
-    }
     Rectangle intersection = {
         fmax(hitBoxA.x, hitBoxB.x),
         fmax(hitBoxA.y, hitBoxB.y),
         fmin(hitBoxA.x + hitBoxA.width, hitBoxB.x + hitBoxB.width) - fmax(hitBoxA.x, hitBoxB.x),
         fmin(hitBoxA.y + hitBoxA.height, hitBoxB.y + hitBoxB.height) - fmax(hitBoxA.y, hitBoxB.y),
     };
-    // std::cout << "Collision" << hitBoxA.x << " " << hitBoxA.y << " " << hitBoxA.width << " " << hitBoxA.height << " " << hitBoxB.x << " " << hitBoxB.y << " " << hitBoxB.width << " " << hitBoxB.height << " "
-    // << intersection.x << " " << intersection.y << " " << intersection.width << " " << intersection.height << "\n";
     return {getCollisionSide(hitBoxA, intersection), getCollisionSide(hitBoxB, intersection)};
 }
         
@@ -93,7 +113,7 @@ void Collision::separate(Collide A, Collide B, Side sideA, Side sideB) {
     }
     Vector2 postion = A.getOwner()->mPhysics.getPosition();
     Vector2 size = A.getOwner()->getSize();
-    A.getOwner()->mCollide.setHitBox({
+    A.getOwner()->mBodyCollide.setHitBox({
         postion.x,
         postion.y,
         size.x,

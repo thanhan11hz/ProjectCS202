@@ -16,7 +16,7 @@ void Koopa::draw() {
 
 }
 
-void Koopa::handleCollision(Side side, Category other) {
+void Koopa::handleCollision(Side side, Collide other) {
 
 }
 

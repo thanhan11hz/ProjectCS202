@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "Entity/Entity.hpp"
+#include "Entity/Enemy.hpp"
 #include "Entity/Animation.hpp"
 #include "Global.hpp"
 
-class Piranha : public Entity {
+class Piranha : public Enemy {
     public: 
         enum class Move {
             FLY,
@@ -18,8 +18,10 @@ class Piranha : public Entity {
         virtual void handle();
         virtual void draw();
 
-        virtual void handleCollision(Side side, Category other);
+        virtual void handleCollision(Side side, Collide other);
         virtual Vector2 getSize();
+
+        virtual std::string getTag();
 
         Texture2D mFly;
         Texture2D mAttack;

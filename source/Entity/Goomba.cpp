@@ -1,17 +1,22 @@
 #include "Entity/Goomba.hpp"
 
-Goomba::Goomba() : mAnim(nullptr, 16, 16, 1.0f, true) {
-
+Goomba::Goomba() {
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setLabel(Category::ENEMY);
+    mAnim.setFrameSize({48, 48});
 }
 
 void Goomba::update(float dt) {
     if (isDie()) return;
+    Enemy::update(dt);
     if (mMove == Move::DEAD) {
         if (mDeadTimer < mDeadTime) mDeadTimer += dt;
         else setDie(true);
         return;
     }
     mPhysics.accelerate(Vector2{mSpeed, 0});
+    mAnim.update(dt);
+    mPhysics.setOnGround(false);
 }
 
 void Goomba::handle() {
@@ -21,26 +26,29 @@ void Goomba::handle() {
 void Goomba::draw() {
     if (isDie()) return;
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f);
+    DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
 }
 
-void Goomba::handleCollision(Side side, Category other) {
-    if (side == Side::TOP && (other == Category::NORMAL_MARIO || other == Category::SUPER_MARIO || other == Category::FIRE_MARIO))
+void Goomba::handleCollision(Side side, Collide other) {
+    Category otherLabel = other.getLabel();
+    if (side == Side::TOP && otherLabel == Category::MARIO)
         setMove(Move::DEAD);
-    if ((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK) {
+
+    if ((side == Side::LEFT || side == Side::RIGHT) && otherLabel == Category::BLOCK) {
         mSpeed *= -1;
     }
 }
         
 Vector2 Goomba::getSize() {
     if (mMove == Move::RUN) return {48, 48};
+    if (isDie()) return {0,0};
     return {48, 24};
 }
 
 void Goomba::setMove(Move move) {
-    if (mMove == Move::DEAD) return;
     Texture2D* texture = nullptr;
 
-    if (mMove == Move::RUN) texture = &mRun;
+    if (move == Move::RUN) texture = &mRun;
     else {
         texture = &mDie;
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 24});
@@ -69,4 +77,8 @@ std::unique_ptr<Goomba> Goomba::spawnGoomba2() {
     mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA2_DIE);
     mGoomba->setMove(Move::RUN);
     return std::move(mGoomba);
+}
+
+std::string Goomba::getTag() {
+    return "Goomba";
 }
