@@ -80,6 +80,12 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::GOOMBA_DIE, "resource\\Texture\\Spritesheet\\Goomba_Die.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_RUN, "resource\\Texture\\Spritesheet\\Goomba2_Run.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_DIE, "resource\\Texture\\Spritesheet\\Goomba2_Die.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_GREEN_WALK, "resource\\Texture\\Spritesheet\\Koopa_Green_Walk.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_RED_WALK, "resource\\Texture\\Spritesheet\\Koopa_Red_Walk.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_BLUE_WALK, "resource\\Texture\\Spritesheet\\Koopa_Blue_Walk.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_GREEN_SHELL, "resource\\Texture\\Spritesheet\\Koopa_Green_Shell.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_RED_SHELL, "resource\\Texture\\Spritesheet\\Koopa_Red_Shell.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_BLUE_SHELL, "resource\\Texture\\Spritesheet\\Koopa_Blue_Shell.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA_MOVE, "resource\\Texture\\Spritesheet\\Piranha_Move.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA_ATTACK, "resource\\Texture\\Spritesheet\\Piranha_Attack.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA2_MOVE, "resource\\Texture\\Spritesheet\\Piranha2_Move.png");
