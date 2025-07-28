@@ -47,48 +47,28 @@ void Piranha::updateMove(float dt) {
         }
         else {
             attackTimer = 0.0f;
-            setMove(Move::FLY);
+            mMove = Move::FLY;
             mSpeed = 50.0f;
         }
     } else {
         if (mPhysics.getPosition().y <= mFixedPoint.y - 48 * 2) {
             mPhysics.setPosition({mPhysics.getPosition().x, mFixedPoint.y - 48 * 2});
             mPhysics.setVelocity({0, 0});
-            setMove(Move::ATTACK);
+            mMove = Move::ATTACK;
         }
-    }
-}
-
-void Piranha::setMove(Move move) {
-    Texture2D* texture = nullptr;
-    if (move == Move::FLY) texture = &mFly;
-    else {
-        texture = &mAttack;
-    }
-
-    mMove = move;
-
-    if (texture) {
-        mAnim.setTexture(texture, getSize().x / 3.0f, getSize().y / 3.0f);
-        mAnim.setRepeating(true, false);
-        mAnim.restart();
     }
 }
 
 std::unique_ptr<Piranha> Piranha::spawnPiranha1(Vector2 position) {
     std::unique_ptr<Piranha> mPiranha = std::make_unique<Piranha>();
-    mPiranha->mFly = Resource::mTexture.get(TextureIdentifier::PIRANHA_MOVE);
-    mPiranha->mAttack = Resource::mTexture.get(TextureIdentifier::PIRANHA_ATTACK);
-    mPiranha->setMove(Move::FLY);
+    mPiranha->setTexture(Resource::mTexture.get(TextureIdentifier::PIRANHA));
     mPiranha->setFixedPoint(position);
     return std::move(mPiranha);
 }
 
 std::unique_ptr<Piranha> Piranha::spawnPiranha2(Vector2 position) {
     std::unique_ptr<Piranha> mPiranha = std::make_unique<Piranha>();
-    mPiranha->mFly = Resource::mTexture.get(TextureIdentifier::PIRANHA2_MOVE);
-    mPiranha->mAttack = Resource::mTexture.get(TextureIdentifier::PIRANHA2_ATTACK);
-    mPiranha->setMove(Move::FLY);
+    mPiranha->setTexture(Resource::mTexture.get(TextureIdentifier::PIRANHA2));
     mPiranha->setFixedPoint(position);
     return std::move(mPiranha);
 }
@@ -100,4 +80,10 @@ void Piranha::setFixedPoint(Vector2 point) {
 
 std::string Piranha::getTag() {
     return "Piranha";
+}
+
+void Piranha::setTexture(Texture2D texture) {
+    mAnim.setTexture(&texture, 16, 24);
+    mAnim.setRepeating(true, false);
+    mAnim.restart();  
 }

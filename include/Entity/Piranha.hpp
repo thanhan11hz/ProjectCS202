@@ -23,13 +23,11 @@ class Piranha : public Enemy {
 
         virtual std::string getTag();
 
-        Texture2D mFly;
-        Texture2D mAttack;
-
         static std::unique_ptr<Piranha> spawnPiranha1(Vector2 position);
         static std::unique_ptr<Piranha> spawnPiranha2(Vector2 position);
 
         void setFixedPoint(Vector2 point);
+        void setTexture(Texture2D texture);
 
     private:
         Move mMove = Move::FLY;
@@ -38,5 +36,4 @@ class Piranha : public Enemy {
         float mSpeed = -50.0f;
         Vector2 mFixedPoint;
         void updateMove(float dt);
-        void setMove(Move move);
 };

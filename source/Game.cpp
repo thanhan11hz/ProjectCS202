@@ -80,14 +80,13 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::GOOMBA_DIE, "resource\\Texture\\Spritesheet\\Goomba_Die.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_RUN, "resource\\Texture\\Spritesheet\\Goomba2_Run.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_DIE, "resource\\Texture\\Spritesheet\\Goomba2_Die.png");
-    Resource::mTexture.load(TextureIdentifier::PIRANHA_MOVE, "resource\\Texture\\Spritesheet\\Piranha_Move.png");
-    Resource::mTexture.load(TextureIdentifier::PIRANHA_ATTACK, "resource\\Texture\\Spritesheet\\Piranha_Attack.png");
-    Resource::mTexture.load(TextureIdentifier::PIRANHA2_MOVE, "resource\\Texture\\Spritesheet\\Piranha2_Move.png");
-    Resource::mTexture.load(TextureIdentifier::PIRANHA2_ATTACK, "resource\\Texture\\Spritesheet\\Piranha2_Attack.png");
+    Resource::mTexture.load(TextureIdentifier::PIRANHA, "resource\\Texture\\Spritesheet\\Piranha.png");
+    Resource::mTexture.load(TextureIdentifier::PIRANHA2, "resource\\Texture\\Spritesheet\\Piranha2.png");
     Resource::mTexture.load(TextureIdentifier::PODOBOO, "resource\\Texture\\Spritesheet\\Podoboo.png");
     Resource::mTexture.load(TextureIdentifier::FIREBAR, "resource\\Texture\\Spritesheet\\FireBar.png");
     Resource::mTexture.load(TextureIdentifier::BOWSER_MOVE, "resource\\Texture\\Spritesheet\\Bowser_Move.png");
     Resource::mTexture.load(TextureIdentifier::BOWSER_ATTACK, "resource\\Texture\\Spritesheet\\Bowser_Attack.png");
+    Resource::mTexture.load(TextureIdentifier::COIN_EFFECT, "resource\\Texture\\Spritesheet\\CoinEffect.png");
     
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");

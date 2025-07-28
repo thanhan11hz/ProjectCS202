@@ -29,9 +29,10 @@ class EffectManager {
 
 class PointEffect : public Effect {
     public:
-        PointEffect();
+        PointEffect(std::string text);
         virtual void draw();
         virtual bool update(float dt);
+        static std::unique_ptr<PointEffect> spawnPointEffect(std::string text);
     private:
         std::string mText;
         static constexpr float mDuration = 2.0f;
@@ -41,11 +42,12 @@ class PointEffect : public Effect {
 
 class CoinEffect : public Effect {
     public:
-        CoinEffect();
+        CoinEffect(Vector2 position);
         virtual void draw();
         virtual bool update(float dt);
+        static std::unique_ptr<CoinEffect> spawnCoinEffect(Vector2 position);
     private:
-        // Animation mAnim;
+        Animation mAnim;
         Vector2 mPosition;
         Vector2 mVelocity;
         Vector2 startPosition;
@@ -53,12 +55,14 @@ class CoinEffect : public Effect {
 
 class DeathEffect : public Effect {
     public:
-        DeathEffect();
+        DeathEffect(Texture2D texture, bool flipY);
         virtual void draw();
         virtual bool update(float dt);
+        static std::unique_ptr<DeathEffect> spawnDeathEffect(Texture2D texture, bool flipY);
     private:
         Texture2D mTexture;
         Vector2 mPosition;
         Vector2 mVelocity;
+        bool isFlipY;
         static constexpr float mDuration = 2.0f;
 };

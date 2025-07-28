@@ -10,7 +10,8 @@ enum Category {
     ITEM = 1 << 3,
     ENEMY = 1 << 4,
     FOOT = 1 << 5,
-    BACKGROUND = 1 << 6
+    BACKGROUND = 1 << 6,
+    PROJECTILE = 1 << 7
 };
 
 enum class Side {
