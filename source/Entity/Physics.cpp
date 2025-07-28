@@ -87,7 +87,7 @@ bool Physics::onGround() {
 
 void Physics::setOnGround(bool flag) {
     mIsGround = flag;
-    if (flag) mVelocity.y = 0;
+    if (flag && mDensity > 0) mVelocity.y = 0;
 }
 
 void Physics::setDensity(float density) {

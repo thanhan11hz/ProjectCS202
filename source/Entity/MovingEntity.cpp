@@ -1,6 +1,6 @@
 #include "Entity/MovingEntity.hpp"
 
-MovingEntity::MovingEntity() : mFootCollide(this), mAnim(nullptr, 48, 48) {
+MovingEntity::MovingEntity() : mFootCollide(this), mAnim(nullptr, 16, 16) {
     mFootCollide.setLabel(Category::FOOT);
     mFootCollide.setFilter(Category::NONE);
 }

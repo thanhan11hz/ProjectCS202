@@ -27,14 +27,13 @@ class Goomba : public Enemy {
         Texture2D mRun;
         Texture2D mDie;
 
-        static std::unique_ptr<Goomba> spawnGoomba1();
-        static std::unique_ptr<Goomba> spawnGoomba2();
+        static std::unique_ptr<Goomba> spawnGoomba1(Vector2 position);
+        static std::unique_ptr<Goomba> spawnGoomba2(Vector2 position);
 
     private:
         Move mMove;
-        static constexpr float mDeadTime = 5.0f;
+        static constexpr float mDeadTime = 0.5f;
         float mDeadTimer = 0.f;
-        bool mIsDead = false;
-        float mSpeed = 50.0f;
+        float mSpeed = 100.0f;
         void setMove(Move move);
 };

@@ -26,17 +26,16 @@ class Piranha : public Enemy {
         Texture2D mFly;
         Texture2D mAttack;
 
-        static std::unique_ptr<Piranha> spawnPiranha1();
-        static std::unique_ptr<Piranha> spawnPiranha2();
+        static std::unique_ptr<Piranha> spawnPiranha1(Vector2 position);
+        static std::unique_ptr<Piranha> spawnPiranha2(Vector2 position);
 
         void setFixedPoint(Vector2 point);
 
     private:
-        Move mMove;
-        Animation mAnim;
-        static constexpr float attackTime = 3.0f;
+        Move mMove = Move::FLY;
+        static constexpr float attackTime = 2.0f;
         float attackTimer = 0.0f;
-        float mSpeed = 100.0f;
+        float mSpeed = -50.0f;
         Vector2 mFixedPoint;
         void updateMove(float dt);
         void setMove(Move move);

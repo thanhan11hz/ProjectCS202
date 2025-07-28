@@ -3,10 +3,11 @@
 Goomba::Goomba() {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setLabel(Category::ENEMY);
-    mAnim.setFrameSize({48, 48});
+    mAnim.setFrameSize({16, 16});
 }
 
 void Goomba::update(float dt) {
+    if (isActive()) return;
     if (isDie()) return;
     Enemy::update(dt);
     if (mMove == Move::DEAD) {
@@ -24,18 +25,17 @@ void Goomba::handle() {
 }
         
 void Goomba::draw() {
-    if (isDie()) return;
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f);
     DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
 }
 
 void Goomba::handleCollision(Side side, Collide other) {
     Category otherLabel = other.getLabel();
-    if (side == Side::TOP && otherLabel == Category::MARIO)
+    if (side == Side::TOP && otherLabel == Category::MARIO && mMove == Move::RUN)
         setMove(Move::DEAD);
 
-    if ((side == Side::LEFT || side == Side::RIGHT) && otherLabel == Category::BLOCK) {
-        mSpeed *= -1;
+    if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
+        mSpeed = (side == Side::RIGHT) ? -100.0f : 100.0f;
     }
 }
         
@@ -63,19 +63,21 @@ void Goomba::setMove(Move move) {
     }
 }
 
-std::unique_ptr<Goomba> Goomba::spawnGoomba1() {
+std::unique_ptr<Goomba> Goomba::spawnGoomba1(Vector2 position) {
     std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
     mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA_RUN);
     mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA_DIE);
     mGoomba->setMove(Move::RUN);
+    mGoomba->mPhysics.setPosition(position);
     return std::move(mGoomba);
 }
         
-std::unique_ptr<Goomba> Goomba::spawnGoomba2() {
+std::unique_ptr<Goomba> Goomba::spawnGoomba2(Vector2 position) {
     std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
     mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA2_RUN);
     mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA2_DIE);
     mGoomba->setMove(Move::RUN);
+    mGoomba->mPhysics.setPosition(position);
     return std::move(mGoomba);
 }
 

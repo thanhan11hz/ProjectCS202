@@ -8,6 +8,7 @@
 #include "Entity/Character.hpp"
 #include "World/Collision.hpp"
 #include "Entity/Goomba.hpp"
+#include "Entity/Piranha.hpp"
 
 class World {
 
@@ -40,7 +41,7 @@ class World {
         std::vector<std::unique_ptr<TileMap>> mMap;
         size_t mCurrent = 0;
         std::unique_ptr<Character> mCharacter;
-        std::unique_ptr<Goomba> mGoomba;
+        std::unique_ptr<Piranha> mPiranha;
         Camera2D mCam;
         Collision mCollision;
         float mTimer = 300.0f;

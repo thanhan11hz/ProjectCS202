@@ -44,7 +44,7 @@ class Character : public MovingEntity {
 
     private:
         Move mMove = Move::IDLE;
-        Form mForm = Form::FIRE;
+        Form mForm = Form::NORMAL;
         static constexpr float mImmortalTime = 5.0f;
         float mImmortalTimer;
         bool mIsImmortal = false;

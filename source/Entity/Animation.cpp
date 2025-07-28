@@ -46,7 +46,7 @@ void Animation::update(float dt) {
 
 }
 
-void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, bool colorBlink, Color tint) {
+void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, bool flipY, bool colorBlink, Color tint) {
     if (!mTexture) return;
     Rectangle src = {
         (float) (mCurrentFrames % mCol) * mFrameSize.x,
@@ -54,9 +54,14 @@ void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, 
         mFrameSize.x,
         mFrameSize.y
     };
+
     if (flipX) {
         src.x += src.width;   
         src.width = -src.width;  
+    }
+
+    if (flipY) {
+        src.width *= -1;
     }
 
     Rectangle dst = {

@@ -31,7 +31,7 @@ void World::update(float dt) {
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
     mCharacter->update(dt);
-    mGoomba->update(dt);
+    mPiranha->update(dt);
     mCollision.handleCollision();
     mTimer -= dt;
 }
@@ -45,13 +45,13 @@ void World::draw() {
     mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawMain();
     mCharacter->draw();
-    mGoomba->draw();
+    mPiranha->draw();
     EndMode2D();
 }
 
 void World::handle() {
     mCharacter->handle();
-    mGoomba->handle();
+    mPiranha->handle();
 }
 
 void World::loadMap(const std::string folder) {
@@ -89,9 +89,9 @@ void World::reset() {
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
-    mGoomba = Goomba::spawnGoomba1();
-    mCollision.addEnemy(mGoomba.get());
-    mGoomba->mPhysics.setPosition({200, 672});
+    // mPiranha = Piranha::spawnPiranha1();
+    // mCollision.addEnemy(mPiranha.get());
+    // mPiranha->setFixedPoint({200, 664});
     mTimer = 300.0f;
     mLives = 3;
     mCoins = 0;
@@ -103,8 +103,9 @@ void World::restart() {
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
-    mGoomba = Goomba::spawnGoomba1();
-    mCollision.addEnemy(mGoomba.get());
+    // mPiranha = Piranha::spawnPiranha1();
+    // mCollision.addEnemy(mPiranha.get());
+    // mPiranha->setFixedPoint({200, 672});
     mCam.target = {0, 500};
 }
 
