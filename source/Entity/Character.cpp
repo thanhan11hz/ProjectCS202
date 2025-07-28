@@ -20,7 +20,7 @@ void Character::handle() {
         if (IsKeyDown(mKey[Action::RIGHT])) mPhysics.accelerate({mLength, 0});
     }
     if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) {
-        mPhysics.startJump(mHigh + getSize().y / 96.0f);
+        mPhysics.startJump(mHigh);
         if (mForm == Form::NORMAL) PlaySound(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP));
         else PlaySound(Resource::mSound.get(SoundIdentifier::SUPER_JUMP));
     }
@@ -129,7 +129,7 @@ void Character::fire() {
 }
 
 std::unique_ptr<Character> Character::spawnMario() {
-    std::unique_ptr<Character> mChar = std::make_unique<Character>(300, 4);
+    std::unique_ptr<Character> mChar = std::make_unique<Character>(300, 5);
     mChar->mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
@@ -147,7 +147,7 @@ std::unique_ptr<Character> Character::spawnMario() {
 }
         
 std::unique_ptr<Character> Character::spawnLuigi() {
-    std::unique_ptr<Character> mChar = std::make_unique<Character>(250, 5);
+    std::unique_ptr<Character> mChar = std::make_unique<Character>(250, 6);
     mChar->mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_JUMP);
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_IDLE);

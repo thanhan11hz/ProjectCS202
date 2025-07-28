@@ -31,7 +31,7 @@ void World::update(float dt) {
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
     mCharacter->update(dt);
-    mPiranha->update(dt);
+    //mPiranha->update(dt);
     mCollision.handleCollision();
     mTimer -= dt;
 }
@@ -45,13 +45,13 @@ void World::draw() {
     mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawMain();
     mCharacter->draw();
-    mPiranha->draw();
+    //mPiranha->draw();
     EndMode2D();
 }
 
 void World::handle() {
     mCharacter->handle();
-    mPiranha->handle();
+    //mPiranha->handle();
 }
 
 void World::loadMap(const std::string folder) {

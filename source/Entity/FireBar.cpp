@@ -3,6 +3,7 @@
 FireBar::FireBar() {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setLabel(Category::ENEMY);
+    mPhysics.setDensity(0.0f);
     mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::FIREBAR), 9, 9);
     mAnim.setRepeating(true, false);
     mAnim.restart();   
@@ -48,7 +49,7 @@ std::vector<std::unique_ptr<FireBar>> FireBar::spawnFireBar(Vector2 position) {
     std::vector<std::unique_ptr<FireBar>> mFireBar;
     for (int i = 0; i < 6; ++i) {
         std::unique_ptr<FireBar> firebar = std::make_unique<FireBar>();
-        firebar->setCircle(position, 9 * (i + 1));
+        firebar->setCircle(position, 9 * (i + 1) * std::sqrt(2));
         mFireBar.push_back(std::move(firebar));
     }
     return mFireBar;
