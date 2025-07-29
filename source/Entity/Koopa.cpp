@@ -1,30 +1,38 @@
-#include "Entity/Koopa.hpp"
-#include "Global.hpp"
-#include <cassert>
-#include <iostream>
+// Koopa.cpp
+#include "Entity/Koopa.hpp" 
+#include "Global.hpp"        
+#include <cassert>           
+#include <iostream>          
 
+// --- Static Factory Methods ---
 std::unique_ptr<Koopa> Koopa::spawnGreenKoopa(Vector2 position) {
     return std::make_unique<Koopa>(position, Koopa::KoopaType::KOOPA_GREEN);
 }
 
 std::unique_ptr<Koopa> Koopa::spawnRedKoopa(Vector2 position) {
-    return std::make_unique<Koopa>(position, Koopa::KoopaType::KOOPA_RED);
+    return std::make_unique<Koopa>(position, Koopa::KoopaType::KOOPA_RED);   
 }
 
 std::unique_ptr<Koopa> Koopa::spawnBlueKoopa(Vector2 position) {
-    return std::make_unique<Koopa>(position, Koopa::KoopaType::KOOPA_BLUE);
+    return std::make_unique<Koopa>(position, Koopa::KoopaType::KOOPA_BLUE);  
 }
 
-Koopa::Koopa(Vector2 position, KoopaType type)
-    : Entity(),
-      mAnim(nullptr, 0, 0, 1.0f, true),
-      mType(type),
-      mCurrentState(State::WALKING),
-      mFacingRight(true),
-      mShellStillTimer(0.0f) {
-    mPhysics.setPosition(position);
-    mCollide.setLabel(Category::KOOPA);
+// --- Constructor ---
+Koopa::Koopa(Vector2 position, KoopaType type) 
+    :   Entity(), 
+        mAnim(nullptr, 0, 0, 1.0f, true), 
+        mType(type), 
+        mCurrentState(State::WALKING), 
+        mFacingRight(true), 
+        mShellStillTimer(0.0f) 
+{
+    mPhysics.setPosition(position); 
+    
+    mCollide.setLabel(Category::KOOPA); // Koopa's own category
+    // FIX: Reverted filter to NONE for initial compilation (as Category is now sequential)
+    mCollide.setFilter(Category::NONE); 
 
+    // Load textures based on KoopaType
     switch (mType) {
         case Koopa::KoopaType::KOOPA_GREEN:
             mWalkTexture = &Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_WALK);
@@ -46,10 +54,12 @@ Koopa::Koopa(Vector2 position, KoopaType type)
             break;
     }
 
-    updateAnimationTexture();
-
+    updateAnimationTexture(); 
+    
     mCollide.setHitBox({mPhysics.getPosition().x, mPhysics.getPosition().y, (float)getSize().x, (float)getSize().y});
 }
+
+// --- Overridden Entity Methods ---
 
 void Koopa::update(float dt) {
     switch (mCurrentState) {
@@ -64,9 +74,9 @@ void Koopa::update(float dt) {
             break;
     }
 
-    mAnim.update(dt);
-    mPhysics.update(dt);
-
+    mAnim.update(dt); 
+    mPhysics.update(dt); 
+    
     Rectangle currentHitBox = mCollide.getHitBox();
     currentHitBox.x = mPhysics.getPosition().x;
     currentHitBox.y = mPhysics.getPosition().y;
@@ -78,50 +88,67 @@ void Koopa::handle() {
 
 void Koopa::draw() {
     Vector2 drawPosition = mPhysics.getPosition();
+    float scale = 3.0f;
 
-    float scale = 1.0f;
-    bool flipX = !mFacingRight;
+    drawPosition.y += (16.0f * scale);
+    drawPosition.y -= (getSize().y * scale);
 
+    bool flipX = !mFacingRight; 
     float rotation = 0.0f;
     if (mCurrentState == State::SHELL_SPINNING) {
-        rotation = (float)GetTime() * 720.0f;
+        rotation = (float)GetTime() * 720.0f; 
     }
-
-    mAnim.draw(drawPosition, scale, rotation, flipX, false, WHITE);
+    mAnim.draw(drawPosition, scale, rotation, flipX, false, WHITE); 
 }
 
 void Koopa::handleCollision(Side side, Category other) {
-    if (isDie()) return;
+    if (isDie()) return; 
 
+    // WALKING Koopa collision logic
     if (mCurrentState == State::WALKING) {
-        if (other == Category::BLOCK) {
+        if (other == Category::BLOCK) { 
             if (side == Side::LEFT || side == Side::RIGHT) {
-                mFacingRight = !mFacingRight;
-                mPhysics.setVelocity(-mPhysics.getVelocity().x, mPhysics.getVelocity().y);
-            }
-        } else if (other == Category::NORMAL_MARIO || other == Category::FIRE_MARIO || other == Category::SUPER_MARIO) {
-            if (side == Side::LEFT || side == Side::RIGHT) {
-            } else if (side == Side::TOP) {
-                onStomped(other);
+                mFacingRight = !mFacingRight; 
+                mPhysics.setVelocity(-mPhysics.getVelocity().x, mPhysics.getVelocity().y); 
             }
         }
-    } else if (mCurrentState == State::SHELL_STILL) {
+        // Simplified checks for Mario interaction (using direct Category enum values)
+        else if (other == Category::NORMAL_MARIO || other == Category::FIRE_MARIO || other == Category::SUPER_MARIO) {
+            if (side == Side::LEFT || side == Side::RIGHT) {
+                // TODO: Call a method on Mario to take damage
+            }
+            else if (side == Side::TOP) {
+                onStomped(other); 
+                // TODO: Make Mario bounce up
+            }
+        }
+    }
+    // SHELL_STILL Koopa collision logic
+    else if (mCurrentState == State::SHELL_STILL) {
         if (other == Category::NORMAL_MARIO || other == Category::FIRE_MARIO || other == Category::SUPER_MARIO) {
             if (side == Side::LEFT || side == Side::RIGHT) {
-                Side kickDir = (side == Side::LEFT) ? Side::RIGHT : Side::LEFT;
+                Side kickDir = (side == Side::LEFT) ? Side::RIGHT : Side::LEFT; 
                 onKicked(kickDir, other);
-            } else if (side == Side::TOP) {
+            }
+            else if (side == Side::TOP) {
                 onKicked(mFacingRight ? Side::RIGHT : Side::LEFT, other);
+                // TODO: Make Mario bounce up
             }
         }
-    } else if (mCurrentState == State::SHELL_SPINNING) {
+    }
+    // SHELL_SPINNING Koopa collision logic
+    else if (mCurrentState == State::SHELL_SPINNING) {
         if (other == Category::BLOCK) {
             if (side == Side::LEFT || side == Side::RIGHT) {
                 mPhysics.setVelocity(-mPhysics.getVelocity().x, mPhysics.getVelocity().y);
-                mFacingRight = !mFacingRight;
+                mFacingRight = !mFacingRight; 
             }
-        } else if (other == Category::NORMAL_MARIO || other == Category::FIRE_MARIO || other == Category::SUPER_MARIO) {
-        } else if (other == Category::GOOMBA || other == Category::KOOPA || other == Category::PIRANHA_PLANT) {
+        }
+        else if (other == Category::NORMAL_MARIO || other == Category::FIRE_MARIO || other == Category::SUPER_MARIO) {
+            // TODO: Call a method on Mario to take damage
+        }
+        else if (other == Category::GOOMBA || other == Category::KOOPA || other == Category::PIRANHA_PLANT) {
+            // TODO: Defeat other enemy (requires passing other Entity* in collision system)
         }
     }
 }
@@ -130,27 +157,29 @@ Vector2 Koopa::getSize() {
     return mAnim.getFrameSize();
 }
 
+// --- Koopa-Specific Public Methods ---
+
 void Koopa::onStomped(Category stomperCategory) {
     if (mCurrentState == State::WALKING) {
         setState(State::SHELL_STILL);
-        mPhysics.setVelocity({0.0f, 0.0f});
-        mPhysics.setVelocity(mPhysics.getVelocity().x, -300.0f);
-        mShellStillTimer = SHELL_STILL_DURATION;
+        mPhysics.setVelocity({0.0f, 0.0f}); 
+        mPhysics.setVelocity(mPhysics.getVelocity().x, -300.0f); 
+        mShellStillTimer = SHELL_STILL_DURATION; 
     }
 }
 
 void Koopa::onKicked(Side kickDirection, Category kickerCategory) {
     if (mCurrentState == State::SHELL_STILL) {
         setState(State::SHELL_SPINNING);
-
+        
         if (kickDirection == Side::LEFT) {
-            mPhysics.setVelocity(-mShellSpinSpeed, mPhysics.getVelocity().y);
+            mPhysics.setVelocity(-mShellSpinSpeed, mPhysics.getVelocity().y); 
             mFacingRight = false;
         } else if (kickDirection == Side::RIGHT) {
-            mPhysics.setVelocity(mShellSpinSpeed, mPhysics.getVelocity().y);
+            mPhysics.setVelocity(mShellSpinSpeed, mPhysics.getVelocity().y); 
             mFacingRight = true;
         }
-        mCollide.setLabel(Category::ENEMY_SHELL);
+        mCollide.setLabel(Category::ENEMY_SHELL); 
     }
 }
 
@@ -158,20 +187,28 @@ Koopa::State Koopa::getState() const {
     return mCurrentState;
 }
 
+// --- Private Helper Functions ---
+
 void Koopa::setState(State newState) {
-    if (mCurrentState == newState) return;
+    if (mCurrentState == newState) return; 
 
     mCurrentState = newState;
-    updateAnimationTexture();
+    updateAnimationTexture(); 
 
     if (mCurrentState == State::WALKING) {
-        mCollide.setLabel(Category::KOOPA);
+        mCollide.setLabel(Category::KOOPA); 
+        // FIX: Reverted filter to NONE (as Category is now sequential)
+        mCollide.setFilter(Category::NONE); 
     } else if (mCurrentState == State::SHELL_STILL) {
         mShellStillTimer = SHELL_STILL_DURATION;
-        mPhysics.setVelocity({0.0f, 0.0f});
-        mCollide.setLabel(Category::KOOPA);
+        mPhysics.setVelocity({0.0f, 0.0f}); 
+        mCollide.setLabel(Category::KOOPA); 
+        // FIX: Reverted filter to NONE (as Category is now sequential)
+        mCollide.setFilter(Category::NONE); 
     } else if (mCurrentState == State::SHELL_SPINNING) {
-        mCollide.setLabel(Category::ENEMY_SHELL);
+        mCollide.setLabel(Category::ENEMY_SHELL); 
+        // FIX: Reverted filter to NONE (as Category is now sequential)
+        mCollide.setFilter(Category::NONE); 
     }
 }
 
@@ -186,7 +223,7 @@ void Koopa::updateWalking(float dt) {
 void Koopa::updateShellStill(float dt) {
     mShellStillTimer -= dt;
     if (mShellStillTimer <= 0.0f) {
-        setState(State::WALKING);
+        setState(State::WALKING); 
     }
     mPhysics.setVelocity(0.0f, mPhysics.getVelocity().y);
 }
@@ -203,35 +240,35 @@ void Koopa::updateAnimationTexture() {
     Texture2D* textureToUse = nullptr;
     float frameWidth = 0.0f;
     float frameHeight = 0.0f;
-    float duration = timePerFrame;
+    float duration = timePerFrame; 
 
     switch (mCurrentState) {
         case State::WALKING:
             textureToUse = mWalkTexture;
             frameWidth = 16.0f;
             frameHeight = 24.0f;
-            duration = 0.15f;
+            duration = 0.15f; 
             break;
         case State::SHELL_STILL:
             textureToUse = mShellStillTexture;
             frameWidth = 16.0f;
             frameHeight = 16.0f;
-            duration = 0.5f;
+            duration = 0.5f; 
             break;
         case State::SHELL_SPINNING:
-            textureToUse = mShellStillTexture;
+            textureToUse = mShellStillTexture; 
             frameWidth = 16.0f;
             frameHeight = 16.0f;
-            duration = 0.05f;
+            duration = 0.05f; 
             break;
     }
 
     if (textureToUse) {
-        assert(textureToUse->id != 0 && "Texture for Koopa state is not loaded! Check ResourceHolder loading.");
+        assert(textureToUse->id != 0 && "Texture for Koopa state is not loaded! Check ResourceHolder loading."); 
         mAnim.setTexture(textureToUse, frameWidth, frameHeight);
         mAnim.setFrameDuration(duration);
-        mAnim.setRepeating(true, true);
-        mAnim.restart();
+        mAnim.setRepeating(true, true); 
+        mAnim.restart(); 
     } else {
         std::cerr << "Error: No texture found for Koopa state " << static_cast<int>(mCurrentState) << "!" << std::endl;
     }
