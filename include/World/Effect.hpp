@@ -13,6 +13,7 @@ class Effect {
         Effect() = default;
         virtual void draw() = 0;
         virtual bool update(float dt) = 0;
+        virtual ~Effect() = default;
     private:
 };
 

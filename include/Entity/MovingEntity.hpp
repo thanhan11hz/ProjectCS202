@@ -22,6 +22,8 @@ class MovingEntity : public Entity {
 
         void setDie(bool flag);
         bool isDie();
+
+        virtual ~MovingEntity() = default;
     
     protected:
         Animation mAnim;

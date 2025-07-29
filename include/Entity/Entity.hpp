@@ -19,4 +19,6 @@ class Entity {
         virtual Vector2 getSize() = 0;
 
         virtual std::string getTag();
+
+        virtual ~Entity() = default;
 };

@@ -18,6 +18,8 @@ class Enemy : public MovingEntity {
 
         void setActive(bool flag);
         bool isActive();
+
+        virtual ~Enemy() = default;
     private:
         bool mIsActive = false;
 
