@@ -1,4 +1,3 @@
-
 #include "Entity/TileEntity.hpp"
 #include "Entity/TileItem.hpp"
 #include "Global.hpp"
@@ -7,30 +6,30 @@
 #include <algorithm>
 
 std::vector<int> tileItemValues = {
-    -1,     // Empty
-    0,      // OwGround
-    1,      // OwInitialTile
-    2,      // OwWall
-    3,      // OwBlock
-    26,     // OwAfterHitBlock
-    23, 24, 25, // OwCoinBlock1..3
-    232, 233,   // OwPipeTop1..2
-    261, 262,   // OwPipeBottom1..2
-    32,         // OWBridge
-    29,         // BrownCube
-    237, 238, 239, // GrassPlatform1..3
-    266, 267, 268, 277, // GreenDotPlatform1..3
-    234, 263, 556,      // HoriPipe1..2
-    60            // UnderTile
+    -1,  
+    0,   
+    1,   
+    2,   
+    3,   
+    26,  
+    23, 24, 25,  
+    232, 233,  
+    261, 262,  
+    32,  
+    29,  
+    237, 238, 239,  
+    266, 267, 268, 277,  
+    234, 263, 556,  
+    60  
 };
 TileBlock::TileBlock(int type, int col, int row)
     : mType(type), mRect({(col * 48.0f), (row * 48.0f), 48, 48}), posTile({0, 0}), printed(false) {
     
     if(type >= 0){
         int x = type % 29;
-        int y = type / 29;
+        int y = type / 29; 
         posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
-        mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE };  
+        mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE }; 
         addFragment();
         createBehavior();
 
@@ -39,17 +38,17 @@ TileBlock::TileBlock(int type, int col, int row)
             mCollide.setLabel(Category::BLOCK);
         } 
         else {
-            //std::cout << mType << "\n";
             mCollide.setLabel(Category::BACKGROUND);}
         if(mType!= 556) isOn = true;
         mCollide.setStatic(true);
-        mCollide.setFiler(Category::NONE);
+        // Set filter using bitmasks (consistent with Collide.hpp)
+        mCollide.setFilter(static_cast<Category>(Category::PLAYER | Category::ENEMY | Category::ENEMY_SHELL | Category::PROJECTILE));
         mPhysics.setPosition({mRect.x, mRect.y});
     }
     aniRect=mRect;
 
 }
-void TileBlock::createBehavior()  {
+void TileBlock::createBehavior() {
     if(getType(calType()) == TileType::OwCoinBlock1||getType(calType()) == TileType::HiddenBox ) {
         mBehavior = new CoinBlockBehavior();
     } 
@@ -76,8 +75,8 @@ void TileBlock::draw( Texture2D& background, Texture2D& object) {
 
 void TileBlock::print(){
     if (printed == false) {
-        if (mRect.x == 0 && mRect.y==0) std::cout << "Error! ";      
-        std::cout << mType <<" " << mSource .x << " " << mSource.y <<  " " << mSource.width << " " << mSource.height  <<"\n";
+        if (mRect.x == 0 && mRect.y==0) std::cout << "Error! ";     
+        std::cout << mType <<" " << mSource .x << " " << mSource.y <<  " " << mSource.width << " " << mSource.height   <<"\n";
         printed = true;
 
     }
@@ -91,7 +90,7 @@ int TileBlock::calType() {
         case OwCoinBlock3:
             return TileType::OwCoinBlock1;
 
-        case OwGround:           return TileType::OwGround;
+        case OwGround:              return TileType::OwGround;
         case OwInitialTile:     return TileType::OwInitialTile;
         case OwAfterHitBlock:   return TileType::OwAfterHitBlock;
         case OwPipeTop1:        return TileType::OwPipeTop1;
@@ -143,7 +142,7 @@ TileType TileBlock::getType(int n) {
         case OwCoinBlock3:
             return TileType::OwCoinBlock1;
 
-        case OwGround:           return TileType::OwGround;
+        case OwGround:              return TileType::OwGround;
         case OwInitialTile:     return TileType::OwInitialTile;
         case OwAfterHitBlock:   return TileType::OwAfterHitBlock;
         case OwPipeTop1:        return TileType::OwPipeTop1;
@@ -204,7 +203,7 @@ float TileBlock::calculateVec(float duration, float dis){
 
 void TileBlock::setAnimation(){
     aniTime = 0;
-    isDoneAnimation = false;
+    isDoneAnimation = false; 
 }
 
 void TileBlock::addFragment() {
@@ -281,10 +280,9 @@ Vector2 TileBlock::getSize(){
 
 void TileBlock::handleCollision(Side side, Category other) {
     if(mBehavior) {
-        mBehavior->setSide(side);
-        mBehavior->setOther(other);
+        mBehavior->onHit(*this, 0.0f, side, other); 
     }
-    mColor = RED;
+    mColor = RED; 
 }
 TileBlock::~TileBlock(){}
 

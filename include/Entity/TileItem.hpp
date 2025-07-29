@@ -1,6 +1,7 @@
 #pragma once
 #include "TileEntity.hpp"
 #include <raylib.h>
+#include "Entity/Collide.hpp"
 
 class TileObject;
 

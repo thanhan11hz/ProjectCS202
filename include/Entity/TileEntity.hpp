@@ -3,10 +3,11 @@
 #include <raylib.h>
 #include <vector>
 #include <memory>
+#include "Entity/Collide.hpp"
 
 enum TileType {
-    Empty=-1,        //Tile Underground,... = Overworld tile + 2*29*n;
-    OwGround=0,    //cvs -> -1
+    Empty=-1, 
+    OwGround=0, 
     OwInitialTile=1,
     OwWall = 2,
     OwBlock = 3,
@@ -19,7 +20,7 @@ enum TileType {
     OwPipeBottom1=261,
     OwPipeBottom2=262,
     OWBridge = 32,
-    OwPole = 277, //Hitbox khác thường
+    OwPole = 277, 
     BrownCube = 29,
     GrassPlatform1 = 237,
     GrassPlatform2 = 238,
@@ -35,9 +36,9 @@ enum TileType {
 };
 
 
- extern std::vector<int> tileItemValues; 
+extern std::vector<int> tileItemValues; 
 enum TileItem {
-    mushroom = 0, //Underground,... +=n*9
+    mushroom = 0, 
     greenMushroom = 1,
     flower = 72,
     star = 108,
@@ -54,14 +55,10 @@ class TileObject;
 class IBlockBehavior{
 
 public:
-    Side side;
-    Category other;
 public:
-    virtual void onHit(TileBlock& block, float dt) = 0;
+    virtual void onHit(TileBlock& block, float dt, Side hitSide, Category otherCategory) = 0;
     virtual void update(TileBlock& block, float dt) = 0;
     virtual ~IBlockBehavior() = default;
-    virtual void setSide(Side side) { this->side = side; }
-    virtual void setOther(Category other) { this->other = other; }
 };
 class TileBlock : public Entity{
     public:
@@ -127,13 +124,9 @@ protected:
 
 
 
-// Example behaviors
-
-
-
 class SimpleBlockBehavior : public IBlockBehavior {
 public:
-    void onHit(TileBlock& block, float dt) override ;
+    void onHit(TileBlock& block, float dt, Side hitSide, Category otherCategory) override ;
     void update(TileBlock& block, float dt) override ;
     void bump(TileBlock& block, float dt) ;
     void destroy(TileBlock& bloc, float dt) ;
@@ -143,5 +136,5 @@ public:
 class CoinBlockBehavior : public SimpleBlockBehavior{
     public:
         void update(TileBlock& block, float dt) override ;
+        void onHit(TileBlock& block, float dt, Side hitSide, Category otherCategory) override ; 
 };
-

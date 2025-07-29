@@ -1,7 +1,8 @@
 #include "Entity/Character.hpp"
+#include "Global.hpp"
 
 Character::Character(int length, int high) : mAnim(nullptr, 16, 16, 1.0f, true), mKey(mKeyBinding), mLength(length), mHigh(high) {
-    mCollide.setFiler(Category::NONE);
+    mCollide.setFilter(Category::NONE); 
     mCollide.setStatic(false);
 }
 
@@ -29,10 +30,6 @@ void Character::draw() {
 void Character::update(float dt) {
     if (mMove == Move::DEAD) return;
     Entity::update(dt);
-    // if (mPhysics.getPosition().y + getSize().y > 725) {
-    //     mPhysics.setPosition({mPhysics.getPosition().x, 725 - getSize().y});
-    //     mPhysics.setOnGround(true);
-    // }
     
     switch (mForm) {
         case Form::NORMAL:
@@ -59,8 +56,8 @@ void Character::update(float dt) {
 void Character::updateMove() {
     if (mMove == Move::DEAD) return;
     if (mMove == Move::CROUCH) return;
-    Move next = mMove;           
-    if (!mPhysics.onGround())                      
+    Move next = mMove;            
+    if (!mPhysics.onGround())           
         next = Move::JUMP;
     else if (mPhysics.isRunning())
         next = Move::RUN;
@@ -103,7 +100,7 @@ void Character::setMove(Move move) {
     if (texture) {
         mAnim.setTexture(texture, getSize().x / 3.0f, getSize().y / 3.0f);
         mAnim.setRepeating(true, false);
-        mAnim.restart();   
+        mAnim.restart();  
     }
 }
         

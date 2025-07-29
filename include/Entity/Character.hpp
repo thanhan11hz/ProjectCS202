@@ -6,6 +6,7 @@
 #include "Entity/Entity.hpp"
 #include "Entity/Animation.hpp"
 #include "Global.hpp"
+#include "Entity/Collide.hpp"
 
 class Character : public Entity {
     public:
@@ -38,7 +39,8 @@ class Character : public Entity {
         std::map<Move,Texture2D> mFire;
         std::map<Move,Texture2D> mSuper;
 
-        virtual void handleCollision(Side side, Category other);
+        // handleCollision signature remains consistent with Entity.hpp
+        virtual void handleCollision(Side side, Category other); 
 
     private:
         Move mMove = Move::IDLE;

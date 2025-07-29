@@ -7,7 +7,6 @@ Collision::Collision() : mCharacter(nullptr) {
 }
 
 void Collision::addItem() {
-    
 }
         
 void Collision::addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& block) {
@@ -25,11 +24,58 @@ void Collision::addCharacter(Character* character) {
     mCharacter = character;
 }
 
+void Collision::addEnemy(Entity* enemy) {
+    mEnemies.push_back(enemy);
+}
+
+void Collision::clearCollidables() {
+    mCharacter = nullptr; 
+    mMain.clear();        
+    mEnemies.clear();     
+}
+
 void Collision::handleCollision() {
     if (mCharacter) {
         for (int i = 0; i < mMain.size(); ++i) {
             for (int j = 0; j < mMain[i].size(); ++j) {
                 checkCollision(mCharacter->mCollide, mMain[i][j]->mCollide);
+            }
+        }
+    }
+
+    // Character vs. Enemies Collision
+    if (mCharacter) {
+        for (const auto& enemy : mEnemies) {
+            if (enemy && !enemy->isDie()) {
+                checkCollision(mCharacter->mCollide, enemy->mCollide);
+            }
+        }
+    }
+
+    // Enemies vs. Blocks Collision
+    for (const auto& enemy : mEnemies) {
+        if (enemy && !enemy->isDie()) {
+            for (int i = 0; i < mMain.size(); ++i) {
+                for (int j = 0; j < mMain[i].size(); ++j) {
+                     if (mMain[i][j]) { // Check if block pointer is valid
+                        checkCollision(enemy->mCollide, mMain[i][j]->mCollide);
+                    }
+                }
+            }
+        }
+    }
+
+    // Enemies vs. Enemies Collision (e.g., spinning shell hitting another enemy)
+    for (size_t i = 0; i < mEnemies.size(); ++i) {
+        if (!mEnemies[i] || mEnemies[i]->isDie()) continue; 
+
+        for (size_t j = i + 1; j < mEnemies.size(); ++j) {
+            if (!mEnemies[j] || mEnemies[j]->isDie()) continue; 
+
+            if (mEnemies[i]->mCollide.getLabel() == Category::ENEMY_SHELL || 
+                mEnemies[j]->mCollide.getLabel() == Category::ENEMY_SHELL) 
+            {
+                checkCollision(mEnemies[i]->mCollide, mEnemies[j]->mCollide);
             }
         }
     }
@@ -69,50 +115,74 @@ std::pair<Side,Side> Collision::checkNarrowPhase(Collide A, Collide B) {
         
 void Collision::separate(Collide A, Collide B, Side sideA, Side sideB) {
 
-    if (A.isStatic()) std::swap(A, B);
+    if (A.isStatic() && !B.isStatic()) std::swap(A, B); 
+    else if (A.isStatic() && B.isStatic()) return; 
+
     Rectangle hitBoxA = A.getHitBox();
     Rectangle hitBoxB = B.getHitBox();
     Vector2 position = A.getOwner()->mPhysics.getPosition();
+
+    float overlap_width = fmin(hitBoxA.x + hitBoxA.width, hitBoxB.x + hitBoxB.width) - fmax(hitBoxA.x, hitBoxB.x);
+    float overlap_height = fmin(hitBoxA.y + hitBoxA.height, hitBoxB.y + hitBoxB.height) - fmax(hitBoxA.y, hitBoxB.y);
+
     switch (sideA) {
         case Side::TOP:
-            position.y += fmin(hitBoxA.y + hitBoxA.height, hitBoxB.y + hitBoxB.height) - fmax(hitBoxA.y, hitBoxB.y);
+            position.y += overlap_height; 
             A.getOwner()->mPhysics.setPosition(position);
+            A.getOwner()->mPhysics.setVelocity(A.getOwner()->mPhysics.getVelocity().x, 0.0f); 
+            A.getOwner()->mPhysics.setOnGround(true); 
             break;
         case Side::BOTTOM:
-            position.y -= fmin(hitBoxA.y + hitBoxA.height, hitBoxB.y + hitBoxB.height) - fmax(hitBoxA.y, hitBoxB.y);
+            position.y -= overlap_height; 
             A.getOwner()->mPhysics.setPosition(position);
+            A.getOwner()->mPhysics.setVelocity(A.getOwner()->mPhysics.getVelocity().x, 0.0f); 
             break;
         case Side::LEFT:
-            position.x += fmin(hitBoxA.x + hitBoxA.width, hitBoxB.x + hitBoxB.width) - fmax(hitBoxA.x, hitBoxB.x);
+            position.x += overlap_width; 
             A.getOwner()->mPhysics.setPosition(position);
+            A.getOwner()->mPhysics.setVelocity(0.0f, A.getOwner()->mPhysics.getVelocity().y); 
             break;
         case Side::RIGHT:
-            position.x -= fmin(hitBoxA.x + hitBoxA.width, hitBoxB.x + hitBoxB.width) - fmax(hitBoxA.x, hitBoxB.x);
+            position.x -= overlap_width; 
             A.getOwner()->mPhysics.setPosition(position);
+            A.getOwner()->mPhysics.setVelocity(0.0f, A.getOwner()->mPhysics.getVelocity().y); 
+            break;
+        case Side::NONE: 
             break;
     }
-    Vector2 postion = A.getOwner()->mPhysics.getPosition();
-    Vector2 size = A.getOwner()->getSize();
+    
+    Vector2 updatedPosition = A.getOwner()->mPhysics.getPosition();
+    Vector2 size = A.getOwner()->getSize(); 
     A.getOwner()->mCollide.setHitBox({
-        postion.x,
-        postion.y,
+        updatedPosition.x,
+        updatedPosition.y,
         size.x,
         size.y
     });
 }
 
 Side Collision::getCollisionSide(Rectangle hitBox, Rectangle intersection) {
-    float top = fabs(hitBox.y - intersection.y);
-    float bottom = fabs((hitBox.y + hitBox.height) - (intersection.y + intersection.height));
-    float left = fabs(hitBox.x - intersection.x);
-    float right = fabs((hitBox.x + hitBox.width) - (intersection.x + intersection.width));
-    float overlapX = (left < right) ? left : -right;
-    float overlapY = (top < bottom) ? top : -bottom;
-
-    if (fabs(overlapX) < fabs(overlapY) || (fabs(overlapX) == fabs(overlapY) && intersection.width < intersection.height)) {
-        return (overlapX > 0 || (overlapX == 0 && left == 0)) ? Side::LEFT : Side::RIGHT;
-    } else {
-        return (overlapY > 0 || (overlapY == 0 && top == 0)) ? Side::TOP : Side::BOTTOM;
+    float topOverlap = fabs(hitBox.y - intersection.y);
+    float bottomOverlap = fabs((hitBox.y + hitBox.height) - (intersection.y + intersection.height));
+    float leftOverlap = fabs(hitBox.x - intersection.x);
+    float rightOverlap = fabs((hitBox.x + hitBox.width) - (intersection.x + intersection.width));
+    
+    bool horizontalCollision = false;
+    if (intersection.width < intersection.height) { 
+        horizontalCollision = true;
+    } else if (intersection.height < intersection.width) { 
+        horizontalCollision = false;
+    } else { 
+        if (fmin(leftOverlap, rightOverlap) < fmin(topOverlap, bottomOverlap)) {
+            horizontalCollision = true;
+        } else {
+            horizontalCollision = false;
+        }
     }
 
+    if (horizontalCollision) {
+        return (leftOverlap < rightOverlap) ? Side::LEFT : Side::RIGHT;
+    } else {
+        return (topOverlap < bottomOverlap) ? Side::TOP : Side::BOTTOM;
+    }
 }

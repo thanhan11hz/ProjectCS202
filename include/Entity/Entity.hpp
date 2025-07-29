@@ -1,5 +1,5 @@
 #pragma once
-
+#include <memory>
 #include "Entity/Physics.hpp"
 #include "Entity/Collide.hpp"
 

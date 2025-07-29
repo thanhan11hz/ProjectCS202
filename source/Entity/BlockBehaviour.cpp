@@ -1,8 +1,11 @@
-
 #include "Entity/TileEntity.hpp"
 #include "Entity/TileItem.hpp"
+#include "Global.hpp"
 #include <iostream>
-using namespace std;
+#include <raylib.h>
+#include <algorithm>
+
+
 void SimpleBlockBehavior::update(TileBlock& block, float dt) {
     Vector2 mousePos = GetMousePosition();
     if(CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON) ) {
@@ -44,13 +47,19 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
     if(block.isDestroyed) destroy(block, dt);
 }
 
-void SimpleBlockBehavior::onHit(TileBlock& block, float dt) {
+// Corrected signature for onHit to match IBlockBehavior (4 parameters)
+void SimpleBlockBehavior::onHit(TileBlock& block, float dt, Side hitSide, Category otherCategory) {
     if (block.isDoneAnimation) return;
     block.setAnimation();
     block.aniTime = 0.0f;
     block.bumped = true;
     block.setVelocity({0, 192.5f});
+    // Now you have hitSide and otherCategory available here to use in your logic
+    // Example: if (hitSide == Side::BOTTOM && (otherCategory == Category::NORMAL_MARIO || otherCategory == Category::SUPER_MARIO || otherCategory == Category::FIRE_MARIO)) {
+    //     bump(block, dt); 
+    // }
 }
+
 void SimpleBlockBehavior::bump(TileBlock& block, float dt) {
     if (block.isDoneAnimation) return;
     float startY = block.mRect.y;
@@ -65,7 +74,6 @@ void SimpleBlockBehavior::bump(TileBlock& block, float dt) {
 }
 
 void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
-    //std::cout << "SimpleBlockBehavior destroy called" << std::endl;
     if (block.isDoneAnimation) return;
     block.aniTime += dt;
     if(block.aniTime < 100.0f){
@@ -78,9 +86,6 @@ void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
     }
 }
 
-/// @brief ///////////////////////////////////
-/// @param block 
-/// @param dt 
 void CoinBlockBehavior::update(TileBlock& block, float dt) {
     Vector2 mousePos = GetMousePosition();
 
@@ -108,9 +113,32 @@ void CoinBlockBehavior::update(TileBlock& block, float dt) {
             int x = (block.mType) % 29;
             int y = (block.mType) / 29;
             block.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE }; 
-            block.mSource = {block.posTile.x, block.posTile.y, TileBlock::TILE_SIZE, TileBlock::TILE_SIZE };  
+            block.mSource = {block.posTile.x, block.posTile.y, TileBlock::TILE_SIZE, TileBlock::TILE_SIZE };   
             block.aniTime = 0.0f;
         }
     }
     if(block.bumped) bump(block, dt);
+}
+
+// Added CoinBlockBehavior::onHit implementation with correct 4-parameter signature
+void CoinBlockBehavior::onHit(TileBlock& block, float dt, Side hitSide, Category otherCategory) {
+    // Call base class's onHit (which has the general bump logic)
+    SimpleBlockBehavior::onHit(block, dt, hitSide, otherCategory); 
+
+    // Add CoinBlock specific logic here
+    if (hitSide == Side::BOTTOM && 
+        (otherCategory == Category::NORMAL_MARIO || 
+         otherCategory == Category::SUPER_MARIO || 
+         otherCategory == Category::FIRE_MARIO)) {
+        // Example: Dispense coin, change block type to hit state
+        // if (block.getType(block.calType()) != TileType::OwAfterHitBlock) {
+        //     // block.dispenseCoin(); // Assuming this function exists
+        //     block.mType = TileType::OwAfterHitBlock;
+        //     // Update source rectangle for new type
+        //     int x = (block.mType) % 29;
+        //     int y = (block.mType) / 29;
+        //     block.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE }; 
+        //     block.mSource = {block.posTile.x, block.posTile.y, TileBlock::TILE_SIZE, TileBlock::TILE_SIZE }; 
+        // }
+    }
 }
