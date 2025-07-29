@@ -31,9 +31,9 @@ void Physics::accelerate(float vx, float vy) {
 }
         
 void Physics::applyGravity(float dt) {
-    if (!mIsGround) {
+    if (!mIsGround) { // FIX: Only apply gravity if NOT on the ground
+        accelerate(0, Gravity * dt * mDensity);
     }
-    accelerate(0, Gravity * dt * mDensity);
 }
 
 void Physics::applyDrag(float dt) {
@@ -88,7 +88,7 @@ bool Physics::onGround() {
 
 void Physics::setOnGround(bool flag) {
     mIsGround = flag;
-    mVelocity.y = 0;
+    mVelocity.y = 0; // Stop vertical movement immediately when on ground
 }
 
 void Physics::setDensity(float density) {
