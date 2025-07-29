@@ -5,7 +5,6 @@
 class Entity; 
 
 // THIS IS THE DEFINITIVE BITMASK CATEGORY ENUM.
-// This version MUST be in your include/World/Collide.hpp file.
 enum Category {
     NONE            = 0,
     // Players (bit flags)
