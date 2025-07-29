@@ -1,4 +1,5 @@
 #include "World/World.hpp"
+#include "Global.hpp" 
 
 World* World::instance = nullptr;
 
@@ -25,6 +26,10 @@ World::~World() {
 
 }
         
+void World::addEnemy(std::unique_ptr<Entity> enemy) {
+    mEnemies.emplace_back(std::move(enemy));
+}
+
 void World::update(float dt) {
     // Rectangle rec = mCharacter->mCollide.getHitBox();
     // std::cout << "Before update" << rec.x << " " << rec.y << " " << rec.width << " " << rec.height << "\n";
@@ -35,6 +40,16 @@ void World::update(float dt) {
     // if (mCam.target.y < targetHeight / 2.0f) mCam.target.y = targetHeight / 2.0f;
     // if (mCam.target.y > 1584 - targetHeight / 2.0f) mCam.target.y = 1584 - targetHeight / 2.0f;
     mCharacter->update(dt);
+
+    for (auto it = mEnemies.begin(); it != mEnemies.end(); ) {
+        (*it)->update(dt);
+        if ((*it)->isDie()) { 
+            it = mEnemies.erase(it); 
+        } else {
+            ++it;
+        }
+    }
+
     // std::cout << "Before" << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
     mCollision.handleCollision();
     // std::cout << "After" << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
@@ -52,6 +67,11 @@ void World::draw() {
     mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawMain();
     mCharacter->draw();
+
+    for (const auto& enemy : mEnemies) {
+        enemy->draw();
+    }
+
     EndMode2D();
 }
 
@@ -95,18 +115,34 @@ void World::backMap() {
 }
 
 void World::reset() {
+    mCollision.clearCollidables(); // Clear existing collidables before adding new ones
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
+
+    addEnemy(Koopa::spawnGreenKoopa({500.0f, 500.0f})); 
+
+    for (const auto& enemy : mEnemies) {
+        mCollision.addEnemy(enemy.get()); // FIX: Changed addCollidable to addEnemy
+    }
+
     mTimer = 300.0f;
     mLives = 3;
     mCoins = 0;
 }
 
 void World::restart() {
+    mCollision.clearCollidables(); // Clear existing collidables before adding new ones
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
+    
+    mEnemies.clear(); 
+    addEnemy(Koopa::spawnGreenKoopa({500.0f, 500.0f})); 
+
+    for (const auto& enemy : mEnemies) {
+        mCollision.addEnemy(enemy.get()); // FIX: Changed addCollidable to addEnemy
+    }
 }
 
 size_t World::getCurrentMap() {

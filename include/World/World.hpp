@@ -6,7 +6,9 @@
 
 #include "World/TileMap.hpp"
 #include "Entity/Character.hpp"
+#include "Entity/Koopa.hpp"
 #include "World/Collision.hpp"
+#include "Global.hpp"
 
 class World {
 
@@ -28,6 +30,10 @@ class World {
         size_t getCurrentMap();
         void receiveCoin();
         void damage();
+
+        // Method to add an enemy to the world
+        void addEnemy(std::unique_ptr<Entity> enemy); 
+
         ~World();
 
     protected:
@@ -47,4 +53,7 @@ class World {
         bool hasNextMap();
         void nextMap();
         void backMap();
+
+        // Container to hold all enemies
+        std::vector<std::unique_ptr<Entity>> mEnemies; 
 };
