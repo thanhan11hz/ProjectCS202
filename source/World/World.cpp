@@ -27,11 +27,30 @@ World::~World() {
         
 void World::update(float dt) {
     mMap[mCurrent]->update(dt);
+
+    mCharacter->update(dt);
     mCam.target.x = mCharacter->mPhysics.getPosition().x;
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
-    mCharacter->update(dt);
-    //mPiranha->update(dt);
+
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ) {
+        if (*itr && !(*itr)->isDie()) {
+            (*itr)->update(dt);
+            ++itr;
+        } else {
+            itr = mEnemy.erase(itr);
+        }
+    }
+
+    // for (auto itr = mItem.begin(); itr != mItem.end(); ) {
+    //     if (*itr && !(*itr)->isDie()) {
+    //         (*itr)->update(dt);
+    //         ++itr;
+    //     } else {
+    //         itr = mItem.erase(itr);
+    //     }
+    // }
+    
     mCollision.handleCollision();
     mTimer -= dt;
 }
@@ -43,21 +62,41 @@ void World::draw() {
     mMap[mCurrent]->setTexture(tiles, object);
     mMap[mCurrent]->drawBackground();
     mMap[mCurrent]->drawItem();
-    mMap[mCurrent]->drawMain();
+
     mCharacter->draw();
-    //mPiranha->draw();
+
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
+        (*itr)->draw();
+    }
+
+    // for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
+    //     (*itr)->draw();
+    // }
+
+    mMap[mCurrent]->drawMain();
     EndMode2D();
 }
 
 void World::handle() {
     mCharacter->handle();
-    //mPiranha->handle();
+
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
+        (*itr)->handle();
+    }
+
+    for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
+        (*itr)->handle();
+    }
 }
 
 void World::loadMap(const std::string folder) {
     std::unique_ptr<TileMap> newMap = std::make_unique<TileMap>();
     newMap->loadFromFile(folder);
     mMap.emplace_back(std::move(newMap));
+}
+
+void World::setMap(size_t index) {
+    mCurrent = index;
 }
 
 void World::setCharater(int Character) {
@@ -86,12 +125,12 @@ void World::backMap() {
 }
 
 void World::reset() {
+    mCollision.clearCollidables();
+    mCollision.addEnemy(mEnemy);
+    mCollision.addItem(mItem);
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
-    // mPiranha = Piranha::spawnPiranha1();
-    // mCollision.addEnemy(mPiranha.get());
-    // mPiranha->setFixedPoint({200, 664});
     mTimer = 300.0f;
     mLives = 3;
     mCoins = 0;
@@ -100,12 +139,12 @@ void World::reset() {
 }
 
 void World::restart() {
+    mCollision.clearCollidables();
+    mCollision.addEnemy(mEnemy);
+    mCollision.addItem(mItem);
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
-    // mPiranha = Piranha::spawnPiranha1();
-    // mCollision.addEnemy(mPiranha.get());
-    // mPiranha->setFixedPoint({200, 672});
     mCam.target = {0, 500};
 }
 

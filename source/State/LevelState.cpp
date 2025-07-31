@@ -117,22 +117,26 @@ void LevelState::setupPage(int page) {
             // next->changeToggle(true);
             header_lv1->changeText("LEVEL 1");
             level1->changeCallback([this]() {
+                    mWorld.setMap(0);
                     requestStackPush(StateIdentifier::CHARSELECT);
                 }
             );
             header_lv2->changeText("LEVEL 2");
             level2->changeCallback([this]() {
-                    //requestStackPush(StateIdentifier::GAME2);
+                    mWorld.setMap(1);
+                    requestStackPush(StateIdentifier::CHARSELECT);
                 }
             );  
             header_lv3->changeText("LEVEL 3");
             level3->changeCallback([this]() {
-                    //requestStackPush(StateIdentifier::GAME3);
+                    mWorld.setMap(5);
+                    requestStackPush(StateIdentifier::CHARSELECT);
                 }
             );
             header_lv4->changeText("LEVEL 4");
             level4->changeCallback([this]() {
-                //requestStackPush(StateIdentifier::GAME4);
+                    mWorld.setMap(4);
+                    requestStackPush(StateIdentifier::CHARSELECT);
                 }
             );
             break;

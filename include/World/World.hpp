@@ -19,6 +19,7 @@ class World {
         static void destroyInstance();
         void setCharater(int Character);
         void loadMap(const std::string folder);
+        void setMap(size_t index);
         void handle();
         void update(float dt);
         void draw();
@@ -39,9 +40,10 @@ class World {
 
     private:
         std::vector<std::unique_ptr<TileMap>> mMap;
-        size_t mCurrent = 0;
         std::unique_ptr<Character> mCharacter;
-        std::unique_ptr<Piranha> mPiranha;
+        std::vector<std::unique_ptr<Enemy>> mEnemy;
+        std::vector<std::unique_ptr<TileObject>> mItem;
+        size_t mCurrent = 0;
         Camera2D mCam;
         Collision mCollision;
         float mTimer = 300.0f;

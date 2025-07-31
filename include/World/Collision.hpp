@@ -9,22 +9,23 @@ class Collision {
     public:
 
         Collision();
-        void addItem();
-        void addEnemy(Enemy* enemy);
+        void addItem(std::vector<std::unique_ptr<TileObject>>& item);
+        void addEnemy(std::vector<std::unique_ptr<Enemy>>& enemy);
         void addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& block);
         void addCharacter(Character* character);
         void handleCollision();
+        void clearCollidables();
 
     private:
 
         Character* mCharacter;
         std::vector<std::vector<TileBlock*>> mMain;
-        std::vector<std::vector<TileBlock>> mItem;
+        std::vector<TileObject*> mItem;
         std::vector<Enemy*> mEnemy;
         void checkCollision(Collide A, Collide B);
         void checkFootCollision(Collide A, Collide B);
         bool checkBroadPhase(Collide A, Collide B);
         std::pair<Side,Side> checkNarrowPhase(Collide A, Collide B);
-        void separate(Collide A, Collide B, Side sideA, Side sideB);
+        void separate(Collide A, Collide B);
         Side getCollisionSide(Rectangle hitBox, Rectangle intersection);
 };

@@ -5,6 +5,7 @@
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
 #include "Resource/ResourceHolder.hpp"
+#include "World/World.hpp"
 
 class LevelState : public State {
     public:

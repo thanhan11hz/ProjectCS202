@@ -6,8 +6,10 @@ Collision::Collision() : mCharacter(nullptr) {
 
 }
 
-void Collision::addItem() {
-    
+void Collision::addItem(std::vector<std::unique_ptr<TileObject>>& item) {
+    for (int i = 0; i < item.size(); ++i) {
+        mItem.push_back(item[i].get());
+    }
 }
         
 void Collision::addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& block) {
@@ -21,12 +23,21 @@ void Collision::addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& b
     }
 }
 
-void Collision::addEnemy(Enemy* enemy) {
-    mEnemy.push_back(enemy);
+void Collision::addEnemy(std::vector<std::unique_ptr<Enemy>>& enemy) {
+    for (int i = 0; i < enemy.size(); ++i) {
+        mEnemy.push_back(enemy[i].get());
+    }
 }
         
 void Collision::addCharacter(Character* character) {
     mCharacter = character;
+}
+
+void Collision::clearCollidables() {
+    mCharacter = nullptr;
+    mMain.clear();
+    mEnemy.clear();
+    mItem.clear();
 }
 
 void Collision::handleCollision() {
@@ -39,12 +50,38 @@ void Collision::handleCollision() {
         }
     }
 
-    for (int i = 0; i < mMain.size(); ++i) {
-        for (int j = 0; j < mMain[i].size(); ++j) {
-            for (int k = 0; k < mEnemy.size(); ++k) {
-                checkCollision(mEnemy[k]->mBodyCollide, mMain[i][j]->mBodyCollide);
-                checkFootCollision(mEnemy[k]->mFootCollide, mMain[i][j]->mBodyCollide);
+    if (mCharacter) {
+        for (int i = 0; i < mMain.size(); ++i) {
+            for (int j = 0; j < mMain[i].size(); ++j) {
+                separate(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
             }
+        }
+    }
+
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            for (int i = 0; i < mMain.size(); ++i) {
+                for (int j = 0; j < mMain[i].size(); ++j) {
+                    checkCollision((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                    checkFootCollision((*itr)->mFootCollide, mMain[i][j]->mBodyCollide);
+                }   
+            }
+            itr++;
+        } else {
+            itr = mEnemy.erase(itr);
+        }
+    }
+
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            for (int i = 0; i < mMain.size(); ++i) {
+                for (int j = 0; j < mMain[i].size(); ++j) {
+                    separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                }   
+            }
+            itr++;
+        } else {
+            itr = mEnemy.erase(itr);
         }
     }
 
@@ -54,12 +91,17 @@ void Collision::handleCollision() {
         }
     }
 
+    if (mCharacter) {
+        for (int i = 0; i < mEnemy.size(); ++i) {
+            separate(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
 }
         
 void Collision::checkCollision(Collide A, Collide B) {
     if (!checkBroadPhase(A, B)) return;
     std::pair<Side,Side> side = checkNarrowPhase(A, B);
-    if (!A.canOverlap(B)) separate(A, B, side.first, side.second);
     A.getOwner()->handleCollision(side.first, B);
     B.getOwner()->handleCollision(side.second, A);
 }
@@ -87,13 +129,15 @@ std::pair<Side,Side> Collision::checkNarrowPhase(Collide A, Collide B) {
     return {getCollisionSide(hitBoxA, intersection), getCollisionSide(hitBoxB, intersection)};
 }
         
-void Collision::separate(Collide A, Collide B, Side sideA, Side sideB) {
-
+void Collision::separate(Collide A, Collide B) {
+    if (!checkBroadPhase(A, B)) return;
+    if (A.canOverlap(B)) return;
     if (A.isStatic()) std::swap(A, B);
+    std::pair<Side, Side> side = checkNarrowPhase(A, B);
     Rectangle hitBoxA = A.getHitBox();
     Rectangle hitBoxB = B.getHitBox();
     Vector2 position = A.getOwner()->mPhysics.getPosition();
-    switch (sideA) {
+    switch (side.first) {
         case Side::TOP:
             position.y += fmin(hitBoxA.y + hitBoxA.height, hitBoxB.y + hitBoxB.height) - fmax(hitBoxA.y, hitBoxB.y);
             A.getOwner()->mPhysics.setPosition(position);
