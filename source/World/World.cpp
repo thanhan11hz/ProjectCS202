@@ -80,17 +80,17 @@ void World::draw() {
     mMap[mCurrent]->drawBackground();
 
     mMap[mCurrent]->drawItem();
-
+    mMap[mCurrent]->drawEnemy();
     mCharacter->draw();
-
+    
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
         (*itr)->draw();
     }
-
+    
     // for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
-    //     (*itr)->draw();
-    // }
-
+        //     (*itr)->draw();
+        // }
+        
     mMap[mCurrent]->drawMain();
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ++itr) {

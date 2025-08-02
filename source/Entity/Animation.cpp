@@ -102,6 +102,7 @@ void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, 
 
         mCurrentColor = (mCurrentColor + 1) % 8;
     } 
+
     DrawTexturePro(*mTexture, src, dst, {0, 0}, rotation, tint);
 }
 

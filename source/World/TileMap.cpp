@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <cmath>
+
+
 #include <sstream>
 using namespace std;
 
@@ -19,7 +22,10 @@ void TileMap::loadFromFile(const std::string& directory) {
         } else if (stem == prefix + "Items") {
             createMap(3, matrix);
         }
-        else if( stem == prefix + "Background1") {
+        else if( stem == prefix + "Enemies") {
+            createMap(5, matrix);
+        }
+        else if(stem == prefix + "Background1") {
             createMap(4, matrix);
         }
         
@@ -66,6 +72,30 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
             }
             mItem.emplace_back(std::move(row));
             row.clear();
+        }
+    }
+    else if (choice == 5){
+        std::cout << "Load Enemies" << "\n";
+        for(int i = 0; i < matrix.size(); i++){
+            for (int j = 0; j < matrix[i].size(); j++){
+                int num = matrix[i][j];
+                int tileId = num;
+                int col =  j;
+                Etr Enemy = nullptr;
+                switch (num)
+                {
+                    case 0: // Goomba
+                        Enemy = std::make_unique<Goomba>();
+                        std::cout << "Spawn Goomba at: " << col << ", " << i << "\n";
+                        break;
+                    default:
+                        break;
+                }
+                if (Enemy) {
+                    Enemy->mPhysics.setPosition({col * 48.0f, i * 48.0f});
+                    Enemies.emplace_back(std::move(Enemy));
+                }
+            }
         }
     }
     else {
@@ -119,7 +149,8 @@ void TileMap::drawBackground() {
             //     mBackground[i][j]->draw(tileTexture, objectTexture);
             // }
             mBackground[i][j]->draw(tileTexture, objectTexture);
-            if ( mBackground2.size() > 0) mBackground2[i][j]->draw(tileTexture, objectTexture);
+            if ( mBackground2.size() > 0) 
+                mBackground2[i][j]->draw(tileTexture, objectTexture);
         }
     }
 }
@@ -128,10 +159,7 @@ void TileMap::drawItem() {
     for (int i = 0; i < mItem.size(); i++) {
         for (int j = 0; j < mItem[i].size(); j++) {
             const Rectangle& rect = mItem[i][j]->getRect(); 
-            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
-            //     mItem[i][j]->draw(tileTexture, objectTexture);
-            // }
+
             mItem[i][j]->draw(tileTexture, objectTexture);
         }
     }
@@ -141,15 +169,19 @@ void TileMap::drawMain() {
     for (int i = 0; i < mMain.size(); i++) {
         for (int j = 0; j < mMain[i].size(); j++) {
             const Rectangle& rect = mMain[i][j]->getRect(); 
-            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
-            //     mMain[i][j]->draw(tileTexture, objectTexture);
-            // }
             mMain[i][j]->draw(tileTexture, objectTexture);
         }
     }
 }
-           
+
+void TileMap::drawEnemy() {
+    for (auto& enemy : Enemies) {
+        if (enemy->isActive()) {
+            
+            enemy->draw();
+        }
+    }
+}
 void TileMap::update(float dt){
  
     for (int i = 0; i < mBackground.size(); i++) {
@@ -164,7 +196,14 @@ void TileMap::update(float dt){
             mBackground[i][j]->update(dt);
             mItem[i][j]->update(dt);
             mMain[i][j]->update(dt);
+            if(i < Enemies.size()) {
+                if ((Enemies[i]->mPhysics.getPosition().y < 1000000.0f) && (Enemies[i]->isActive())) {
+                    std::cout << "Drawing Enemy: " << i << " at position: " << Enemies[i]->mPhysics.getPosition().x << ", " << Enemies[i]->mPhysics.getPosition().y << "\n";
+                }
+                Enemies[i]->update(dt);
+            }
         }
+
 
     }
 }

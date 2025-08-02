@@ -4,23 +4,32 @@
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
 #include "Entity/TileEntity.hpp"
+#include "Entity/Goomba.hpp"
+#include "Entity/Koopa.hpp"
+#include "Entity/Podoboo.hpp"
+#include "Entity/Piranha.hpp"
 #include "Entity/TileItem.hpp"
+#include "Entity/Enemy.hpp"
 #include <memory>
 #include <vector>
 #include <string>
 
 class TileMap {
 public:
-    using Btr = std::unique_ptr<TileBlock>; //thêm hàm reset item, map
+    using Btr = std::unique_ptr<TileBlock>;
+    using Etr = std::unique_ptr<Enemy>;
                                             //hàm getBounds
-                                            //setActive cho enemy
+                                            //fix bug sọc trắng
+                                            //load enemy
+                                            //block màn 6
                                             //sửa hiệu ứng vỡ gạch
-                                            //warp, movingblock, lửa, rìu, hiệu ứng rút cầu
+                                            //warp, movingblock, rìu, hiệu ứng rút cầu
     TileMap(){};
     void loadFromFile(const std::string& directory);
     std::vector<std::vector<int>> loadMatrixFromCSV(const std::string& filepath);
     void createMap(int choice, std::vector<std::vector<int>>& matrix);
     void drawBackground();
+    void drawEnemy();
     void drawItem();
     void drawMain();
     void update(float dt);
@@ -32,6 +41,8 @@ private:
     std::vector<std::vector<Btr>> mBackground;
     std::vector<std::vector<Btr>> mItem;
     std::vector<std::vector<Btr>> mBackground2;
+    std::vector<Etr> mEnemy;
+    std::vector<Etr> Enemies;
     std::vector<TileObject*> Items;
     Texture2D tileTexture;
     Texture2D objectTexture;
