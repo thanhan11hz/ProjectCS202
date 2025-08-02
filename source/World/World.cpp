@@ -191,6 +191,10 @@ void World::backMap() {
 }
 
 void World::reset() {
+    mEnemy.clear();
+    if (mCharacter) {
+        mCharacter->mPhysics.setPosition({150, 400});
+    }
     mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     //
     mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
@@ -211,6 +215,10 @@ void World::reset() {
 }
 
 void World::restart() {
+    mEnemy.clear();
+    if (mCharacter) {
+        mCharacter->mPhysics.setPosition({150, 400});
+    }
     mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     //
     mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
