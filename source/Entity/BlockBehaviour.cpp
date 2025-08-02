@@ -10,17 +10,16 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
             std::cout << "Block is solid, cannot hit." << std::endl;
         }
     }
-    if (block.getType(block.calType()) == TileType::OwInitialTile && CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+    if (block.getType(block.calType()) == TileType::OwInitialTile && side==Side::BOTTOM && other == Category::MARIO && oTag == "Normal") {
         if(block.isDoneAnimation){
             block.mPhysics.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;
             block.aniTime = 0.0f;
             block.bumped = true;
         }
-        std::cout << "Block hit!" << std::endl;
     }
     if(block.bumped) bump(block, dt);
-    if (block.getType(block.calType()) == TileType::OwInitialTile && CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
+    if (block.getType(block.calType()) == TileType::OwInitialTile && side == Side::BOTTOM && other == Category::MARIO && oTag == "Super") {
         block.frag[0]->mPhysics.setVelocity({-10.0f, block.frag[0]->calculateVec(0.2f, 10)});
         block.frag[0]->setOn(true);
         block.frag[0]->setAnimation();
@@ -38,6 +37,7 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
         block.frag[3]->setAnimation();
 
         block.isDestroyed = true;
+        block.mBodyCollide.setLabel(Category::NONE);
         block.isDoneAnimation = false;
         block.aniTime = 0.0f;
     }
@@ -61,6 +61,9 @@ void SimpleBlockBehavior::bump(TileBlock& block, float dt) {
         block.mPhysics.setPosition({block.mPhysics.getPosition().x, startY});
         block.isDoneAnimation = true;
         block.aniTime = 0.0f;
+        side = Side::NONE; 
+        other = Category::NONE;
+        oTag ="";
     }
 }
 
@@ -84,7 +87,7 @@ void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
 void CoinBlockBehavior::update(TileBlock& block, float dt) {
     Vector2 mousePos = GetMousePosition();
 
-    if(CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && block.mType != 26){
+    if(side == Side::BOTTOM && (oTag == "Normal" || oTag == "Super") && other == Category::ITEM && block.mType != 26){
         if(block.isDoneAnimation){
             block.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;

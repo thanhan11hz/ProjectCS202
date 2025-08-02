@@ -30,6 +30,7 @@ enum TileType {
     HoriPipe1 = 234,
     HoriPipe2 = 263,
     HiddenBox = 556,
+    CastleTile = 147,
 
     UnderTile = 60,
 };
@@ -56,12 +57,14 @@ class IBlockBehavior{
 public:
     Side side;
     Category other;
+    std::string oTag;
 public:
     virtual void onHit(TileBlock& block, float dt) = 0;
     virtual void update(TileBlock& block, float dt) = 0;
     virtual ~IBlockBehavior() = default;
     virtual void setSide(Side side) { this->side = side; }
     virtual void setOther(Category other) { this->other = other; }
+    virtual void setTag(std::string tag) { this->oTag = tag; }
 };
 class TileBlock : public Entity{
     public:
