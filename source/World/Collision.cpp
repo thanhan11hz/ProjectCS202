@@ -56,13 +56,35 @@ void Collision::handleCollision() {
         }
     }
 
+    // for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
+    //     if (*itr && !(*itr)->isDie()) {
+    //         for (int i = 0; i < mMain.size(); ++i) {
+    //             for (int j = 0; j < mMain[i].size(); ++j) {
+    //                 checkCollision((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+    //                 checkFootCollision((*itr)->mFootCollide, mMain[i][j]->mBodyCollide);
+    //             }   
+    //         }
+    //         itr++;
+    //     } else {
+    //         itr = mEnemy.erase(itr);
+    //     }
+    // }
+
     for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
         if (*itr && !(*itr)->isDie()) {
-            for (int i = 0; i < mMain.size(); ++i) {
-                for (int j = 0; j < mMain[i].size(); ++j) {
-                    checkCollision((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
-                    checkFootCollision((*itr)->mFootCollide, mMain[i][j]->mBodyCollide);
-                }   
+            const float tileSize = 48.0f;
+            Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+            int enemyCol = enemyPos.x / tileSize;
+            int enemyRow = enemyPos.y / tileSize;
+            int radius = 2;
+
+            for (int i = enemyRow - radius; i <= enemyRow + radius; ++i) {
+                for (int j = enemyCol - radius; j <= enemyCol + radius; ++j) {
+                    if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size()) {
+                        checkCollision((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                        checkFootCollision((*itr)->mFootCollide, mMain[i][j]->mBodyCollide);
+                    }
+                }
             }
             itr++;
         } else {
@@ -105,12 +127,33 @@ void Collision::handleCollision() {
         }
     }
 
+    // for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
+    //     if (*itr && !(*itr)->isDie()) {
+    //         for (int i = 0; i < mMain.size(); ++i) {
+    //             for (int j = 0; j < mMain[i].size(); ++j) {
+    //                 separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+    //             }   
+    //         }
+    //         itr++;
+    //     } else {
+    //         itr = mEnemy.erase(itr);
+    //     }
+    // }
+
     for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
         if (*itr && !(*itr)->isDie()) {
-            for (int i = 0; i < mMain.size(); ++i) {
-                for (int j = 0; j < mMain[i].size(); ++j) {
-                    separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
-                }   
+            const float tileSize = 48.0f;
+            Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+            int enemyCol = enemyPos.x / tileSize;
+            int enemyRow = enemyPos.y / tileSize;
+            int radius = 2;
+
+            for (int i = enemyRow - radius; i <= enemyRow + radius; ++i) {
+                for (int j = enemyCol - radius; j <= enemyCol + radius; ++j) {
+                    if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size()) {
+                        separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                    }
+                }
             }
             itr++;
         } else {
@@ -212,18 +255,41 @@ void Collision::separate(Collide A, Collide B) {
     });
 }
 
+// Side Collision::getCollisionSide(Rectangle hitBox, Rectangle intersection) {
+//     float top = fabs(hitBox.y - intersection.y);
+//     float bottom = fabs((hitBox.y + hitBox.height) - (intersection.y + intersection.height));
+//     float left = fabs(hitBox.x - intersection.x);
+//     float right = fabs((hitBox.x + hitBox.width) - (intersection.x + intersection.width));
+//     float overlapX = (left < right) ? left : -right;
+//     float overlapY = (top < bottom) ? top : -bottom;
+
+//     if (fabs(overlapX) < fabs(overlapY) || (fabs(overlapX) == fabs(overlapY) && intersection.width < intersection.height)) {
+//         return (overlapX > 0 || (overlapX == 0 && left == 0)) ? Side::LEFT : Side::RIGHT;
+//     } else {
+//         return (overlapY > 0 || (overlapY == 0 && top == 0)) ? Side::TOP : Side::BOTTOM;
+//     }
+
+// }
+
 Side Collision::getCollisionSide(Rectangle hitBox, Rectangle intersection) {
-    float top = fabs(hitBox.y - intersection.y);
-    float bottom = fabs((hitBox.y + hitBox.height) - (intersection.y + intersection.height));
-    float left = fabs(hitBox.x - intersection.x);
-    float right = fabs((hitBox.x + hitBox.width) - (intersection.x + intersection.width));
-    float overlapX = (left < right) ? left : -right;
-    float overlapY = (top < bottom) ? top : -bottom;
-
-    if (fabs(overlapX) < fabs(overlapY) || (fabs(overlapX) == fabs(overlapY) && intersection.width < intersection.height)) {
-        return (overlapX > 0 || (overlapX == 0 && left == 0)) ? Side::LEFT : Side::RIGHT;
+    // Checking if the collision overlap is wider or taller.
+    if (intersection.width < intersection.height) {
+        float hitBoxCenterX = hitBox.x + hitBox.width / 2.0f;
+        float intersectionCenterX = intersection.x + intersection.width / 2.0f;
+        
+        if (hitBoxCenterX < intersectionCenterX) {
+            return Side::RIGHT;
+        } else {
+            return Side::LEFT;
+        }
     } else {
-        return (overlapY > 0 || (overlapY == 0 && top == 0)) ? Side::TOP : Side::BOTTOM;
+        float hitBoxCenterY = hitBox.y + hitBox.height / 2.0f;
+        float intersectionCenterY = intersection.y + intersection.height / 2.0f;
+        
+        if (hitBoxCenterY < intersectionCenterY) {
+            return Side::BOTTOM;
+        } else {
+            return Side::TOP;
+        }
     }
-
 }

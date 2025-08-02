@@ -42,6 +42,12 @@ void World::update(float dt) {
     }
 
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ) {
+        // If an enemy falls too far down, mark it as dead.
+        const float deathPlaneY = 2000.0f;
+        if ((*itr)->mPhysics.getPosition().y > deathPlaneY) {
+            (*itr)->setDie(true);
+        }
+        // ----------------------
         if (*itr && !(*itr)->isDie()) {
             (*itr)->update(dt);
             ++itr;

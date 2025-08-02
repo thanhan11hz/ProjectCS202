@@ -198,7 +198,7 @@ void TileMap::update(float dt){
             mMain[i][j]->update(dt);
             if(i < Enemies.size()) {
                 if ((Enemies[i]->mPhysics.getPosition().y < 1000000.0f) && (Enemies[i]->isActive())) {
-                    std::cout << "Drawing Enemy: " << i << " at position: " << Enemies[i]->mPhysics.getPosition().x << ", " << Enemies[i]->mPhysics.getPosition().y << "\n";
+                    // std::cout << "Drawing Enemy: " << i << " at position: " << Enemies[i]->mPhysics.getPosition().x << ", " << Enemies[i]->mPhysics.getPosition().y << "\n";
                 }
                 Enemies[i]->update(dt);
             }
