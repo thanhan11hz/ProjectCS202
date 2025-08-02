@@ -80,7 +80,7 @@ void World::draw() {
     mMap[mCurrent]->drawBackground();
 
     mMap[mCurrent]->drawItem();
-    mMap[mCurrent]->drawEnemy();
+    //mMap[mCurrent]->drawEnemy();
     mCharacter->draw();
     
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
@@ -160,6 +160,9 @@ void World::backMap() {
 
 void World::reset() {
     mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
+    //
+    mEnemy.push_back(Koopa::spawnKoopa({200, 300}, Koopa::Type::K_GREEN));
+    //
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);
@@ -175,6 +178,9 @@ void World::reset() {
 
 void World::restart() {
     mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
+    //
+    mEnemy.push_back(Koopa::spawnKoopa({200, 300}, Koopa::Type::K_GREEN));
+    //
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);
