@@ -30,12 +30,14 @@ class Bowser : public Enemy {
         Move mMove = Move::MOVE;
         static constexpr float mAttackTime = 2.0f;
         float mAttackTimer = 0.0f;
-        static constexpr float mCooldownTime = 2.0f;
+        static constexpr float mCooldownTime = 10.0f;
         float mCooldownTimer = 0.0f;
-        float mSpeed = 50.0f;
+        static constexpr float mJumpTime = 1.0f;
+        float mJumpTimer = 0.0f;
+        float mSpeed = -50.0f;
         Vector2 mCenter;
-        float mAmplitude = 96.0f;
-        float jumpChance = 0.3f;
+        float mAmplitude = 144.0f;
+        float jumpChance = 0.05f;
         void setMove(Move move);
         void fire();
         size_t mLives = 3;

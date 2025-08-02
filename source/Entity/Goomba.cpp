@@ -34,6 +34,7 @@ void Goomba::draw() {
 void Goomba::handleCollision(Side side, Collide other) {
     Category otherLabel = other.getLabel();
     if (side == Side::TOP && otherLabel == Category::MARIO && mMove == Move::RUN)
+        PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         setMove(Move::DEAD);
 
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {

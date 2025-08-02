@@ -133,34 +133,25 @@ void Animation::drawScale(Vector2 position, float scaleX, float scaleY, float ro
     if (colorBlink) {
         switch (mCurrentColor) {
         case 0:
-            tint = WHITE;
+            tint = {231, 32, 32};
             break;
         case 1:
-            tint = RED;
+            tint = {77, 227, 42};
             break;
         case 2:
-            tint = ORANGE;
+            tint = {40, 202, 225};
             break; 
         case 3:
-            tint = YELLOW;
+            tint = {244, 119, 220};
             break;
         case 4:
-            tint = GREEN;
-            break;
-        case 5:
-            tint = BLUE;
-            break;
-        case 6:
-            tint = PURPLE;
-            break;
-        case 7:
-            tint = VIOLET;
+            tint = {251, 242, 48};
             break;
         default:
             break;
         }
 
-        mCurrentColor = (mCurrentColor + 1) % 8;
+        mCurrentColor = (mCurrentColor + 1) % 5;
     } 
     DrawTexturePro(*mTexture, src, dst, {0, 0}, rotation, tint);
 }

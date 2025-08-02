@@ -30,7 +30,7 @@ void World::update(float dt) {
 
     mMap[mCurrent]->update(dt);
 
-    mCharacter->update(dt);
+    if (!mCharacter->isDie()) mCharacter->update(dt);
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ) {
         if (*itr && !(*itr)->isDie()) {
@@ -81,7 +81,7 @@ void World::draw() {
 
     mMap[mCurrent]->drawItem();
 
-    mCharacter->draw();
+    if (!mCharacter->isDie()) mCharacter->draw();
 
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
         (*itr)->draw();
@@ -103,7 +103,7 @@ void World::draw() {
 }
 
 void World::handle() {
-    mCharacter->handle();
+    if (!mCharacter->isDie()) mCharacter->handle();
 
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
         (*itr)->handle();
@@ -159,7 +159,7 @@ void World::backMap() {
 }
 
 void World::reset() {
-    // mEnemy.push_back(Piranha::spawnPiranha1({200, 650}));
+    mEnemy.push_back(Bowser::spawnBowser({200, 650}));
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);

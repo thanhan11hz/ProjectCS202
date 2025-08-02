@@ -27,7 +27,7 @@ class Piranha : public Enemy {
         static std::unique_ptr<Piranha> spawnPiranha2(Vector2 position);
 
         void setFixedPoint(Vector2 point);
-        void setTexture(Texture2D texture);
+        void setTexture(Texture2D& texture);
 
     private:
         Move mMove = Move::FLY;
