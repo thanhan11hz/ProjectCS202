@@ -159,7 +159,7 @@ void World::backMap() {
 }
 
 void World::reset() {
-    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
+    // mEnemy.push_back(Piranha::spawnPiranha1({200, 650}));
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);

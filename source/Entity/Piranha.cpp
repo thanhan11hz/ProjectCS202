@@ -1,4 +1,5 @@
 #include "Entity/Piranha.hpp"
+#include "World/World.hpp"
 
 Piranha::Piranha() {
     mPhysics.setDensity(0.0f);
@@ -8,9 +9,10 @@ Piranha::Piranha() {
 }
 
 void Piranha::update(float dt) {
+    Enemy::update(dt);
     if (isActive()) return;
     if (isDie()) return;
-    Enemy::update(dt);
+    MovingEntity::update(dt);
     if (mMove == Move::FLY) mPhysics.accelerate({0, mSpeed});
     if (mPhysics.getPosition().y > mFixedPoint.y) {
         mPhysics.setPosition(mFixedPoint);
@@ -32,8 +34,13 @@ void Piranha::draw() {
 void Piranha::handleCollision(Side side, Collide other) {
     Category otherLabel = other.getLabel();
     if (side == Side::TOP && otherLabel == MARIO) {
+        if (mMove == Move::FLY) mSpeed *= -1;
+    }
+
+    if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
         setDie(true);
-    } 
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+    }
 }
         
 Vector2 Piranha::getSize() {
