@@ -39,6 +39,7 @@ std::unique_ptr<Koopa> Koopa::spawnKoopa(Vector2 position, Type type) {
 }
 
 void Koopa::update(float dt) {
+    if (mLedgeCooldown > 0) mLedgeCooldown -= dt;
     Enemy::update(dt);
     if (!isActive() || isDie()) return;
     MovingEntity::update(dt);
@@ -46,7 +47,7 @@ void Koopa::update(float dt) {
     switch (mState) {
         case State::WALKING:
             // Ledge Detection for Red and Blue Koopas
-            if (mType == Type::K_RED || mType == Type::K_BLUE) {
+            if (mLedgeCooldown <= 0 && (mType == Type::K_RED || mType == Type::K_BLUE)) {
                 Vector2 currentPos = mPhysics.getPosition();
                 Vector2 koopaSize = getSize();
 
@@ -86,7 +87,6 @@ void Koopa::update(float dt) {
 }
 
 void Koopa::handleCollision(Side side, Collide other) {
-    if (isDie()) return;
 
     Category otherLabel = other.getLabel();
 
@@ -112,6 +112,19 @@ void Koopa::handleCollision(Side side, Collide other) {
     
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
         mSpeed *= -1;
+        
+        mPhysics.setVelocity(0, mPhysics.getVelocity().y);
+
+        Rectangle blockHitBox = other.getHitBox();
+        Vector2 newPos = mPhysics.getPosition();
+        if (side == Side::LEFT) {
+            newPos.x = blockHitBox.x + blockHitBox.width;
+        } 
+        else if (side == Side::RIGHT) {
+            newPos.x = blockHitBox.x - getSize().x;
+        }
+        mPhysics.setPosition(newPos);
+        mLedgeCooldown = 0.2f;
     }
     
     if (otherLabel == Category::MARIO) {
