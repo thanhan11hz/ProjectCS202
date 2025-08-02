@@ -14,7 +14,6 @@ bool Enemy::isActive() {
 }
 
 void Enemy::update(float dt) {
-    MovingEntity::update(dt);
     Vector2 screenPos = GetWorldToScreen2D(mPhysics.getPosition(), mWorld.getCamera());
     if (screenPos.x <= targetWidth + 50) mIsActive = true;
 }

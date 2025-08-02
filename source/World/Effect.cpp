@@ -14,8 +14,9 @@ void EffectManager::draw() {
 }
 
 void EffectManager::update(float dt) {
-    for (auto itr = mEffect.begin(); itr != mEffect.end(); ++itr) {
-        if (!(*itr)->update(dt)) mEffect.erase(itr);
+    for (auto itr = mEffect.begin(); itr != mEffect.end();) {
+        if (!(*itr)->update(dt)) itr = mEffect.erase(itr);
+        else ++itr;
     }
 }
 
@@ -25,13 +26,13 @@ void EffectManager::addEffect(std::unique_ptr<Effect> effect) {
 
 // Point Effect
 
-PointEffect::PointEffect(std::string text) : mText(text) {
-
+PointEffect::PointEffect(Vector2 position, std::string text) : mText(text) {
+    mPosition = position;
 }
     
 void PointEffect::draw() {
     if (mTimer > mDuration) return;
-    DrawTextEx(Resource::mFont.get(FontIdentifier::PixelifySans), mText.c_str(), mPosition, 20, 10, WHITE);
+    DrawTextEx(GetFontDefault(), mText.c_str(), mPosition, 30, 5, WHITE);
 }
         
 bool PointEffect::update(float dt) {
@@ -41,8 +42,8 @@ bool PointEffect::update(float dt) {
     return true;
 }
 
-std::unique_ptr<PointEffect> PointEffect::spawnPointEffect(std::string text) {
-    std::unique_ptr<PointEffect> mEffect = std::make_unique<PointEffect>(text);
+std::unique_ptr<PointEffect> PointEffect::spawnPointEffect(Vector2 position, std::string text) {
+    std::unique_ptr<PointEffect> mEffect = std::make_unique<PointEffect>(position, text);
     return std::move(mEffect);
 }
 
@@ -74,25 +75,48 @@ std::unique_ptr<CoinEffect> CoinEffect::spawnCoinEffect(Vector2 position) {
 
 // Death Effect
 
-DeathEffect::DeathEffect(Texture2D texture, bool flipY) {
+DeathEffect::DeathEffect(Vector2 position, Texture2D texture, bool flipY) {
     isFlipY = flipY;
     mTexture = texture;
+    mPosition = position;
+    mVelocity = {0, (float)- std::sqrt(2 * 850 * 48)};
 }
 
 void DeathEffect::draw() {
-    Vector2 screenPos = GetWorldToScreen2D(mPosition, mWorld.getCamera());
-    if (screenPos.y < targetWidth) return;
     DrawTexturePro(mTexture, {0, 0, (float)mTexture.width, (isFlipY ? -1 : 1) * (float)mTexture.height}, {mPosition.x, mPosition.y, (float)mTexture.width * 3, (float)mTexture.height * 3}, {0, 0}, 0.0f, WHITE);
 }
 
 bool DeathEffect::update(float dt) {
     Vector2 screenPos = GetWorldToScreen2D(mPosition, mWorld.getCamera());
-    if (screenPos.y < targetWidth) return false;
-    mPosition += {0, 800 * dt};
+    if (screenPos.y > targetWidth) return false;
+    mVelocity += {100 * dt, 850 * dt};
+    mPosition += mVelocity * dt;
     return true;
 }
 
-std::unique_ptr<DeathEffect> DeathEffect::spawnDeathEffect(Texture2D texture, bool flipY) {
-    std::unique_ptr<DeathEffect> mEffect = std::make_unique<DeathEffect>(texture, flipY);
+std::unique_ptr<DeathEffect> DeathEffect::spawnDeathEffect(Vector2 position, Texture2D texture, bool flipY) {
+    std::unique_ptr<DeathEffect> mEffect = std::make_unique<DeathEffect>(position, texture, flipY);
     return std::move(mEffect);
+}
+
+// Explosion Effect
+
+ExplosionEffect::ExplosionEffect(Vector2 position) : mAnim(nullptr, 16, 16, 0.3f, false) {
+    mPosition = position;
+    mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::EXPLOSION), 16, 16);
+}
+
+void ExplosionEffect::draw() {
+    mAnim.draw(mPosition, 3.0f);
+}
+
+bool ExplosionEffect::update(float dt) {
+    if (mAnim.isFinished()) return false;
+    mAnim.update(dt);
+    return true;
+}
+        
+std::unique_ptr<ExplosionEffect> ExplosionEffect::spawnExplosionEffect(Vector2 position) {
+    std::unique_ptr<ExplosionEffect> explosion = std::make_unique<ExplosionEffect>(position);
+    return std::move(explosion);
 }

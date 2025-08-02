@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include <raylib.h>
-#include <raymath.h>
 
 #include "Entity/Animation.hpp"
 #include "Global.hpp"
@@ -30,10 +29,10 @@ class EffectManager {
 
 class PointEffect : public Effect {
     public:
-        PointEffect(std::string text);
+        PointEffect(Vector2 position, std::string text);
         virtual void draw();
         virtual bool update(float dt);
-        static std::unique_ptr<PointEffect> spawnPointEffect(std::string text);
+        static std::unique_ptr<PointEffect> spawnPointEffect(Vector2 position, std::string text);
     private:
         std::string mText;
         static constexpr float mDuration = 2.0f;
@@ -56,14 +55,25 @@ class CoinEffect : public Effect {
 
 class DeathEffect : public Effect {
     public:
-        DeathEffect(Texture2D texture, bool flipY);
+        DeathEffect(Vector2 position, Texture2D texture, bool flipY);
         virtual void draw();
         virtual bool update(float dt);
-        static std::unique_ptr<DeathEffect> spawnDeathEffect(Texture2D texture, bool flipY);
+        static std::unique_ptr<DeathEffect> spawnDeathEffect(Vector2 position, Texture2D texture, bool flipY);
     private:
         Texture2D mTexture;
         Vector2 mPosition;
         Vector2 mVelocity;
         bool isFlipY;
         static constexpr float mDuration = 2.0f;
+};
+
+class ExplosionEffect: public Effect {
+    public:
+        ExplosionEffect(Vector2 position);
+        virtual void draw();
+        virtual bool update(float dt);
+        static std::unique_ptr<ExplosionEffect> spawnExplosionEffect(Vector2 position);
+    private:
+        Vector2 mPosition;
+        Animation mAnim;
 };

@@ -4,6 +4,7 @@
 
 #include "Entity/Enemy.hpp"
 #include "Entity/Animation.hpp"
+#include "World/Effect.hpp"
 #include "Global.hpp"
 
 class Goomba : public Enemy {
@@ -26,6 +27,7 @@ class Goomba : public Enemy {
 
         Texture2D mRun;
         Texture2D mDie;
+        Texture2D mDeath;
 
         static std::unique_ptr<Goomba> spawnGoomba1(Vector2 position);
         static std::unique_ptr<Goomba> spawnGoomba2(Vector2 position);

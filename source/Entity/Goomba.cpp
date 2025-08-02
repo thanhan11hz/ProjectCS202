@@ -1,4 +1,5 @@
 #include "Entity/Goomba.hpp"
+#include "World/World.hpp"
 
 Goomba::Goomba() {
     mBodyCollide.setFilter(Category::NONE);
@@ -7,9 +8,10 @@ Goomba::Goomba() {
 }
 
 void Goomba::update(float dt) {
-    if (isActive()) return;
-    if (isDie()) return;
     Enemy::update(dt);
+    if (!isActive()) return;
+    if (isDie()) return;
+    MovingEntity::update(dt);
     if (mMove == Move::DEAD) {
         if (mDeadTimer < mDeadTime) mDeadTimer += dt;
         else setDie(true);
@@ -37,6 +39,12 @@ void Goomba::handleCollision(Side side, Collide other) {
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
         mSpeed = (side == Side::RIGHT) ? -100.0f : 100.0f;
     }
+
+    if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, true));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+    }
 }
         
 Vector2 Goomba::getSize() {
@@ -59,7 +67,7 @@ void Goomba::setMove(Move move) {
     if (texture) {
         mAnim.setTexture(texture, getSize().x / 3.0f, getSize().y / 3.0f);
         mAnim.setRepeating(true, false);
-        mAnim.restart();   
+        mAnim.restart();
     }
 }
 
@@ -67,6 +75,7 @@ std::unique_ptr<Goomba> Goomba::spawnGoomba1(Vector2 position) {
     std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
     mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA_RUN);
     mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA_DIE);
+    mGoomba->mDeath = Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH);
     mGoomba->setMove(Move::RUN);
     mGoomba->mPhysics.setPosition(position);
     return std::move(mGoomba);
@@ -76,6 +85,7 @@ std::unique_ptr<Goomba> Goomba::spawnGoomba2(Vector2 position) {
     std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
     mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA2_RUN);
     mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA2_DIE);
+    mGoomba->mDeath = Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH);
     mGoomba->setMove(Move::RUN);
     mGoomba->mPhysics.setPosition(position);
     return std::move(mGoomba);

@@ -5,6 +5,8 @@
 
 #include "Entity/MovingEntity.hpp"
 #include "Entity/Animation.hpp"
+#include "Entity/Projectile.hpp"
+#include "World/World.hpp"
 #include "Global.hpp"
 
 class Character : public MovingEntity {
@@ -44,15 +46,20 @@ class Character : public MovingEntity {
 
     private:
         Move mMove = Move::IDLE;
-        Form mForm = Form::NORMAL;
+        void updateMove();
+        void setMove(Move move);
+
+        Form mForm = Form::FIRE;
+        void setForm(Form form);
+
         static constexpr float mImmortalTime = 5.0f;
         float mImmortalTimer;
         bool mIsImmortal = false;
-        void updateMove();
-        void setMove(Move move);
         void updateImmortal(float dt);
         void setImmortal(bool flag);
-        void setForm(Form form);
+
+        float transitionProgress = 1.0f;
+
         void fire();
 
         float mHigh;

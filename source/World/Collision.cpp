@@ -1,4 +1,5 @@
 #include "World/Collision.hpp"
+#include "Entity/Character.hpp"
 
 static bool check = false;
 
@@ -28,6 +29,10 @@ void Collision::addEnemy(std::vector<std::unique_ptr<Enemy>>& enemy) {
         mEnemy.push_back(enemy[i].get());
     }
 }
+
+void Collision::addProjectile(MovingEntity* projectile) {
+    mProjectile.push_back(projectile);
+}
         
 void Collision::addCharacter(Character* character) {
     mCharacter = character;
@@ -38,6 +43,7 @@ void Collision::clearCollidables() {
     mMain.clear();
     mEnemy.clear();
     mItem.clear();
+    mProjectile.clear();
 }
 
 void Collision::handleCollision() {
@@ -46,14 +52,6 @@ void Collision::handleCollision() {
             for (int j = 0; j < mMain[i].size(); ++j) {
                 checkCollision(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
                 checkFootCollision(mCharacter->mFootCollide, mMain[i][j]->mBodyCollide);
-            }
-        }
-    }
-
-    if (mCharacter) {
-        for (int i = 0; i < mMain.size(); ++i) {
-            for (int j = 0; j < mMain[i].size(); ++j) {
-                separate(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
             }
         }
     }
@@ -72,6 +70,41 @@ void Collision::handleCollision() {
         }
     }
 
+    for (auto itr = mProjectile.begin(); itr != mProjectile.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            for (int i = 0; i < mMain.size(); ++i) {
+                for (int j = 0; j < mMain[i].size(); ++j) {
+                    checkCollision((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                    checkFootCollision((*itr)->mFootCollide, mMain[i][j]->mBodyCollide);
+                }   
+            }
+            itr++;
+        } else {
+            itr = mProjectile.erase(itr);
+        }
+    }
+
+
+    if (mCharacter) {
+        for (int i = 0; i < mEnemy.size(); ++i) {
+            checkCollision(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
+    for (int i = 0; i < mEnemy.size(); ++i) {
+        for (int j = 0; j < mProjectile.size(); ++j) {
+            checkCollision(mEnemy[i]->mBodyCollide, mProjectile[j]->mBodyCollide);
+        }
+    }
+
+    if (mCharacter) {
+        for (int i = 0; i < mMain.size(); ++i) {
+            for (int j = 0; j < mMain[i].size(); ++j) {
+                separate(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
+            }
+        }
+    }
+
     for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
         if (*itr && !(*itr)->isDie()) {
             for (int i = 0; i < mMain.size(); ++i) {
@@ -85,15 +118,29 @@ void Collision::handleCollision() {
         }
     }
 
-    if (mCharacter) {
-        for (int i = 0; i < mEnemy.size(); ++i) {
-            checkCollision(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
-        }
-    }
 
     if (mCharacter) {
         for (int i = 0; i < mEnemy.size(); ++i) {
             separate(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
+    for (auto itr = mProjectile.begin(); itr != mProjectile.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            for (int i = 0; i < mMain.size(); ++i) {
+                for (int j = 0; j < mMain[i].size(); ++j) {
+                    separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                }   
+            }
+            itr++;
+        } else {
+            itr = mProjectile.erase(itr);
+        }
+    }
+
+    for (int i = 0; i < mEnemy.size(); ++i) {
+        for (int j = 0; j < mProjectile.size(); ++j) {
+            separate(mEnemy[i]->mBodyCollide, mProjectile[j]->mBodyCollide);
         }
     }
 

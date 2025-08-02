@@ -32,10 +32,12 @@ void Character::handle() {
         
 void Character::draw() {
     if (mMove == Move::DEAD) return;
-    mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f, !mPhysics.isRight(), false, mIsImmortal);
+    if (transitionProgress < 1.0f) {
+        if (mForm == Form::NORMAL) mAnim.drawScale(mPhysics.getPosition() - Vector2{0, 48 - transitionProgress * 48}, 3.0f, 3.0f * (32 - transitionProgress * 16) / 16.0f, !mPhysics.isRight(), false, mIsImmortal);
+        else mAnim.drawScale(mPhysics.getPosition() + Vector2{0, 48 - transitionProgress * 48}, 3.0f, 3.0f * (16 + transitionProgress * 16) / 32.0f, !mPhysics.isRight(), false, mIsImmortal);
+    } else mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f, !mPhysics.isRight(), false, mIsImmortal);
     DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
     DrawRectangleLines(mFootCollide.getHitBox().x, mFootCollide.getHitBox().y, mFootCollide.getHitBox().width, mFootCollide.getHitBox().height, BLACK);
-
 }
         
 void Character::update(float dt) {
@@ -43,6 +45,13 @@ void Character::update(float dt) {
     MovingEntity::update(dt);
     updateMove();
     updateImmortal(dt);
+    if (transitionProgress < 1.0f) {
+        transitionProgress += 5 * dt;
+        if (transitionProgress >= 1.0f) {
+            transitionProgress = 1.0f;
+        }
+    }
+    
     mAnim.update(dt);
     mPhysics.setOnGround(false);
 }
@@ -115,17 +124,21 @@ void Character::setImmortal(bool flag) {
 void Character::setForm(Form form) {
     if (mForm == form) return;
     if (mForm == Form::NORMAL) {
-        mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 48});
+        transitionProgress = 0.0f;
+        mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y - 48});
     }
     if (form == Form::NORMAL) {
-        mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y - 48});
+        transitionProgress = 0.0f;
+        mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 48});
     }
     mForm = form;
     setMove(mMove);
 }
 
 void Character::fire() {
-    
+    Vector2 position = mPhysics.isRight() ? mPhysics.getPosition() + Vector2{getSize().x, getSize().y / 2.0f} : mPhysics.getPosition() + Vector2{0, getSize().y / 2.0f};
+    std::unique_ptr<FireBall> fireBall = FireBall::spawnFireBall(position, mPhysics.isRight());
+    mWorld.addProjectile(std::move(fireBall));
 }
 
 std::unique_ptr<Character> Character::spawnMario() {

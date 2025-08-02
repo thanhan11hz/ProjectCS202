@@ -1,4 +1,5 @@
 #include "World/World.hpp"
+#include "Entity/Character.hpp"
 
 World* World::instance = nullptr;
 
@@ -26,12 +27,19 @@ World::~World() {
 }
         
 void World::update(float dt) {
+
     mMap[mCurrent]->update(dt);
 
     mCharacter->update(dt);
-    mCam.target.x = mCharacter->mPhysics.getPosition().x;
-    if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
-    if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
+
+    for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ) {
+        if (*itr && !(*itr)->isDie()) {
+            (*itr)->update(dt);
+            ++itr;
+        } else {
+            itr = mProjectile.erase(itr);
+        }
+    }
 
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ) {
         if (*itr && !(*itr)->isDie()) {
@@ -52,15 +60,25 @@ void World::update(float dt) {
     // }
     
     mCollision.handleCollision();
+
+    mEffect.update(dt);
+
+    mCam.target.x = mCharacter->mPhysics.getPosition().x;
+    if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
+    if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
+
     mTimer -= dt;
 }
         
 void World::draw() {
     BeginMode2D(mCam);
+
     Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
     Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
     mMap[mCurrent]->setTexture(tiles, object);
+
     mMap[mCurrent]->drawBackground();
+
     mMap[mCurrent]->drawItem();
 
     mCharacter->draw();
@@ -74,6 +92,13 @@ void World::draw() {
     // }
 
     mMap[mCurrent]->drawMain();
+
+    for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ++itr) {
+        (*itr)->draw();
+    }
+
+    mEffect.draw();
+
     EndMode2D();
 }
 
@@ -106,6 +131,15 @@ void World::setCharater(int Character) {
         mCharacter = Character::spawnLuigi();
     }
 }
+
+void World::addEffect(std::unique_ptr<Effect> effect) {
+    mEffect.addEffect(std::move(effect));
+}
+
+void World::addProjectile(std::unique_ptr<MovingEntity> projectile) {
+    mCollision.addProjectile(projectile.get());
+    mProjectile.push_back(std::move(projectile));
+}
         
 bool World::isLevelComplete() {
     return false;
@@ -125,6 +159,7 @@ void World::backMap() {
 }
 
 void World::reset() {
+    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);
@@ -139,6 +174,7 @@ void World::reset() {
 }
 
 void World::restart() {
+    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);

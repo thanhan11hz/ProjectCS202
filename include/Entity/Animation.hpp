@@ -16,6 +16,7 @@ class Animation {
         void restart();
         void update(float dt);
         void draw(Vector2 position, float scale = 1.0f, float rotation = 0.0f, bool flipX = false, bool flipY = false, bool colorBlink = false, Color tint = WHITE);
+        void drawScale(Vector2 position, float scaleX = 1.0f, float scaleY = 1.0f, float rotation = 0.0f, bool flipX = false, bool flipY = false, bool colorBlink = false, Color tint = WHITE);
         void setFrameSize(Vector2 size);
         Vector2 getFrameSize() const;
     

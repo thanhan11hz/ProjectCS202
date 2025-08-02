@@ -68,6 +68,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::MARIO_F_IDLE, "resource\\Texture\\Spritesheet\\Mario_F_Idle.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_F_RUN, "resource\\Texture\\Spritesheet\\Mario_F_Run.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_F_JUMP, "resource\\Texture\\Spritesheet\\Mario_F_Jump.png");
+    Resource::mTexture.load(TextureIdentifier::MARIO_DEATH, "resource\\Texture\\Spritesheet\\Mario_Death.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_F_CROUCH, "resource\\Texture\\Spritesheet\\Mario_F_Crouch.png");
     Resource::mTexture.load(TextureIdentifier::LUIGI_N_IDLE, "resource\\Texture\\Spritesheet\\Luigi_N_Idle.png");
     Resource::mTexture.load(TextureIdentifier::LUIGI_N_RUN, "resource\\Texture\\Spritesheet\\Luigi_N_Run.png");
@@ -76,10 +77,13 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::LUIGI_S_RUN, "resource\\Texture\\Spritesheet\\Luigi_S_Run.png");
     Resource::mTexture.load(TextureIdentifier::LUIGI_S_JUMP, "resource\\Texture\\Spritesheet\\Luigi_S_Jump.png");
     Resource::mTexture.load(TextureIdentifier::LUIGI_S_CROUCH, "resource\\Texture\\Spritesheet\\Luigi_S_Crouch.png");
+    Resource::mTexture.load(TextureIdentifier::LUIGI_DEATH, "resource\\Texture\\Spritesheet\\Luigi_Death.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA_RUN, "resource\\Texture\\Spritesheet\\Goomba_Run.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA_DIE, "resource\\Texture\\Spritesheet\\Goomba_Die.png");
+    Resource::mTexture.load(TextureIdentifier::GOOMBA_DEATH, "resource\\Texture\\Spritesheet\\Goomba_Death.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_RUN, "resource\\Texture\\Spritesheet\\Goomba2_Run.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_DIE, "resource\\Texture\\Spritesheet\\Goomba2_Die.png");
+    Resource::mTexture.load(TextureIdentifier::GOOMBA2_DEATH, "resource\\Texture\\Spritesheet\\Goomba2_Death.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA, "resource\\Texture\\Spritesheet\\Piranha.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA2, "resource\\Texture\\Spritesheet\\Piranha2.png");
     Resource::mTexture.load(TextureIdentifier::PODOBOO, "resource\\Texture\\Spritesheet\\Podoboo.png");
@@ -87,6 +91,9 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::BOWSER_MOVE, "resource\\Texture\\Spritesheet\\Bowser_Move.png");
     Resource::mTexture.load(TextureIdentifier::BOWSER_ATTACK, "resource\\Texture\\Spritesheet\\Bowser_Attack.png");
     Resource::mTexture.load(TextureIdentifier::COIN_EFFECT, "resource\\Texture\\Spritesheet\\CoinEffect.png");
+    Resource::mTexture.load(TextureIdentifier::EXPLOSION, "resource\\Texture\\Spritesheet\\Explosion.png");
+    Resource::mTexture.load(TextureIdentifier::BOWSER_FIRE, "resource\\Texture\\Spritesheet\\Bowser_Fire.png");
+    Resource::mTexture.load(TextureIdentifier::FIREBALL, "resource\\Texture\\Spritesheet\\FireBall.png");
     
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");

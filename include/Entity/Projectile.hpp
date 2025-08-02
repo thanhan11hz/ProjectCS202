@@ -1,13 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <cmath>
 
 #include "Entity/MovingEntity.hpp"
 #include "Global.hpp"
 
 class FireBall : public MovingEntity {
     public:
-        FireBall();
+        FireBall(bool isRight);
         virtual void update(float dt);
         virtual void handle();
         virtual void draw();
@@ -18,10 +19,10 @@ class FireBall : public MovingEntity {
 
         virtual std::string getTag();
 
-        std::unique_ptr<FireBall> spawnFireBall(Vector2 position);
+        static std::unique_ptr<FireBall> spawnFireBall(Vector2 position, bool isRight);
     private:
-        bool isDown = true;
-        size_t mLives = 3;
+        float mSpeedX = 400.0f;
+        float mBoundSpeed = -std::sqrt(2 * 850 * 2 * 48.0f);
 };
 
 class BowserFire: public MovingEntity {
@@ -37,7 +38,7 @@ class BowserFire: public MovingEntity {
 
         virtual std::string getTag();
 
-        std::unique_ptr<BowserFire> spawnBowserFire(Vector2 position, float speed);
+        static std::unique_ptr<BowserFire> spawnBowserFire(Vector2 position, float speed);
 
         void setSpeed(float speed);
         

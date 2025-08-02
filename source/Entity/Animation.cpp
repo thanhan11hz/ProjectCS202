@@ -105,6 +105,67 @@ void Animation::draw(Vector2 position, float scale, float rotation, bool flipX, 
     DrawTexturePro(*mTexture, src, dst, {0, 0}, rotation, tint);
 }
 
+void Animation::drawScale(Vector2 position, float scaleX, float scaleY, float rotation, bool flipX, bool flipY, bool colorBlink, Color tint) {
+    if (!mTexture) return;
+    Rectangle src = {
+        (float) (mCurrentFrames % mCol) * mFrameSize.x,
+        (float) (mCurrentFrames / mCol) * mFrameSize.y,
+        mFrameSize.x,
+        mFrameSize.y
+    };
+
+    if (flipX) {
+        src.x += src.width;   
+        src.width = -src.width;  
+    }
+
+    if (flipY) {
+        src.width *= -1;
+    }
+
+    Rectangle dst = {
+        position.x,
+        position.y,
+        mFrameSize.x * scaleX,
+        mFrameSize.y * scaleY
+    };
+
+    if (colorBlink) {
+        switch (mCurrentColor) {
+        case 0:
+            tint = WHITE;
+            break;
+        case 1:
+            tint = RED;
+            break;
+        case 2:
+            tint = ORANGE;
+            break; 
+        case 3:
+            tint = YELLOW;
+            break;
+        case 4:
+            tint = GREEN;
+            break;
+        case 5:
+            tint = BLUE;
+            break;
+        case 6:
+            tint = PURPLE;
+            break;
+        case 7:
+            tint = VIOLET;
+            break;
+        default:
+            break;
+        }
+
+        mCurrentColor = (mCurrentColor + 1) % 8;
+    } 
+    DrawTexturePro(*mTexture, src, dst, {0, 0}, rotation, tint);
+}
+
+
 void Animation::setFrameSize(Vector2 size) {
     mFrameSize = size;
 }
