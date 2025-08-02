@@ -45,6 +45,19 @@ void Koopa::update(float dt) {
 
     switch (mState) {
         case State::WALKING:
+            // Ledge Detection for Red and Blue Koopas
+            if (mType == Type::K_RED || mType == Type::K_BLUE) {
+                Vector2 currentPos = mPhysics.getPosition();
+                Vector2 koopaSize = getSize();
+
+                float probeX = (mSpeed < 0) ? currentPos.x - 1 : currentPos.x + koopaSize.x;
+                float probeY = currentPos.y + koopaSize.y + 1;
+
+                if (!World::getInstance().isSolidTileAt({probeX, probeY})) {
+                    mSpeed *= -1;
+                }
+            }
+
             mPhysics.accelerate({mSpeed, 0});
             break;
 

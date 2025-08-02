@@ -161,7 +161,9 @@ void World::backMap() {
 void World::reset() {
     mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     //
-    mEnemy.push_back(Koopa::spawnKoopa({200, 300}, Koopa::Type::K_GREEN));
+    mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
+    mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
+    mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
     //
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
@@ -179,7 +181,9 @@ void World::reset() {
 void World::restart() {
     mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     //
-    mEnemy.push_back(Koopa::spawnKoopa({200, 300}, Koopa::Type::K_GREEN));
+    mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
+    mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
+    mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
     //
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
@@ -216,4 +220,27 @@ void World::damage() {
 
 Camera2D& World::getCamera() {
     return mCam;
+}
+
+bool World::isSolidTileAt(Vector2 worldPosition) {
+    // Get the main tile grid from the current map
+    auto& grid = mMap[mCurrent]->getMain();
+
+    if (grid.empty()) {
+        return false;
+    }
+
+    int col = worldPosition.x / 48;
+    int row = worldPosition.y / 48;
+
+    if (row < 0 || row >= grid.size() || col < 0 || col >= grid[0].size()) {
+        return false;
+    }
+
+    // Check if the tile at the grid index exists and is collidable
+    if (grid[row][col] && grid[row][col]->isSolid()) {
+        return true;
+    }
+
+    return false;
 }
