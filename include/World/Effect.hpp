@@ -12,6 +12,7 @@ class Effect {
         Effect() = default;
         virtual void draw() = 0;
         virtual bool update(float dt) = 0;
+        virtual Rectangle getBounds() = 0;
         virtual ~Effect() = default;
     private:
 };
@@ -19,9 +20,11 @@ class Effect {
 class EffectManager {
     public:
         EffectManager();
-        void draw();
+        // void draw();
+        void draw(Camera2D& camera);
         void update(float dt);
         void addEffect(std::unique_ptr<Effect> effect);
+        
     private:
         std::vector<std::unique_ptr<Effect>> mEffect;
 
@@ -32,6 +35,7 @@ class PointEffect : public Effect {
         PointEffect(Vector2 position, std::string text);
         virtual void draw();
         virtual bool update(float dt);
+        virtual Rectangle getBounds() override;
         static std::unique_ptr<PointEffect> spawnPointEffect(Vector2 position, std::string text);
     private:
         std::string mText;
@@ -45,6 +49,7 @@ class CoinEffect : public Effect {
         CoinEffect(Vector2 position);
         virtual void draw();
         virtual bool update(float dt);
+        virtual Rectangle getBounds() override;
         static std::unique_ptr<CoinEffect> spawnCoinEffect(Vector2 position);
     private:
         Animation mAnim;
@@ -58,6 +63,7 @@ class DeathEffect : public Effect {
         DeathEffect(Vector2 position, Texture2D texture, bool flipY);
         virtual void draw();
         virtual bool update(float dt);
+        virtual Rectangle getBounds() override;
         static std::unique_ptr<DeathEffect> spawnDeathEffect(Vector2 position, Texture2D texture, bool flipY);
     private:
         Texture2D mTexture;
@@ -72,6 +78,7 @@ class ExplosionEffect: public Effect {
         ExplosionEffect(Vector2 position);
         virtual void draw();
         virtual bool update(float dt);
+        virtual Rectangle getBounds() override;
         static std::unique_ptr<ExplosionEffect> spawnExplosionEffect(Vector2 position);
     private:
         Vector2 mPosition;

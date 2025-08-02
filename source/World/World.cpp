@@ -83,27 +83,53 @@ void World::draw() {
     Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
     mMap[mCurrent]->setTexture(tiles, object);
 
-    mMap[mCurrent]->drawBackground();
+    // mMap[mCurrent]->drawBackground();
+    mMap[mCurrent]->drawBackground(mCam);
 
-    mMap[mCurrent]->drawItem();
+    // mMap[mCurrent]->drawItem();
+    mMap[mCurrent]->drawItem(mCam);
+
     //mMap[mCurrent]->drawEnemy();
     mCharacter->draw();
     
+    // for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
+    //     (*itr)->draw();
+    // }
+
+    // Rectangle that represents what the camera can currently see.
+    Rectangle cameraView = {
+        mCam.target.x - mCam.offset.x,
+        mCam.target.y - mCam.offset.y,
+        (float)targetWidth,
+        (float)targetHeight
+    };
+
+    // Only draw the ones inside view.
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-        (*itr)->draw();
+        // Get the enemy's bounding box
+        Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+        Vector2 enemySize = (*itr)->getSize();
+        Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
+
+        // Check if the enemy's rectangle overlaps with the camera's view
+        if (CheckCollisionRecs(cameraView, enemyRect)) {
+            (*itr)->draw(); // Only draw the enemy if it's visible
+        }
     }
     
     // for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
         //     (*itr)->draw();
         // }
         
-    mMap[mCurrent]->drawMain();
+    // mMap[mCurrent]->drawMain();
+    mMap[mCurrent]->drawMain(mCam);
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ++itr) {
         (*itr)->draw();
     }
 
-    mEffect.draw();
+    // mEffect.draw();
+    mEffect.draw(mCam);
 
     EndMode2D();
 }

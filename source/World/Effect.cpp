@@ -7,9 +7,27 @@ EffectManager::EffectManager() {
 
 }
 
-void EffectManager::draw() {
+// void EffectManager::draw() {
+//     for (int i = 0; i < mEffect.size(); ++i) {
+//         mEffect[i]->draw();
+//     }
+// }
+
+void EffectManager::draw(Camera2D& camera) {
+    Rectangle cameraView = {
+        camera.target.x - camera.offset.x,
+        camera.target.y - camera.offset.y,
+        (float)targetWidth,
+        (float)targetHeight
+    };
+
     for (int i = 0; i < mEffect.size(); ++i) {
-        mEffect[i]->draw();
+        Rectangle effectRect = mEffect[i]->getBounds();
+
+        // Only draw if the effect is on screen
+        if (CheckCollisionRecs(cameraView, effectRect)) {
+            mEffect[i]->draw();
+        }
     }
 }
 
@@ -119,4 +137,22 @@ bool ExplosionEffect::update(float dt) {
 std::unique_ptr<ExplosionEffect> ExplosionEffect::spawnExplosionEffect(Vector2 position) {
     std::unique_ptr<ExplosionEffect> explosion = std::make_unique<ExplosionEffect>(position);
     return std::move(explosion);
+}
+
+Rectangle PointEffect::getBounds() {
+    return { mPosition.x, mPosition.y, 120, 30 };
+}
+
+Rectangle CoinEffect::getBounds() {
+    Vector2 size = mAnim.getFrameSize();
+    return { mPosition.x, mPosition.y, size.x * 3.0f, size.y * 3.0f };
+}
+
+Rectangle DeathEffect::getBounds() {
+    return { mPosition.x, mPosition.y, mTexture.width * 3.0f, mTexture.height * 3.0f };
+}
+
+Rectangle ExplosionEffect::getBounds() {
+    Vector2 size = mAnim.getFrameSize();
+    return { mPosition.x, mPosition.y, size.x * 3.0f, size.y * 3.0f };
 }
