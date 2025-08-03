@@ -29,19 +29,20 @@ public:
     std::vector<std::vector<int>> loadMatrixFromCSV(const std::string& filepath);
     void createMap(int choice, std::vector<std::vector<int>>& matrix);
     void drawBackground();
-    void drawEnemy();
     void drawItem();
     void drawMain();
     void update(float dt);
     void setTexture(Texture2D tileBlock, Texture2D tileObject) {tileTexture = tileBlock; objectTexture = tileObject;};
     std::vector<std::vector<Btr>>& getMain() {return mMain;}
+    std::vector<Etr>& getEnemy() {return Enemies;}
+    std::vector<std::unique_ptr<Enemy>> takeEnemies() {return std::move(Enemies); }
 
 private:
     std::vector<std::vector<Btr>> mMain;
     std::vector<std::vector<Btr>> mBackground;
     std::vector<std::vector<Btr>> mItem;
     std::vector<std::vector<Btr>> mBackground2;
-    std::vector<Etr> mEnemy;
+    std::vector<std::pair<int, Vector2>> mEnemy;
     std::vector<Etr> Enemies;
     std::vector<TileObject*> Items;
     Texture2D tileTexture;
