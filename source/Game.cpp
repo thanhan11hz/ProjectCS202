@@ -143,15 +143,36 @@ Game::Game() {
     mStateStack.registerState<GameOverState>(StateIdentifier::GAMEOVER);
 
     mStateStack.pushState(StateIdentifier::MENU);
+    
+    // mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");
+    // mWorld.loadMap("resource\\Map\\02 - Underground Area (1-2)");
+    // mWorld.loadMap("resource\\Map\\03 - Desert Area (2-3 & 4-1)");
+    // mWorld.loadMap("resource\\Map\\04 - Snowy Area (5-2)");
+    // mWorld.loadMap("resource\\Map\\05 - Castle (1-4)");
+    // mWorld.loadMap("resource\\Map\\06 - Sky Area (1-3)");
+    // mWorld.loadMap("resource\\Map\\07 - Mushroom Area (4-3)");
+    // mWorld.loadMap("resource\\Map\\08 - Sea Area (2-2)");
 
-    mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");
-    mWorld.loadMap("resource\\Map\\02 - Underground Area (1-2)");
-    mWorld.loadMap("resource\\Map\\03 - Desert Area (2-3 & 4-1)");
-    mWorld.loadMap("resource\\Map\\04 - Snowy Area (5-2)");
-    mWorld.loadMap("resource\\Map\\05 - Castle (1-4)");
-    mWorld.loadMap("resource\\Map\\06 - Sky Area (1-3)");
-    mWorld.loadMap("resource\\Map\\07 - Mushroom Area (4-3)");
-    mWorld.loadMap("resource\\Map\\08 - Sea Area (2-2)");
+
+    //Load all provided maps 
+    std::filesystem::path exePath = std::filesystem::current_path().parent_path();
+    std::filesystem::path mapDir = exePath / "resource" / "Map";
+    for (const auto& entry : std::filesystem::directory_iterator(mapDir)) {
+        if (entry.is_directory() && entry.path().filename().string() != "Custom") {
+            std::string folder_path = entry.path().string();
+            mWorld.loadMap(folder_path);
+        }
+    }
+    
+    //Load any available custom maps
+    std::filesystem::path customDir = exePath / "resource" / "Map" / "Custom";
+    for (const auto& entry : std::filesystem::directory_iterator(customDir)) {
+        if (entry.is_directory() && entry.path().filename().string() != "EmptyMapTemplate") {
+            std::string folder_path = entry.path().string();
+            mWorld.loadMap(folder_path);
+            createdCount++;
+        }
+    }
 
 }
 

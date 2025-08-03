@@ -6,6 +6,8 @@
 #include "GUI/Label.hpp"
 #include "Resource/ResourceHolder.hpp"
 #include "World/World.hpp"
+#include "Global.hpp"
+#include <filesystem>
 
 class LevelState : public State {
     public:
@@ -14,6 +16,7 @@ class LevelState : public State {
         int mCurrentPage;
         int mMaxPage;
         void setupPage(int page);
+        void setupCustom();
         virtual void draw();
         virtual bool handle();
         virtual bool update(float dt);
