@@ -33,7 +33,13 @@ class EndingLevel : public CutScene {
     private:
         Character* mChar;
         Vector2 mDestination;
+        float mTimer = 0.0f;
+        bool step1 = false;
+        bool step2 = false;
+        bool step3 = false;
+        bool step4 = false;
 };
+
 // Cần điều khiển Mario
 class GoIntoPipe : public CutScene {
     public:
@@ -44,4 +50,7 @@ class GoIntoPipe : public CutScene {
         Character* mChar;
         Vector2 mDestination;
         Vector2 mPipePosition;
+        bool step1 = false;
+        bool step2 = false;
+        bool step3 = false;
 };

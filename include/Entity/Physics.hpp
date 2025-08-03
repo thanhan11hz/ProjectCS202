@@ -26,6 +26,7 @@ class Physics {
         bool isRising();
         bool isRight();
         void setDensity(float density);
+        void setRight(bool flag);
         void update(float dt);
 
     private:

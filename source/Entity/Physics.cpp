@@ -93,3 +93,7 @@ void Physics::setOnGround(bool flag) {
 void Physics::setDensity(float density) {
     mDensity = density;
 }
+
+void Physics::setRight(bool flag) {
+    mIsRight = flag;
+}
