@@ -95,7 +95,7 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
 void GameOverState::draw() {
     DrawRectangle(0,0,GetScreenWidth(),GetScreenHeight(),BLACK);
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
-    DrawTexture(bricksTexture, -10, 772, WHITE);
+    DrawTexture(bricksTexture, 0, 772, WHITE);
     mContainer.draw();
 }
 

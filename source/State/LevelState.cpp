@@ -60,45 +60,49 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
     mContainer.pack(tracker);
 
     header_lv1 = new Label();
-    header_lv1->changeShape({353,195,120,17});
+    header_lv1->changeShape({239,195,334,17});
+    header_lv1->changeAlignment(Alignment::CENTER);
     header_lv1->changeSize(17);
     mContainer.pack(header_lv1);
 
     level1 = new Button();
-    level1->changShape({306, 436, 211, 56});
+    level1->changShape({301, 436, 211, 56});
     level1->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     level1->changeText("Enter");
     mContainer.pack(level1);
 
     header_lv2 = new Label();
-    header_lv2->changeShape({981,195,120,17});
+    header_lv2->changeShape({867,195,334,17});
+    header_lv2->changeAlignment(Alignment::CENTER);
     header_lv2->changeSize(17);
     mContainer.pack(header_lv2);
 
     level2 = new Button();
-    level2->changShape({934, 436, 211, 56});
+    level2->changShape({929, 436, 211, 56});
     level2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     level2->changeText("Enter");
     mContainer.pack(level2);
     
     header_lv3 = new Label();
-    header_lv3->changeShape({353,541,120,17});
+    header_lv3->changeShape({239,541,334,17});
+    header_lv3->changeAlignment(Alignment::CENTER);
     header_lv3->changeSize(17);
     mContainer.pack(header_lv3);
 
     level3 = new Button();
-    level3->changShape({306, 780, 211, 56});
+    level3->changShape({301, 780, 211, 56});
     level3->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     level3->changeText("Enter");
     mContainer.pack(level3);
 
     header_lv4 = new Label();
-    header_lv4->changeShape({981,541,120,17});
+    header_lv4->changeShape({867,541,120,17});
+    header_lv4->changeAlignment(Alignment::CENTER);
     header_lv4->changeSize(17);
     mContainer.pack(header_lv4);
 
     level4 = new Button();
-    level4->changShape({934, 780, 211, 56});
+    level4->changShape({929, 780, 211, 56});
     level4->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     level4->changeText("Enter");
     mContainer.pack(level4);
@@ -113,8 +117,6 @@ void LevelState::setupPage(int page) {
     {
         case 1: 
         {
-            // previous->changeToggle(false);
-            // next->changeToggle(true);
             header_lv1->changeText("LEVEL 1");
             level1->changeCallback([this]() {
                     mWorld.setMap(0);
@@ -142,36 +144,22 @@ void LevelState::setupPage(int page) {
             break;
         }
         case 2: {
-            // previous->changeToggle(true);
-            // next->changeToggle(false);
             header_lv1->changeText("CUSTOM 1");
             level1->changeCallback([this]() {
-                    //requestStackPush(StateIdentifier::GAME5);
                 }
             );
             header_lv2->changeText("CUSTOM 2");
             level2->changeCallback([this]() {
-                    //requestStackPush(StateIdentifier::GAME6);
                 }
             );
             header_lv3->changeText("CUSTOM 3");
             level3->changeCallback([this]() {
-                    //requestStackPush(StateIdentifier::GAME7);
                 }
             );
             header_lv4->changeText("CUSTOM 4");
             level4->changeCallback([this]() {
-                    //requestStackPush(StateIdentifier::GAME8);
                 }
             );
-            // Texture2D preview1 = Resource::mTexture.get(TextureIdentifier::PREVIEW5);
-            // DrawTexture(preview1, 245, 229);
-            // Texture2D preview2 = Resource::mTexture.get(TextureIdentifier::PREVIEW6);
-            // DrawTexture(preview2, 873, 229);
-            // Texture2D preview3 = Resource::mTexture.get(TextureIdentifier::PREVIEW7);
-            // DrawTexture(preview3, 245, 575);
-            // Texture2D preview4 = Resource::mTexture.get(TextureIdentifier::PREVIEW8);
-            // DrawTexture(preview4, 873, 575);
             break;
         }
     }
@@ -182,26 +170,25 @@ void LevelState::draw() {
     DrawTexturePro(background, {0, 0, (float)background.width, (float)background.height}, {0, 0, (float)targetWidth, (float)targetHeight}, {0, 0}, 0.0f, WHITE);
     switch (mCurrentPage) {
         case 1: {
-            //sau này sẽ bổ sung hình preview khác cho các level khác nhau
             Texture2D preview1 = Resource::mTexture.get(TextureIdentifier::PREVIEW);
             DrawTexture(preview1, 245, 229, WHITE);
-            Texture2D preview2 = Resource::mTexture.get(TextureIdentifier::PREVIEW);
+            Texture2D preview2 = Resource::mTexture.get(TextureIdentifier::PREVIEW2);
             DrawTexture(preview2, 873, 229, WHITE);
-            Texture2D preview3 = Resource::mTexture.get(TextureIdentifier::PREVIEW);
+            Texture2D preview3 = Resource::mTexture.get(TextureIdentifier::PREVIEW6);
             DrawTexture(preview3, 245, 575, WHITE);
-            Texture2D preview4 = Resource::mTexture.get(TextureIdentifier::PREVIEW);
+            Texture2D preview4 = Resource::mTexture.get(TextureIdentifier::PREVIEW5);
             DrawTexture(preview4, 873, 575, WHITE);
             break;
         }
         case 2: {
-            // Texture2D preview1 = Resource::mTexture.get(TextureIdentifier::PREVIEW5);
-            // DrawTexture(preview1, 245, 229);
-            // Texture2D preview2 = Resource::mTexture.get(TextureIdentifier::PREVIEW6);
-            // DrawTexture(preview2, 873, 229);
-            // Texture2D preview3 = Resource::mTexture.get(TextureIdentifier::PREVIEW7);
-            // DrawTexture(preview3, 245, 575);
-            // Texture2D preview4 = Resource::mTexture.get(TextureIdentifier::PREVIEW8);
-            // DrawTexture(preview4, 873, 575);
+            Texture2D preview1 = Resource::mTexture.get(TextureIdentifier::PREVIEW3);
+            DrawTexture(preview1, 245, 229, WHITE);
+            Texture2D preview2 = Resource::mTexture.get(TextureIdentifier::PREVIEW6);
+            DrawTexture(preview2, 873, 229, WHITE);
+            Texture2D preview3 = Resource::mTexture.get(TextureIdentifier::PREVIEW4);
+            DrawTexture(preview3, 245, 575, WHITE);
+            Texture2D preview4 = Resource::mTexture.get(TextureIdentifier::PREVIEW8);
+            DrawTexture(preview4, 873, 575, WHITE);
             break;
         }
     }

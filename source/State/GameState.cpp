@@ -92,7 +92,7 @@ void GameState::draw() {
     // mMap.drawMain();
 
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
-    DrawTexture(bricksTexture, -10, 772, WHITE);
+    DrawTexture(bricksTexture, 0, 772, WHITE);
     mContainer.draw();
 }
 
