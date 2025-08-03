@@ -34,8 +34,8 @@ class Goomba : public Enemy {
 
     private:
         Move mMove;
-        static constexpr float mDeadTime = 0.5f;
+        static constexpr float mDeadTime = 2.0f;
         float mDeadTimer = 0.f;
-        float mSpeed = 100.0f;
+        float mSpeed = -100.0f;
         void setMove(Move move);
 };

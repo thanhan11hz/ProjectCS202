@@ -202,26 +202,23 @@ void World::backMap() {
 }
 
 void World::reset() {
-
-
     mEnemy.clear();
     if (mCharacter) {
         mCharacter->mPhysics.setPosition({150, 400});
     }
-    std::vector<std::unique_ptr<FireBar>> mFireBar = FireBar::spawnFireBar({200, 600});
-    for (int i = 0; i < mFireBar.size(); ++i) {
-        mEnemy.push_back(std::move(mFireBar[i]));
-    }
-    // mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
-    // mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
-    // mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
-    //
+    // std::vector<std::unique_ptr<FireBar>> mFireBar = FireBar::spawnFireBar({200, 600});
+    // for (int i = 0; i < mFireBar.size(); ++i) {
+    //     mEnemy.push_back(std::move(mFireBar[i]));
+    // }
+    // // mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
+    // // mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
+    // // mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
+    // //
 
     mCollision.clearCollidables();
     std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
     mCollision.addEnemy(Enemy);
     mEnemy = mMap[mCurrent]->takeEnemies();
-    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     mCollision.addItem(mItem);
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
@@ -238,12 +235,6 @@ void World::restart() {
     if (mCharacter) {
         mCharacter->mPhysics.setPosition({150, 400});
     }
-    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
-    //
-    mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
-    mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
-    mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
-    //
     mCollision.clearCollidables();
     std::vector<std::unique_ptr<Enemy>>& mEnemy = mMap[mCurrent]->getEnemy();
     mCollision.addEnemy(mEnemy);

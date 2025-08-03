@@ -213,6 +213,7 @@ void Character::handleCollision(Side side, Collide other) {
     }
 
     if (otherLabel == Category::ENEMY && side != Side::BOTTOM) {
+        if (other.getOwner()->getTag() != "Goomba" || !other.getOwner()->mPhysics.isRest())
         damage();
     }
 

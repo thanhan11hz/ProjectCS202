@@ -13,7 +13,6 @@ void Goomba::update(float dt) {
     if (isDie()) return;
     MovingEntity::update(dt);
     if (mMove == Move::DEAD) {
-        std::cout << "Death";
         if (mDeadTimer < mDeadTime) mDeadTimer += dt;
         else setDie(true);
         return;
@@ -49,8 +48,10 @@ void Goomba::handleCollision(Side side, Collide other) {
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
     }
 
-    if (otherLabel == Category::ENEMY) {
+    if (otherLabel == Category::ENEMY && (side == Side::LEFT || side == Side::RIGHT)) {
         mSpeed *= -1;
+        if (side == Side::LEFT) mPhysics.setPosition(mPhysics.getPosition() + Vector2{10, 0});
+        else mPhysics.setPosition(mPhysics.getPosition() + Vector2{-10, 0});
     }
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "KOOPA") {
