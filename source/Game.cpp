@@ -37,7 +37,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::Character_MARIO, "resource\\Texture\\StateAsset\\marioart.png");
     Resource::mTexture.load(TextureIdentifier::Character_LUIGI, "resource\\Texture\\StateAsset\\luigiart.png");
     Resource::mTexture.load(TextureIdentifier::Character_POINTER, "resource\\Texture\\StateAsset\\uppointer.png");
-    Resource::mTexture.load(TextureIdentifier::BRICKS_TEXTURE, "resource\\Texture\\StateAsset\\brickstexture.png");
+    Resource::mTexture.load(TextureIdentifier::BRICKS_TEXTURE, "resource\\Texture\\StateAsset\\brickstexture1.png");
     Resource::mTexture.load(TextureIdentifier::CONFIRM_BOX, "resource\\Texture\\StateAsset\\confirmbox.png");
     Resource::mTexture.load(TextureIdentifier::PREVIEW, "resource\\Texture\\StateAsset\\thumbnail.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION1, "resource\\Texture\\StateAsset\\Instructions\\ins1.png");
@@ -57,7 +57,15 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::PAL3, "resource\\Texture\\StateAsset\\Palettes\\FOLIAGE2.png");
     Resource::mTexture.load(TextureIdentifier::PAL4, "resource\\Texture\\StateAsset\\Palettes\\COINS.png");
     Resource::mTexture.load(TextureIdentifier::PAL5, "resource\\Texture\\StateAsset\\Palettes\\BLOCKS.png");
-  
+
+    Resource::mTexture.load(TextureIdentifier::PREVIEW2, "resource\\Texture\\StateAsset\\MapPreview\\preview2.png");
+    Resource::mTexture.load(TextureIdentifier::PREVIEW3, "resource\\Texture\\StateAsset\\MapPreview\\preview3.png");
+    Resource::mTexture.load(TextureIdentifier::PREVIEW4, "resource\\Texture\\StateAsset\\MapPreview\\preview4.png");
+    Resource::mTexture.load(TextureIdentifier::PREVIEW5, "resource\\Texture\\StateAsset\\MapPreview\\preview5.png");
+    Resource::mTexture.load(TextureIdentifier::PREVIEW6, "resource\\Texture\\StateAsset\\MapPreview\\preview6.png");
+    Resource::mTexture.load(TextureIdentifier::PREVIEW7, "resource\\Texture\\StateAsset\\MapPreview\\preview7.png");
+    Resource::mTexture.load(TextureIdentifier::PREVIEW8, "resource\\Texture\\StateAsset\\MapPreview\\preview8.png");
+    
     Resource::mTexture.load(TextureIdentifier::MARIO_N_IDLE, "resource\\Texture\\Spritesheet\\Mario_N_Idle.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_N_RUN, "resource\\Texture\\Spritesheet\\Mario_N_Run.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_N_JUMP, "resource\\Texture\\Spritesheet\\Mario_N_Jump.png");
@@ -137,17 +145,39 @@ Game::Game() {
     mStateStack.registerState<CharSelectState>(StateIdentifier::CHARSELECT);
     mStateStack.registerState<GameState>(StateIdentifier::GAME1);
     mStateStack.registerState<MapEditor>(StateIdentifier::MAPEDITOR);
+    mStateStack.registerState<GameOverState>(StateIdentifier::GAMEOVER);
 
     mStateStack.pushState(StateIdentifier::MENU);
+    
+    // mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");
+    // mWorld.loadMap("resource\\Map\\02 - Underground Area (1-2)");
+    // mWorld.loadMap("resource\\Map\\03 - Desert Area (2-3 & 4-1)");
+    // mWorld.loadMap("resource\\Map\\04 - Snowy Area (5-2)");
+    // mWorld.loadMap("resource\\Map\\05 - Castle (1-4)");
+    // mWorld.loadMap("resource\\Map\\06 - Sky Area (1-3)");
+    // mWorld.loadMap("resource\\Map\\07 - Mushroom Area (4-3)");
+    // mWorld.loadMap("resource\\Map\\08 - Sea Area (2-2)");
 
-    mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");
-    mWorld.loadMap("resource\\Map\\02 - Underground Area (1-2)");
-    mWorld.loadMap("resource\\Map\\03 - Desert Area (2-3 & 4-1)");
-    mWorld.loadMap("resource\\Map\\04 - Snowy Area (5-2)");
-    mWorld.loadMap("resource\\Map\\05 - Castle (1-4)");
-    mWorld.loadMap("resource\\Map\\06 - Sky Area (1-3)");
-    mWorld.loadMap("resource\\Map\\07 - Mushroom Area (4-3)");
-    mWorld.loadMap("resource\\Map\\08 - Sea Area (2-2)");
+
+    //Load all provided maps 
+    std::filesystem::path exePath = std::filesystem::current_path().parent_path();
+    std::filesystem::path mapDir = exePath / "resource" / "Map";
+    for (const auto& entry : std::filesystem::directory_iterator(mapDir)) {
+        if (entry.is_directory() && entry.path().filename().string() != "Custom") {
+            std::string folder_path = entry.path().string();
+            mWorld.loadMap(folder_path);
+        }
+    }
+    
+    //Load any available custom maps
+    std::filesystem::path customDir = exePath / "resource" / "Map" / "Custom";
+    for (const auto& entry : std::filesystem::directory_iterator(customDir)) {
+        if (entry.is_directory() && entry.path().filename().string() != "EmptyMapTemplate") {
+            std::string folder_path = entry.path().string();
+            mWorld.loadMap(folder_path);
+            createdCount++;
+        }
+    }
 
 }
 

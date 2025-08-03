@@ -47,3 +47,7 @@ enum class Action {
 extern std::map<Action, KeyboardKey> mKeyBinding;
 
 extern Music mPlayingMusic;
+extern float musicVolume;
+extern float sfxVolume;
+
+extern int createdCount;

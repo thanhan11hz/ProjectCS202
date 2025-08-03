@@ -11,7 +11,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     Label* header = new Label();
     header->changeShape({405, 168, 630, 30});
     header->changeSize(30);
-    header->changeText("SELECT YOUR Character");
+    header->changeText("SELECT YOUR CHARACTER");
     header->changeColor(WHITE);
     mContainer.pack(header);
 

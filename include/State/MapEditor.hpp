@@ -9,6 +9,7 @@
 #include "GUI/Label.hpp"
 #include "GUI/TextBox.hpp"
 #include "Resource/ResourceHolder.hpp"
+#include "World/World.hpp"
 
 enum class MapEditorMode {
     SELECTION,

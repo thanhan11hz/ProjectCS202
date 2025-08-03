@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <iostream>
 #include <cmath>
+#include <filesystem>
 
 #include "Global.hpp"
 #include "Resource/ResourceHolder.hpp"
@@ -16,6 +17,7 @@
 #include "State/CharSelectState.hpp"
 #include "State/GameState.hpp"
 #include "State/MapEditor.hpp"
+#include "State/GameOverState.hpp"
 class Game {
     public:
         Game();

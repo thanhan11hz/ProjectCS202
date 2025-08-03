@@ -1,5 +1,4 @@
 #include "State/MapEditor.hpp"
-
 MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW), mPalette(Palette::NONE), hasChanges(false), selected(-1), tileX(0), tileY(0), showPalette(false), showGrid(true), isDropDown(false), confirm(false) {
     mMap = std::vector<std::vector<int>>(DEFAULT_MAP_HEIGHT, std::vector<int>(DEFAULT_MAP_WIDTH, -1));
     mItems = std::vector<std::vector<int>>(DEFAULT_MAP_HEIGHT, std::vector<int>(DEFAULT_MAP_WIDTH, -1));
@@ -445,7 +444,7 @@ void MapEditor::stampingHandle() {
     BeginScissorMode(0,0,workspaceWidth,workspaceHeight);
     BeginMode2D(mCamera);
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), mCamera);
-    cameraHandle();
+    if (mMode != MapEditorMode::RENAME) cameraHandle();
     tileX = mouse.x / TILE_SIZE;
     tileY = mouse.y / TILE_SIZE;
 
@@ -610,40 +609,33 @@ int MapEditor::getTilesPerRow() {
     if (mPalette != Palette::ITEMS) return TILES_PER_ROW_BLOCKS;
     return TILES_PER_ROW_ITEMS;
 }
-
+ 
 void MapEditor::saveMap() {
+    int order = (createdCount >= 4 ? 3 : createdCount);
     std::filesystem::path exePath = std::filesystem::current_path().parent_path();
     std::filesystem::path customDir = exePath / "resource" / "Map" / "Custom";
 
-    int highestPrefix = 0;
-    for (const auto& entry : std::filesystem::directory_iterator(customDir)) {
-        if (entry.is_directory()) {
-            std::string dirName = entry.path().filename().string();
-            // Check if directory name matches the pattern [0-9]{2}_<name>
-            if (dirName.size() >= 3 + name.size() && 
-                dirName.substr(2, 1) == "_" &&
-                dirName.substr(3) == name &&
-                dirName.substr(0, 2).find_first_not_of("0123456789") == std::string::npos) {
-                try {
-                    int prefix = std::stoi(dirName.substr(0, 2));
-                    highestPrefix = std::max(highestPrefix, prefix);
-                } catch (const std::exception&) {
-                    continue;
-                }
-            }
+    std::string prefix = "0" + std::to_string(order+1);
+    std::string dirName = prefix + "_"+ name;
+
+    //always overwrite 4th map if overflow
+    if (createdCount < 4) std::filesystem::create_directory(customDir / dirName);
+    else {
+        for (const auto& entry : std::filesystem::directory_iterator(customDir)) {
+            std::string folderName = entry.path().filename().string();
+        if (entry.is_directory() && folderName != "EmptyMapTemplate" && folderName[1] == '4') {
+            std::filesystem::path original_path = entry.path();
+            std::filesystem::path new_path = customDir / dirName;
+            std::filesystem::rename(original_path, new_path);
         }
     }
+    }
 
-    // Determine the next prefix (increment highest or start at 01)
-    std::string prefix = std::to_string(highestPrefix + 1);
-    prefix = std::string(2 - prefix.length(), '0') + prefix; // Ensure correct format of 2 digits (e.g. "01")
-
-    std::string dirName = prefix + "_" + name;
     std::filesystem::path directory = customDir / dirName;
-    std::filesystem::create_directories(directory);
     std::string extension = ".csv";
     std::filesystem::path filePath1 = directory / (prefix + "_Main" + extension);
     std::filesystem::path filePath2 = directory / (prefix + "_Items" + extension);
+    std::filesystem::path filePath3 = directory / (prefix + "_Background" + extension);
 
     std::ofstream outFile(filePath1);
     if (!outFile.is_open()) {
@@ -675,11 +667,30 @@ void MapEditor::saveMap() {
     }
     outFile.close();
 
-    name = dirName;
+    outFile.open(filePath3);
+    if (!outFile.is_open()) {
+        std::cerr << "Cannot access output file at" << filePath3 << std::endl;
+        return;
+    }
+
+    // Generate backgrond data
+    for (const auto& row : mItems) {
+        for (int i = 0; i < row.size()-1; i++) {
+            outFile << 612 << ",";
+        }
+        outFile << 612 << "\n";
+    }
+    outFile.close();
+
+    std::string loadmap = directory.string();
+    ///std::cout << "Loading map from " << loadmap << std::endl;
+    mWorld.loadMap(loadmap);
+
+    createdCount++;
 }
 
 bool MapEditor::handle() {
-    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+    if (IsKeyPressed(mKeyBinding[Action::MUTE]) && mMode != MapEditorMode::RENAME) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }

@@ -4,6 +4,7 @@
 #include "GUI/Container.hpp"
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
+#include "GUI/Slider.hpp"
 #include "Resource/ResourceHolder.hpp"
 #include <map>
 class SettingState : public State {
@@ -12,7 +13,6 @@ class SettingState : public State {
     private:
         int mCurrentPage;
         int mMaxPage;
-        //void setupPage(int page);
         virtual void draw();
         virtual bool handle();
         virtual bool update(float dt);
@@ -40,4 +40,8 @@ class SettingState : public State {
         Button* down;
         Button* right;
         Button* left;
+        
+        Slider* master;
+        Slider* mus;
+        Slider* sfx;
 };
