@@ -1,28 +1,39 @@
+#include "State/GameOverState.hpp"
+
 #include "State/GameState.hpp"
 
-GameState::GameState(StateStack& stack) : State(stack) {
-    muteButton = new Button();
-    muteButton->changeTexture(TextureIdentifier::SOUND_ON);
-    muteButton->changShape({23,22,41,41});
-    mContainer.pack(muteButton);
-    muteButton->changeCallback(
+GameOverState::GameOverState(StateStack& stack) : State(stack) {
+    Label* header = new Label();
+    header->changeShape({359,325,722,50});
+    header->changeAlignment(Alignment::CENTER);
+    header->changeColor(WHITE);
+    header->changeSize(50);
+    if ((int)mWorld.getRestLive() <= 0) header->changeText("GAME OVER!");
+    else header->changeText("TIME UP!");
+    mContainer.pack(header);
+
+    Button* retry = new Button();
+    retry->changeText("RETRY");
+    retry->changShape({615,433,211,56});
+    mContainer.pack(retry);
+    retry->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-            else ResumeMusicStream(mPlayingMusic);
+            requestStackClear();
+            requestStackPush(StateIdentifier::GAME1);
+        }
+    );
+
+    Button* quit = new Button();
+    quit->changeText("QUIT");
+    quit->changShape({615,545,211,56});
+    mContainer.pack(quit);
+    quit->changeCallback(
+        [this]() {
+            requestStackClear();
+            requestStackPush(StateIdentifier::LEVEL);
         }
     );
     
-    Button* pauseButton = new Button();
-    pauseButton->changShape({1174,811,211,56});
-    pauseButton->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    pauseButton->changeText("PAUSE");
-    mContainer.pack(pauseButton);
-    pauseButton->changeCallback(
-        [this]() {
-            requestStackPush(StateIdentifier::PAUSE);
-        }
-    );
-
     Label* lvl = new Label();
     lvl->changeShape({23,806,187, 17});
     lvl->changeSize(17);
@@ -79,41 +90,23 @@ GameState::GameState(StateStack& stack) : State(stack) {
     items->changeText("ACTIVE POWER-UPS:");
     items->changeColor(WHITE);
     mContainer.pack(items);
-    mWorld.reset();
 }
 
-void GameState::draw() {
-    mWorld.draw();
-    // Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
-    // Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
-    // mMap.setTexture(tiles, object);
-    // mMap.drawBackground();
-    // mMap.drawItem();
-    // mMap.drawMain();
-
+void GameOverState::draw() {
+    DrawRectangle(0,0,GetScreenWidth(),GetScreenHeight(),BLACK);
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
     DrawTexture(bricksTexture, -10, 772, WHITE);
     mContainer.draw();
 }
 
-bool GameState::update(float dt) {
-    if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
-    else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
-    mWorld.update(dt);
-    if ((int)mWorld.getRestLive() <= 0 || (int)mWorld.getRestTime() <= 0) {
-        requestStackClear();
-        requestStackPush(StateIdentifier::GAMEOVER);
-    }
-    return true;
+bool GameOverState::update(float dt) {
+    return false;
 }
 
-bool GameState::handle() {
+bool GameOverState::handle() {
     if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
-    }
-    if (IsKeyPressed(mKeyBinding[Action::PAUSE])) {
-        requestStackPush(StateIdentifier::PAUSE);
     }
     mWorld.handle();
     mContainer.handle();

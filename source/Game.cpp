@@ -132,7 +132,8 @@ Game::Game() {
     mStateStack.registerState<CharSelectState>(StateIdentifier::CHARSELECT);
     mStateStack.registerState<GameState>(StateIdentifier::GAME1);
     mStateStack.registerState<MapEditor>(StateIdentifier::MAPEDITOR);
-
+    mStateStack.registerState<GameOverState>(StateIdentifier::GAMEOVER);
+    
     mStateStack.pushState(StateIdentifier::MENU);
 
     mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");
