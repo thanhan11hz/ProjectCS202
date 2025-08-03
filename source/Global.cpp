@@ -26,3 +26,5 @@ std::map<Action, KeyboardKey> mKeyBinding = {
 };
 
 Music mPlayingMusic;
+float musicVolume = 1.0f;
+float sfxVolume = 1.0f;

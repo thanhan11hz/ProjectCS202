@@ -77,6 +77,9 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     masterVol->changeColor(WHITE);
     mContainer_sound.pack(masterVol);
 
+    master = new Slider(648,261,564,20, GetMasterVolume()*100);
+    mContainer_sound.pack(master);
+    
     Label* sfxVol = new Label();
     sfxVol->changeShape({166, 349, 350, 25});
     sfxVol->changeSize(25);
@@ -84,12 +87,18 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     sfxVol->changeColor(WHITE);
     mContainer_sound.pack(sfxVol);
 
+    sfx = new Slider(648,349,564,20, sfxVolume*100);
+    mContainer_sound.pack(sfx);
+
     Label* musicVol = new Label();
     musicVol->changeShape({166, 437, 350, 25});
     musicVol->changeSize(25);
     musicVol->changeText("Music Volume: ");
     musicVol->changeColor(WHITE);
     mContainer_sound.pack(musicVol);
+
+    mus = new Slider(648,437,564,20, musicVolume*100);
+    mContainer_sound.pack(mus);
 
     Label* bgm = new Label();
     bgm->changeShape({166, 569, 309, 25});
@@ -329,6 +338,12 @@ bool SettingState::update(float dt) {
     else save->changeTexture(TextureIdentifier::INACTIVE_BUTTON);
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
+    SetMasterVolume(master->getValue()/100.0);
+    musicVolume = mus->getValue()/100.0;
+    SetMusicVolume(mPlayingMusic, musicVolume);
+    sfxVolume = sfx->getValue()/100.0;
+    //update volume for sfx
+    //SetAudioStreamVolume(sfx, sfxVolume);
     return false;
 }
 
