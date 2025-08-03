@@ -39,7 +39,7 @@ void FireBall::handleCollision(Side side, Collide other) {
     }
 
     if ((side == Side::LEFT || side == Side::RIGHT) && otherLabel == Category::BLOCK) {
-        if (!mPhysics.onGround()) setDie(true);
+        if (!mPhysics.onGround()) setDie(true);        
         mWorld.addEffect(std::move(ExplosionEffect::spawnExplosionEffect(mPhysics.getPosition())));
     }
 
@@ -70,6 +70,7 @@ BowserFire::BowserFire(bool isRight) {
     mBodyCollide.setStatic(false);
     mPhysics.setDensity(0.0f);
     mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::BOWSER_FIRE), 24, 8);
+    this->isRight = isRight;
     if (!isRight) mSpeed *= -1;
 }
 
@@ -86,7 +87,7 @@ void BowserFire::handle() {
 }
         
 void BowserFire::draw() {
-    mAnim.draw(mPhysics.getPosition(), 6.0f, 0.0f);
+    mAnim.draw(mPhysics.getPosition(), 6.0f, 0.0f, !isRight);
 }
 
 void BowserFire::handleCollision(Side side, Collide other) {

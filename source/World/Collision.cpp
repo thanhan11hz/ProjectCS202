@@ -349,14 +349,13 @@ void Collision::handleCollision() {
         Vector2 charPos = mCharacter->mPhysics.getPosition();
         int charCol = charPos.x / tileSize;
         int charRow = charPos.y / tileSize;
-        int radius = 2;
+        int radius = 4;
 
         for (int i = charRow - radius; i <= charRow + radius; ++i) {
             for (int j = charCol - radius; j <= charCol + radius; ++j) {
                 if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
                     checkCollision(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
                     checkFootCollision(mCharacter->mFootCollide, mMain[i][j]->mBodyCollide);
-                    separate(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
                 }
             }
         }
@@ -368,7 +367,7 @@ void Collision::handleCollision() {
             Vector2 enemyPos = (*itr)->mPhysics.getPosition();
             int enemyCol = enemyPos.x / tileSize;
             int enemyRow = enemyPos.y / tileSize;
-            int radius = 2;
+            int radius = 4;
 
             for (int i = enemyRow - radius; i <= enemyRow + radius; ++i) {
                 for (int j = enemyCol - radius; j <= enemyCol + radius; ++j) {
@@ -384,20 +383,160 @@ void Collision::handleCollision() {
             itr = mEnemy.erase(itr);
         }
     }
+
+    // 3. Projectile vs Blocks
+    for (auto itr = mProjectile.begin(); itr != mProjectile.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            Vector2 projectilePos = (*itr)->mPhysics.getPosition();
+            int projectileCol = projectilePos.x / tileSize;
+            int projectileRow = projectilePos.y / tileSize;
+            int radius = 4;
+
+            for (int i = projectileRow - radius; i <= projectileRow + radius; ++i) {
+                for (int j = projectileCol - radius; j <= projectileCol + radius; ++j) {
+                    if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
+                        checkCollision((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                        checkFootCollision((*itr)->mFootCollide, mMain[i][j]->mBodyCollide);
+                    }
+                }
+            }
+            itr++;
+        } else {
+            itr = mProjectile.erase(itr);
+        }
+    }
     
-    // 3. Player vs. Enemies
+    // 4. Player vs. Enemies
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mEnemy.size(); ++i) {
             checkCollision(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
+    // 5. Enemies vs. Projectiles
+    for (int i = 0; i < mEnemy.size(); ++i) {
+        for (int j = 0; j < mProjectile.size(); ++j) {
+            checkCollision(mEnemy[i]->mBodyCollide, mProjectile[j]->mBodyCollide);
+        }
+    }
+
+    // 6. Character vs. Projectiles
+    if (mCharacter && !mCharacter->isDie()) {
+        for (int i = 0; i < mProjectile.size(); ++i) {
+            checkCollision(mCharacter->mBodyCollide, mProjectile[i]->mBodyCollide);
+        }
+    }
+
+    // 7. Enemies vs. Enemies
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            for (auto itr2 = itr + 1; itr2 != mEnemy.end();) {
+                if (*itr2 && !(*itr2)->isDie()) {
+                    checkCollision((*itr)->mBodyCollide, (*itr2)->mBodyCollide);
+                    itr2++;
+                } else {
+                    itr2 = mEnemy.erase(itr2);
+                }
+            }
+            itr++;
+        } else {
+            itr = mEnemy.erase(itr);
+        }
+    }
+
+    // 1. Player vs. Blocks
+    if (mCharacter && !mCharacter->isDie()) {
+        Vector2 charPos = mCharacter->mPhysics.getPosition();
+        int charCol = charPos.x / tileSize;
+        int charRow = charPos.y / tileSize;
+        int radius = 4;
+
+        for (int i = charRow - radius; i <= charRow + radius; ++i) {
+            for (int j = charCol - radius; j <= charCol + radius; ++j) {
+                if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
+                    separate(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
+                }
+            }
+        }
+    }
+
+    // 2. Enemies vs. Blocks
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+            int enemyCol = enemyPos.x / tileSize;
+            int enemyRow = enemyPos.y / tileSize;
+            int radius = 4;
+
+            for (int i = enemyRow - radius; i <= enemyRow + radius; ++i) {
+                for (int j = enemyCol - radius; j <= enemyCol + radius; ++j) {
+                    if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
+                        separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                    }
+                }
+            }
+            itr++;
+        } else {
+            itr = mEnemy.erase(itr);
+        }
+    }
+
+    // 3. Projectile vs Blocks
+    for (auto itr = mProjectile.begin(); itr != mProjectile.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            Vector2 projectilePos = (*itr)->mPhysics.getPosition();
+            int projectileCol = projectilePos.x / tileSize;
+            int projectileRow = projectilePos.y / tileSize;
+            int radius = 4;
+
+            for (int i = projectileRow - radius; i <= projectileRow + radius; ++i) {
+                for (int j = projectileCol - radius; j <= projectileCol + radius; ++j) {
+                    if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
+                        separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                    }
+                }
+            }
+            itr++;
+        } else {
+            itr = mProjectile.erase(itr);
+        }
+    }
+
+    // 4. Player vs. Enemies
+    if (mCharacter && !mCharacter->isDie()) {
+        for (int i = 0; i < mEnemy.size(); ++i) {
             separate(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
         }
     }
 
-    // 4. Enemies vs. Projectiles
+    // 5. Enemies vs. Projectiles
     for (int i = 0; i < mEnemy.size(); ++i) {
         for (int j = 0; j < mProjectile.size(); ++j) {
-            checkCollision(mEnemy[i]->mBodyCollide, mProjectile[j]->mBodyCollide);
             separate(mEnemy[i]->mBodyCollide, mProjectile[j]->mBodyCollide);
+        }
+    }
+
+    // 6. Character vs. Projectiles
+    if (mCharacter && !mCharacter->isDie()) {
+        for (int i = 0; i < mProjectile.size(); ++i) {
+            separate(mCharacter->mBodyCollide, mProjectile[i]->mBodyCollide);
+        }
+    }
+
+    // 7. Enemies vs. Enemies
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            for (auto itr2 = itr + 1; itr2 != mEnemy.end();) {
+                if (*itr2 && !(*itr2)->isDie()) {
+                    separate((*itr)->mBodyCollide, (*itr2)->mBodyCollide);
+                    itr2++;
+                } else {
+                    itr2 = mEnemy.erase(itr2);
+                }
+            }
+            itr++;
+        } else {
+            itr = mEnemy.erase(itr);
         }
     }
 }
@@ -446,8 +585,8 @@ void Collision::separate(Collide A, Collide B) {
             break;
         case Side::BOTTOM:
             position.y -= intersection.height;
-            A.getOwner()->mPhysics.setOnGround(true);
-            A.getOwner()->mPhysics.setVelocity(A.getOwner()->mPhysics.getVelocity().x, 0); // <-- ADD THIS LINE
+            // A.getOwner()->mPhysics.setOnGround(true);
+            // A.getOwner()->mPhysics.setVelocity(A.getOwner()->mPhysics.getVelocity().x, 0); // <-- ADD THIS LINE
             break;
         case Side::LEFT:
             position.x += intersection.width;

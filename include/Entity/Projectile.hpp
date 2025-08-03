@@ -42,4 +42,5 @@ class BowserFire: public MovingEntity {
         
     private:
         float mSpeed = 300.0f;
+        bool isRight;
 };

@@ -10,6 +10,7 @@
 #include "Entity/Piranha.hpp"
 #include "Entity/Podoboo.hpp"
 #include "Entity/Bowser.hpp"
+#include "Entity/FireBar.hpp"
 #include "World/Effect.hpp"
 #include "Entity/Projectile.hpp"
 

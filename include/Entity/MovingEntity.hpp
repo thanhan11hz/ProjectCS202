@@ -23,6 +23,9 @@ class MovingEntity : public Entity {
         void setDie(bool flag);
         bool isDie();
 
+        void setAfterBlock(bool flag);
+        bool isAfterBlock();
+
         virtual ~MovingEntity() = default;
     
     protected:
@@ -30,5 +33,5 @@ class MovingEntity : public Entity {
 
     private:
         bool mIsDie = false;
-
+        bool afterBlock = true;
 };

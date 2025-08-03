@@ -28,7 +28,7 @@ class Bowser : public Enemy {
         static std::unique_ptr<Bowser> spawnBowser(Vector2 position);
     private:
         Move mMove = Move::MOVE;
-        static constexpr float mAttackTime = 2.0f;
+        static constexpr float mAttackTime = 3.0f;
         float mAttackTimer = 0.0f;
         static constexpr float mCooldownTime = 10.0f;
         float mCooldownTimer = 0.0f;

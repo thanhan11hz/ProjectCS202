@@ -28,3 +28,11 @@ bool MovingEntity::isDie() {
 void MovingEntity::handleFootCollision() {
     mPhysics.setOnGround(true);
 }
+
+void MovingEntity::setAfterBlock(bool flag) {
+    afterBlock = flag;
+}
+        
+bool MovingEntity::isAfterBlock() {
+    return afterBlock;
+}

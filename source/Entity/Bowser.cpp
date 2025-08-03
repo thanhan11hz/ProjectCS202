@@ -78,6 +78,7 @@ void Bowser::fire() {
     PlaySound(Resource::mSound.get(SoundIdentifier::BOWSER_FIRE));
     Vector2 position = mPhysics.getPosition();
     if (mPhysics.isRight()) position += {getSize().x, 0};
+    else position += {-144, 0};
     mWorld.addProjectile(BowserFire::spawnBowserFire(position, mPhysics.isRight()));
 }
 

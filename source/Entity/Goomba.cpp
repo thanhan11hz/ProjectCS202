@@ -13,6 +13,7 @@ void Goomba::update(float dt) {
     if (isDie()) return;
     MovingEntity::update(dt);
     if (mMove == Move::DEAD) {
+        std::cout << "Death";
         if (mDeadTimer < mDeadTime) mDeadTimer += dt;
         else setDie(true);
         return;
@@ -33,15 +34,26 @@ void Goomba::draw() {
 
 void Goomba::handleCollision(Side side, Collide other) {
     Category otherLabel = other.getLabel();
-    if (side == Side::TOP && otherLabel == Category::MARIO && mMove == Move::RUN)
+    if (side == Side::TOP && otherLabel == Category::MARIO && mMove == Move::RUN) {
         PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         setMove(Move::DEAD);
+    }
 
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
         mSpeed = (side == Side::RIGHT) ? -100.0f : 100.0f;
     }
 
     if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, true));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+    }
+
+    if (otherLabel == Category::ENEMY) {
+        mSpeed *= -1;
+    }
+
+    if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "KOOPA") {
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));

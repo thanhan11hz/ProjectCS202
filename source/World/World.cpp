@@ -89,7 +89,7 @@ void World::draw() {
     // mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawItem(mCam);
 
-    if (!mCharacter->isDie()) mCharacter->draw();
+    if (!mCharacter->isDie() && mCharacter->isAfterBlock()) mCharacter->draw();
 
     // Rectangle that represents what the camera can currently see.
     Rectangle cameraView = {
@@ -107,7 +107,7 @@ void World::draw() {
         Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
 
         // Check if the enemy's rectangle overlaps with the camera's view
-        if (CheckCollisionRecs(cameraView, enemyRect)) {
+        if (CheckCollisionRecs(cameraView, enemyRect) && (*itr)->isAfterBlock()) {
             (*itr)->draw(); // Only draw the enemy if it's visible
         }
     }
@@ -119,8 +119,23 @@ void World::draw() {
     // mMap[mCurrent]->drawMain();
     mMap[mCurrent]->drawMain(mCam);
 
+    if (!mCharacter->isDie() && !mCharacter->isAfterBlock()) mCharacter->draw();
+
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ++itr) {
         (*itr)->draw();
+    }
+
+    // Only draw the ones inside view.
+    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
+        // Get the enemy's bounding box
+        Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+        Vector2 enemySize = (*itr)->getSize();
+        Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
+
+        // Check if the enemy's rectangle overlaps with the camera's view
+        if (CheckCollisionRecs(cameraView, enemyRect) && !(*itr)->isAfterBlock()) {
+            (*itr)->draw(); // Only draw the enemy if it's visible
+        }
     }
 
     // mEffect.draw();
@@ -190,11 +205,13 @@ void World::reset() {
     if (mCharacter) {
         mCharacter->mPhysics.setPosition({150, 400});
     }
-    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
-    //
-    mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
-    mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
-    mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
+    std::vector<std::unique_ptr<FireBar>> mFireBar = FireBar::spawnFireBar({200, 600});
+    for (int i = 0; i < mFireBar.size(); ++i) {
+        mEnemy.push_back(std::move(mFireBar[i]));
+    }
+    // mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
+    // mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
+    // mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
     //
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
