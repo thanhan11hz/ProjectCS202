@@ -8,6 +8,7 @@ class IItemBehavior {
 protected:
     Side side;
     Category other;
+    std::string oTag;
 public:
     virtual void onCollect(TileObject& item) = 0;
     virtual void update(TileObject& item, float dt) = 0;

@@ -42,6 +42,12 @@ void World::update(float dt) {
     }
 
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ) {
+        // If an enemy falls too far down, mark it as dead.
+        const float deathPlaneY = 2000.0f;
+        if ((*itr)->mPhysics.getPosition().y > deathPlaneY) {
+            (*itr)->setDie(true);
+        }
+        // ----------------------
         if (*itr && !(*itr)->isDie()) {
             (*itr)->update(dt);
             ++itr;
@@ -77,27 +83,48 @@ void World::draw() {
     Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
     mMap[mCurrent]->setTexture(tiles, object);
 
-    mMap[mCurrent]->drawBackground();
+    // mMap[mCurrent]->drawBackground();
+    mMap[mCurrent]->drawBackground(mCam);
 
-    mMap[mCurrent]->drawItem();
+    // mMap[mCurrent]->drawItem();
+    mMap[mCurrent]->drawItem(mCam);
 
     if (!mCharacter->isDie()) mCharacter->draw();
 
+    // Rectangle that represents what the camera can currently see.
+    Rectangle cameraView = {
+        mCam.target.x - mCam.offset.x,
+        mCam.target.y - mCam.offset.y,
+        (float)targetWidth,
+        (float)targetHeight
+    };
+
+    // Only draw the ones inside view.
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-        (*itr)->draw();
+        // Get the enemy's bounding box
+        Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+        Vector2 enemySize = (*itr)->getSize();
+        Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
+
+        // Check if the enemy's rectangle overlaps with the camera's view
+        if (CheckCollisionRecs(cameraView, enemyRect)) {
+            (*itr)->draw(); // Only draw the enemy if it's visible
+        }
     }
-
+    
     // for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
-    //     (*itr)->draw();
-    // }
-
-    mMap[mCurrent]->drawMain();
+        //     (*itr)->draw();
+        // }
+        
+    // mMap[mCurrent]->drawMain();
+    mMap[mCurrent]->drawMain(mCam);
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ++itr) {
         (*itr)->draw();
     }
 
-    mEffect.draw();
+    // mEffect.draw();
+    mEffect.draw(mCam);
 
     EndMode2D();
 }
@@ -159,7 +186,16 @@ void World::backMap() {
 }
 
 void World::reset() {
-    mEnemy.push_back(Bowser::spawnBowser({200, 650}));
+    mEnemy.clear();
+    if (mCharacter) {
+        mCharacter->mPhysics.setPosition({150, 400});
+    }
+    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
+    //
+    mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
+    mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
+    mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
+    //
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);
@@ -174,7 +210,16 @@ void World::reset() {
 }
 
 void World::restart() {
+    mEnemy.clear();
+    if (mCharacter) {
+        mCharacter->mPhysics.setPosition({150, 400});
+    }
     mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
+    //
+    mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
+    mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
+    mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
+    //
     mCollision.clearCollidables();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);
@@ -210,4 +255,27 @@ void World::damage() {
 
 Camera2D& World::getCamera() {
     return mCam;
+}
+
+bool World::isSolidTileAt(Vector2 worldPosition) {
+    // Get the main tile grid from the current map
+    auto& grid = mMap[mCurrent]->getMain();
+
+    if (grid.empty()) {
+        return false;
+    }
+
+    int col = worldPosition.x / 48;
+    int row = worldPosition.y / 48;
+
+    if (row < 0 || row >= grid.size() || col < 0 || col >= grid[0].size()) {
+        return false;
+    }
+
+    // Check if the tile at the grid index exists and is collidable
+    if (grid[row][col] && grid[row][col]->isSolid()) {
+        return true;
+    }
+
+    return false;
 }

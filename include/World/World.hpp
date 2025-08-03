@@ -45,6 +45,9 @@ class World {
 
         ~World();
 
+        // For Koopa ledging logic
+        bool isSolidTileAt(Vector2 worldPosition);
+
     protected:
         World();
         static World* instance;

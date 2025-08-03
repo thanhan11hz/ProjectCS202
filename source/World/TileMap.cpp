@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <cmath>
+
+
 #include <sstream>
 using namespace std;
 
@@ -19,7 +22,10 @@ void TileMap::loadFromFile(const std::string& directory) {
         } else if (stem == prefix + "Items") {
             createMap(3, matrix);
         }
-        else if( stem == prefix + "Background1") {
+        else if( stem == prefix + "Enemies") {
+            createMap(5, matrix);
+        }
+        else if(stem == prefix + "Background1") {
             createMap(4, matrix);
         }
         
@@ -68,6 +74,30 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
             row.clear();
         }
     }
+    else if (choice == 5){
+        std::cout << "Load Enemies" << "\n";
+        for(int i = 0; i < matrix.size(); i++){
+            for (int j = 0; j < matrix[i].size(); j++){
+                int num = matrix[i][j];
+                int tileId = num;
+                int col =  j;
+                Etr Enemy = nullptr;
+                switch (num)
+                {
+                    case 0: // Goomba
+                        Enemy = std::make_unique<Goomba>();
+                        std::cout << "Spawn Goomba at: " << col << ", " << i << "\n";
+                        break;
+                    default:
+                        break;
+                }
+                if (Enemy) {
+                    Enemy->mPhysics.setPosition({col * 48.0f, i * 48.0f});
+                    Enemies.emplace_back(std::move(Enemy));
+                }
+            }
+        }
+    }
     else {
         for(int i = 0; i < matrix.size(); i++){
             for (int j = 0; j < matrix[i].size(); j++){
@@ -110,46 +140,151 @@ vector<vector<int>> TileMap::loadMatrixFromCSV(const string& filepath) {
     return matrix;
 }
 
-void TileMap::drawBackground() {
-    for (int i = 0; i < mBackground.size(); i++) {
-        for (int j = 0; j < mBackground[i].size(); j++) {
-            const Rectangle& rect = mBackground[i][j]->getRect(); 
-            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
-            //     mBackground[i][j]->draw(tileTexture, objectTexture);
-            // }
-            mBackground[i][j]->draw(tileTexture, objectTexture);
-            if ( mBackground2.size() > 0) mBackground2[i][j]->draw(tileTexture, objectTexture);
+// void TileMap::drawBackground() {
+//     for (int i = 0; i < mBackground.size(); i++) {
+//         for (int j = 0; j < mBackground[i].size(); j++) {
+//             const Rectangle& rect = mBackground[i][j]->getRect(); 
+//             // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
+//             //     rect.y + rect.height >= 0 && rect.y <= screenH) {
+//             //     mBackground[i][j]->draw(tileTexture, objectTexture);
+//             // }
+//             mBackground[i][j]->draw(tileTexture, objectTexture);
+//             if ( mBackground2.size() > 0) 
+//                 mBackground2[i][j]->draw(tileTexture, objectTexture);
+//         }
+//     }
+// }
+
+void TileMap::drawBackground(Camera2D& camera) {
+    // Calculate the camera's view in world coordinates
+    float startX = camera.target.x - camera.offset.x;
+    float endX = startX + targetWidth;
+    float startY = camera.target.y - camera.offset.y;
+    float endY = startY + targetHeight;
+
+    // Convert world coordinates to tile indices
+    int startCol = startX / TileBlock::TILE_RENDER_SIZE;
+    int endCol = endX / TileBlock::TILE_RENDER_SIZE;
+    int startRow = startY / TileBlock::TILE_RENDER_SIZE;
+    int endRow = endY / TileBlock::TILE_RENDER_SIZE;
+
+    // Clamp values for the first layer
+    int clampedStartRow1 = std::max(0, startRow);
+    int clampedEndRow1 = std::min((int)mBackground.size() - 1, endRow);
+    int clampedStartCol1 = std::max(0, startCol);
+    int clampedEndCol1 = std::min((int)mBackground[0].size() - 1, endCol);
+
+    for (int i = clampedStartRow1; i <= clampedEndRow1; i++) {
+        for (int j = clampedStartCol1; j <= clampedEndCol1; j++) {
+            if (mBackground[i][j]) {
+                mBackground[i][j]->draw(tileTexture, objectTexture);
+            }
+        }
+    }
+
+    // Draw the second background layer
+    if (!mBackground2.empty()) {
+        // Clamp values for the second layer
+        int clampedStartRow2 = std::max(0, startRow);
+        int clampedEndRow2 = std::min((int)mBackground2.size() - 1, endRow);
+        int clampedStartCol2 = std::max(0, startCol);
+        int clampedEndCol2 = std::min((int)mBackground2[0].size() - 1, endCol);
+
+        for (int i = clampedStartRow2; i <= clampedEndRow2; i++) {
+            for (int j = clampedStartCol2; j <= clampedEndCol2; j++) {
+                if (mBackground2[i][j]) {
+                    mBackground2[i][j]->draw(tileTexture, objectTexture);
+                }
+            }
         }
     }
 }
 
-void TileMap::drawItem() {
-    for (int i = 0; i < mItem.size(); i++) {
-        for (int j = 0; j < mItem[i].size(); j++) {
-            const Rectangle& rect = mItem[i][j]->getRect(); 
-            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
-            //     mItem[i][j]->draw(tileTexture, objectTexture);
-            // }
-            mItem[i][j]->draw(tileTexture, objectTexture);
+// void TileMap::drawItem() {
+//     for (int i = 0; i < mItem.size(); i++) {
+//         for (int j = 0; j < mItem[i].size(); j++) {
+//             const Rectangle& rect = mItem[i][j]->getRect(); 
+
+//             mItem[i][j]->draw(tileTexture, objectTexture);
+//         }
+//     }
+// }
+
+void TileMap::drawItem(Camera2D& camera) {
+    // Calculate the camera's view in world coordinates
+    float startX = camera.target.x - camera.offset.x;
+    float endX = startX + targetWidth;
+    float startY = camera.target.y - camera.offset.y;
+    float endY = startY + targetHeight;
+
+    // Convert world coordinates to tile indices
+    int startCol = startX / TileBlock::TILE_RENDER_SIZE;
+    int endCol = endX / TileBlock::TILE_RENDER_SIZE;
+    int startRow = startY / TileBlock::TILE_RENDER_SIZE;
+    int endRow = endY / TileBlock::TILE_RENDER_SIZE;
+
+    // Clamp values to be within the map boundaries to prevent crashes
+    startCol = std::max(0, startCol);
+    endCol = std::min((int)mItem[0].size() - 1, endCol);
+    startRow = std::max(0, startRow);
+    endRow = std::min((int)mItem.size() - 1, endRow);
+
+    // Loop only through the visible tiles
+    for (int i = startRow; i <= endRow; i++) {
+        for (int j = startCol; j <= endCol; j++) {
+            if (mItem[i][j]) { // Check if the tile exists
+                mItem[i][j]->draw(tileTexture, objectTexture);
+            }
         }
     }
 }
 
-void TileMap::drawMain() {
-    for (int i = 0; i < mMain.size(); i++) {
-        for (int j = 0; j < mMain[i].size(); j++) {
-            const Rectangle& rect = mMain[i][j]->getRect(); 
-            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
-            //     mMain[i][j]->draw(tileTexture, objectTexture);
-            // }
-            mMain[i][j]->draw(tileTexture, objectTexture);
+// void TileMap::drawMain() {
+//     for (int i = 0; i < mMain.size(); i++) {
+//         for (int j = 0; j < mMain[i].size(); j++) {
+//             const Rectangle& rect = mMain[i][j]->getRect(); 
+//             mMain[i][j]->draw(tileTexture, objectTexture);
+//         }
+//     }
+// }
+
+void TileMap::drawMain(Camera2D& camera) {
+    // Calculate the camera's view in world coordinates
+    float startX = camera.target.x - camera.offset.x;
+    float endX = startX + targetWidth;
+    float startY = camera.target.y - camera.offset.y;
+    float endY = startY + targetHeight;
+
+    // Convert world coordinates to tile indices
+    int startCol = startX / TileBlock::TILE_RENDER_SIZE;
+    int endCol = endX / TileBlock::TILE_RENDER_SIZE;
+    int startRow = startY / TileBlock::TILE_RENDER_SIZE;
+    int endRow = endY / TileBlock::TILE_RENDER_SIZE;
+
+    // Clamp values to be within the map boundaries to prevent crashes
+    startCol = std::max(0, startCol);
+    endCol = std::min((int)mMain[0].size() - 1, endCol);
+    startRow = std::max(0, startRow);
+    endRow = std::min((int)mMain.size() - 1, endRow);
+
+    // Loop only through the visible tiles
+    for (int i = startRow; i <= endRow; i++) {
+        for (int j = startCol; j <= endCol; j++) {
+            if (mMain[i][j]) { // Check if the tile exists
+                mMain[i][j]->draw(tileTexture, objectTexture);
+            }
         }
     }
 }
-           
+
+void TileMap::drawEnemy() {
+    for (auto& enemy : Enemies) {
+        if (enemy->isActive()) {
+            
+            enemy->draw();
+        }
+    }
+}
 void TileMap::update(float dt){
  
     for (int i = 0; i < mBackground.size(); i++) {
@@ -164,7 +299,14 @@ void TileMap::update(float dt){
             mBackground[i][j]->update(dt);
             mItem[i][j]->update(dt);
             mMain[i][j]->update(dt);
+            if(i < Enemies.size()) {
+                if ((Enemies[i]->mPhysics.getPosition().y < 1000000.0f) && (Enemies[i]->isActive())) {
+                    // std::cout << "Drawing Enemy: " << i << " at position: " << Enemies[i]->mPhysics.getPosition().x << ", " << Enemies[i]->mPhysics.getPosition().y << "\n";
+                }
+                Enemies[i]->update(dt);
+            }
         }
+
 
     }
 }

@@ -15,7 +15,7 @@ void FragmentBehavior::update(TileObject& item, float dt) {
 
 void SimpleBehavior::update(TileObject& item, float dt) {
     Vector2 mousePos = GetMousePosition();
-    if(CheckCollisionPointRec(mousePos, item.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
+    if(side == Side::BOTTOM && other == Category::MARIO && (oTag == "Normal" || oTag  == "Super")){
         item.setOn(true);
         item.setAnimation();
         item.mPhysics.setVelocity({0, 96.0f});
@@ -38,6 +38,9 @@ void SimpleBehavior::moveUp(TileObject& item, float dt) {
         item.isDoneAnimation = true;
         item.aniTime = 0.0f;
         item.isUp = true;
+        side = Side::NONE;
+        other = Category::NONE;
+        oTag = "";
     }
 }
 
