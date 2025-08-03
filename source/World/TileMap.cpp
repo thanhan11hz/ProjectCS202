@@ -79,14 +79,26 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
         for(int i = 0; i < matrix.size(); i++){
             for (int j = 0; j < matrix[i].size(); j++){
                 int num = matrix[i][j];
+                if (num == -1) continue; 
                 int tileId = num;
                 int col =  j;
                 Etr Enemy = nullptr;
                 switch (num)
                 {
                     case 0: // Goomba
-                        Enemy = std::make_unique<Goomba>();
-                        std::cout << "Spawn Goomba at: " << col << ", " << i << "\n";
+                    case 1: 
+                        Enemy = Goomba::spawnGoomba1({col * 48.0f, i * 48.0f});
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
+                        break;
+                        
+                    case 18:
+                    case 19: 
+                        Enemy = Goomba::spawnGoomba2({col * 48.0f, i * 48.0f});
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
+                        break;
+                    case 84:
+                        Enemy = Piranha::spawnPiranha2({col * 48.0f, i * 48.0f});
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
                         break;
                     default:
                         break;
@@ -277,14 +289,6 @@ void TileMap::drawMain(Camera2D& camera) {
     }
 }
 
-void TileMap::drawEnemy() {
-    for (auto& enemy : Enemies) {
-        if (enemy->isActive()) {
-            
-            enemy->draw();
-        }
-    }
-}
 void TileMap::update(float dt){
  
     for (int i = 0; i < mBackground.size(); i++) {
@@ -299,14 +303,6 @@ void TileMap::update(float dt){
             mBackground[i][j]->update(dt);
             mItem[i][j]->update(dt);
             mMain[i][j]->update(dt);
-            // if(i < Enemies.size()) {
-            //     if ((Enemies[i]->mPhysics.getPosition().y < 1000000.0f) && (Enemies[i]->isActive())) {
-            //         // std::cout << "Drawing Enemy: " << i << " at position: " << Enemies[i]->mPhysics.getPosition().x << ", " << Enemies[i]->mPhysics.getPosition().y << "\n";
-            //     }
-            //     Enemies[i]->update(dt);
-            // }
         }
-
-
     }
 }

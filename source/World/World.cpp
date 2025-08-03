@@ -86,6 +86,7 @@ void World::draw() {
     // mMap[mCurrent]->drawBackground();
     mMap[mCurrent]->drawBackground(mCam);
 
+
     // mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawItem(mCam);
 
@@ -201,6 +202,8 @@ void World::backMap() {
 }
 
 void World::reset() {
+
+
     mEnemy.clear();
     if (mCharacter) {
         mCharacter->mPhysics.setPosition({150, 400});
@@ -213,8 +216,12 @@ void World::reset() {
     // mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
     // mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
     //
+
     mCollision.clearCollidables();
-    mCollision.addEnemy(mEnemy);
+    std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
+    mCollision.addEnemy(Enemy);
+    mEnemy = mMap[mCurrent]->takeEnemies();
+    mEnemy.push_back(Goomba::spawnGoomba1({200, 600}));
     mCollision.addItem(mItem);
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
@@ -238,6 +245,7 @@ void World::restart() {
     mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
     //
     mCollision.clearCollidables();
+    std::vector<std::unique_ptr<Enemy>>& mEnemy = mMap[mCurrent]->getEnemy();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);
     mCollision.addCharacter(mCharacter.get());
