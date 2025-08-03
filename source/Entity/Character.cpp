@@ -16,8 +16,8 @@ void Character::handle() {
         }
     } else {
         if (IsKeyDown(mKey[Action::DOWN])) setMove(Move::CROUCH);
-        if (IsKeyDown(mKey[Action::LEFT])) mPhysics.accelerate({-mLength, 0});
-        if (IsKeyDown(mKey[Action::RIGHT])) mPhysics.accelerate({mLength, 0});
+        if (IsKeyDown(mKey[Action::LEFT])) mPhysics.accelerate({mIsImmortal ? -3 * mLength : -mLength, 0});
+        if (IsKeyDown(mKey[Action::RIGHT])) mPhysics.accelerate({mIsImmortal ? 3 * mLength : mLength, 0});
     }
     if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) {
         mPhysics.startJump(mHigh);
@@ -26,12 +26,13 @@ void Character::handle() {
     }
     if (IsKeyReleased(mKey[Action::JUMP])) mPhysics.endJump();
     if (mForm == Form::FIRE) {
-        if (IsKeyPressed(mKey[Action::FIRE])) fire();
+        if (IsKeyPressed(mKey[Action::FIRE])) 
+            if (mCooldown >= mCooldownTime) fire();
     }
 }
         
 void Character::draw() {
-    if (mMove == Move::DEAD) return;
+    if (isDie()) return;
     if (transitionProgress < 1.0f) {
         if (mForm == Form::NORMAL) mAnim.drawScale(mPhysics.getPosition() - Vector2{0, 48 - transitionProgress * 48}, 3.0f, 3.0f * (32 - transitionProgress * 16) / 16.0f, !mPhysics.isRight(), false, mIsImmortal);
         else mAnim.drawScale(mPhysics.getPosition() + Vector2{0, 48 - transitionProgress * 48}, 3.0f, 3.0f * (16 + transitionProgress * 16) / 32.0f, !mPhysics.isRight(), false, mIsImmortal);
@@ -41,7 +42,7 @@ void Character::draw() {
 }
         
 void Character::update(float dt) {
-    if (mMove == Move::DEAD) return;
+    if (isDie()) return;
     MovingEntity::update(dt);
     updateMove();
     updateImmortal(dt);
@@ -51,13 +52,15 @@ void Character::update(float dt) {
             transitionProgress = 1.0f;
         }
     }
+
+    if (mCooldown < mCooldownTime) mCooldown += dt;
+    if (invincibleTimer < invincibleTime) invincibleTimer += dt;
     
     mAnim.update(dt);
     mPhysics.setOnGround(false);
 }
 
 void Character::updateMove() {
-    if (mMove == Move::DEAD) return;
     if (mMove == Move::CROUCH) return;
     Move next = mMove;           
     if (!mPhysics.onGround())                      
@@ -124,10 +127,13 @@ void Character::setImmortal(bool flag) {
 void Character::setForm(Form form) {
     if (mForm == form) return;
     if (mForm == Form::NORMAL) {
+        PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP));
         transitionProgress = 0.0f;
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y - 48});
     }
     if (form == Form::NORMAL) {
+        invincibleTimer = 0.0f;
+        PlaySound(Resource::mSound.get(SoundIdentifier::PIPE));
         transitionProgress = 0.0f;
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 48});
     }
@@ -136,9 +142,24 @@ void Character::setForm(Form form) {
 }
 
 void Character::fire() {
+    mCooldown = 0.0f;
+    PlaySound(Resource::mSound.get(SoundIdentifier::FIREBALL));
     Vector2 position = mPhysics.isRight() ? mPhysics.getPosition() + Vector2{getSize().x, getSize().y / 2.0f} : mPhysics.getPosition() + Vector2{0, getSize().y / 2.0f};
     std::unique_ptr<FireBall> fireBall = FireBall::spawnFireBall(position, mPhysics.isRight());
     mWorld.addProjectile(std::move(fireBall));
+}
+
+void Character::damage() {
+    if (isDie()) return;
+    if (mForm == Form::NORMAL) {
+        if (invincibleTimer < invincibleTime) return;
+        PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, false));
+    } else {
+        invincibleTimer = 0.0f;
+        setForm(Form::NORMAL);
+    }
 }
 
 std::unique_ptr<Character> Character::spawnMario() {
@@ -155,6 +176,7 @@ std::unique_ptr<Character> Character::spawnMario() {
     mChar->mFire[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_F_RUN);
     mChar->mFire[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_F_IDLE);
     mChar->mFire[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::MARIO_F_CROUCH);
+    mChar->mDeath = Resource::mTexture.get(TextureIdentifier::MARIO_DEATH);
     mChar->setMove(Move::IDLE);
     return std::move(mChar);
 }
@@ -173,6 +195,7 @@ std::unique_ptr<Character> Character::spawnLuigi() {
     mChar->mFire[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_RUN);
     mChar->mFire[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_IDLE);
     mChar->mFire[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_CROUCH);
+    mChar->mDeath = Resource::mTexture.get(TextureIdentifier::LUIGI_DEATH);
     mChar->setMove(Move::IDLE);
     return std::move(mChar);
 }
@@ -188,8 +211,13 @@ void Character::handleCollision(Side side, Collide other) {
     if (side == Side::TOP && otherLabel == Category::BLOCK) {
         mPhysics.setVelocity({mPhysics.getVelocity().x, 0});
     }
-    if ((side == Side::LEFT || side == Side::RIGHT) && otherLabel == Category::BLOCK) {
-        
+
+    if (otherLabel == Category::ENEMY && side != Side::BOTTOM) {
+        damage();
+    }
+
+    if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "BowserFire") {
+        damage();
     }
 }
 

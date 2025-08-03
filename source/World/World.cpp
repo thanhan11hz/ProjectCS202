@@ -30,7 +30,7 @@ void World::update(float dt) {
 
     mMap[mCurrent]->update(dt);
 
-    mCharacter->update(dt);
+    if (!mCharacter->isDie()) mCharacter->update(dt);
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ) {
         if (*itr && !(*itr)->isDie()) {
@@ -89,12 +89,7 @@ void World::draw() {
     // mMap[mCurrent]->drawItem();
     mMap[mCurrent]->drawItem(mCam);
 
-    //mMap[mCurrent]->drawEnemy();
-    mCharacter->draw();
-    
-    // for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-    //     (*itr)->draw();
-    // }
+    if (!mCharacter->isDie()) mCharacter->draw();
 
     // Rectangle that represents what the camera can currently see.
     Rectangle cameraView = {
@@ -135,7 +130,7 @@ void World::draw() {
 }
 
 void World::handle() {
-    mCharacter->handle();
+    if (!mCharacter->isDie()) mCharacter->handle();
 
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
         (*itr)->handle();

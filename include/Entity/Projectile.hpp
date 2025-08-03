@@ -27,7 +27,7 @@ class FireBall : public MovingEntity {
 
 class BowserFire: public MovingEntity {
     public:
-        BowserFire();
+        BowserFire(bool isRight);
         virtual void update(float dt);
         virtual void handle();
         virtual void draw();
@@ -38,10 +38,8 @@ class BowserFire: public MovingEntity {
 
         virtual std::string getTag();
 
-        static std::unique_ptr<BowserFire> spawnBowserFire(Vector2 position, float speed);
-
-        void setSpeed(float speed);
+        static std::unique_ptr<BowserFire> spawnBowserFire(Vector2 position, bool isRight);
         
     private:
-        float mSpeed;
+        float mSpeed = 300.0f;
 };

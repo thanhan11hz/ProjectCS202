@@ -8,6 +8,8 @@
 #include "World/Collision.hpp"
 #include "Entity/Goomba.hpp"
 #include "Entity/Piranha.hpp"
+#include "Entity/Podoboo.hpp"
+#include "Entity/Bowser.hpp"
 #include "World/Effect.hpp"
 #include "Entity/Projectile.hpp"
 

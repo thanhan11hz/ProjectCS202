@@ -64,17 +64,21 @@ std::unique_ptr<FireBall> FireBall::spawnFireBall(Vector2 position, bool isRight
 
 // BowserFire
 
-BowserFire::BowserFire() {
+BowserFire::BowserFire(bool isRight) {
     mBodyCollide.setLabel(Category::PROJECTILE);
     mBodyCollide.setFilter(static_cast<Category>(Category::BLOCK | Category::ITEM | Category::ENEMY));
     mBodyCollide.setStatic(false);
     mPhysics.setDensity(0.0f);
+    mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::BOWSER_FIRE), 24, 8);
+    if (!isRight) mSpeed *= -1;
 }
 
 void BowserFire::update(float dt) {
     if (isDie()) return;
-    MovingEntity::update(dt);
     mPhysics.accelerate({mSpeed, 0});
+    MovingEntity::update(dt);
+    Vector2 screenPos = GetWorldToScreen2D(mPhysics.getPosition(), mWorld.getCamera());
+    if (screenPos.x < -100.0f || screenPos.x > 100 + targetWidth) setDie(true);
 }
 
 void BowserFire::handle() {
@@ -82,8 +86,7 @@ void BowserFire::handle() {
 }
         
 void BowserFire::draw() {
-    if (isDie()) return;
-    mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f);
+    mAnim.draw(mPhysics.getPosition(), 6.0f, 0.0f);
 }
 
 void BowserFire::handleCollision(Side side, Collide other) {
@@ -91,20 +94,15 @@ void BowserFire::handleCollision(Side side, Collide other) {
 }
 
 Vector2 BowserFire::getSize() {
-    return {72, 24};
+    return {144, 48};
 }
 
 std::string BowserFire::getTag() {
     return "BowserFire";
 }
 
-void BowserFire::setSpeed(float speed) {
-    mSpeed = speed;
-}
-
-std::unique_ptr<BowserFire> BowserFire::spawnBowserFire(Vector2 position, float speed) {
-    std::unique_ptr<BowserFire> mBowserFire = std::make_unique<BowserFire>();
+std::unique_ptr<BowserFire> BowserFire::spawnBowserFire(Vector2 position, bool isRight) {
+    std::unique_ptr<BowserFire> mBowserFire = std::make_unique<BowserFire>(isRight);
     mBowserFire->mPhysics.setPosition(position);
-    mBowserFire->setSpeed(speed);
     return std::move(mBowserFire);
 }

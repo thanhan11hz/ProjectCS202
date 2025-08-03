@@ -17,7 +17,6 @@ class Character : public MovingEntity {
             JUMP, 
             CROUCH, 
             SKID,
-            DEAD
         };
 
         enum class Form {
@@ -40,6 +39,8 @@ class Character : public MovingEntity {
         std::map<Move,Texture2D> mFire;
         std::map<Move,Texture2D> mSuper;
 
+        Texture2D mDeath;
+
         virtual void handleCollision(Side side, Collide other);
 
         virtual std::string getTag();
@@ -58,12 +59,19 @@ class Character : public MovingEntity {
         void updateImmortal(float dt);
         void setImmortal(bool flag);
 
+        static constexpr float invincibleTime = 2.0f;
+        float invincibleTimer = 2.0f;
+
         float transitionProgress = 1.0f;
 
         void fire();
+        static constexpr float mCooldownTime = 1.0f;
+        float mCooldown = 1.0f;
 
         float mHigh;
         float mLength;
+
+        void damage();
 
         std::map<Action, KeyboardKey> &mKey;
 };
