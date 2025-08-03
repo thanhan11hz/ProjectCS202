@@ -8,6 +8,8 @@
 #include "World/Collision.hpp"
 #include "Entity/Goomba.hpp"
 #include "Entity/Piranha.hpp"
+#include "Entity/Podoboo.hpp"
+#include "Entity/Bowser.hpp"
 #include "World/Effect.hpp"
 #include "Entity/Projectile.hpp"
 
@@ -42,6 +44,9 @@ class World {
         void damage();
 
         ~World();
+
+        // For Koopa ledging logic
+        bool isSolidTileAt(Vector2 worldPosition);
 
     protected:
         World();

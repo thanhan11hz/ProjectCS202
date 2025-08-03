@@ -1,36 +1,48 @@
 #pragma once
 
 #include <memory>
-
-#include "Entity/Entity.hpp"
-#include "Entity/Animation.hpp"
+#include "Entity/Enemy.hpp"
 #include "Global.hpp"
 
-class Koopa : public Entity {
-    public:
-        enum class Move {
-            RUN,
-            SHELL
-        };
+class Koopa : public Enemy {
+public:
+    enum class State {
+        WALKING,
+        SHELL,
+        SLIDING,
+        WIGGLING
+    };
 
-        Koopa();
+    enum class Type {
+        K_GREEN,
+        K_RED,
+        K_BLUE
+    };
 
-        virtual void update(float dt);
-        virtual void handle();
-        virtual void draw();
+    Koopa(Type type);
 
-        virtual void handleCollision(Side side, Collide other);
-        virtual Vector2 getSize();
+    virtual void update(float dt) override;
+    virtual void handle() override;
+    virtual void draw() override;
+    virtual void handleCollision(Side side, Collide other) override;
+    virtual Vector2 getSize() override;
+    virtual std::string getTag() override;
 
-        Texture2D mRun;
-        Texture2D mDie;
+    static std::unique_ptr<Koopa> spawnKoopa(Vector2 position, Type type);
 
-        static std::unique_ptr<Koopa> spawnKoopa1();
-        static std::unique_ptr<Koopa> spawnKoopa2();
+private:
+    void setState(State state);
 
-    private:
-        Move mMove;
-        Animation mAnim;
-        float mSpeed = 100.0f;
-        void setMove(Move move);
+    State mState;
+    Type mType;
+    float mSpeed;
+    float mLedgeCooldown;
+
+    float mShellTimer;
+    static constexpr float mTimeToWiggle = 5.0f;
+    static constexpr float mTimeToEmerge = 2.0f;
+
+    Texture2D mRunTexture;
+    Texture2D mShellTexture;
+    Texture2D mWiggleTexture;
 };

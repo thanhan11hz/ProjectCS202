@@ -28,9 +28,16 @@ public:
     void loadFromFile(const std::string& directory);
     std::vector<std::vector<int>> loadMatrixFromCSV(const std::string& filepath);
     void createMap(int choice, std::vector<std::vector<int>>& matrix);
-    void drawBackground();
-    void drawItem();
-    void drawMain();
+
+
+    // void drawBackground();
+    void drawBackground(Camera2D& camera);
+    void drawEnemy();
+    // void drawItem();
+    void drawItem(Camera2D& camera);
+    // void drawMain();
+    void drawMain(Camera2D& camera);
+
     void update(float dt);
     void setTexture(Texture2D tileBlock, Texture2D tileObject) {tileTexture = tileBlock; objectTexture = tileObject;};
     std::vector<std::vector<Btr>>& getMain() {return mMain;}

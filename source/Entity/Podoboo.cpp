@@ -10,9 +10,10 @@ Podoboo::Podoboo() {
 }
 
 void Podoboo::update(float dt) {
-    if (isActive()) return;
-    if (isDie()) return;
     Enemy::update(dt);
+    if (!isActive()) return;
+    if (isDie()) return;
+    MovingEntity::update(dt);
     if (mIsRest) {
         if (mRestTimer > mRestTime) {
             mIsRest = false;

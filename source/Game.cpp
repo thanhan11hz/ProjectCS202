@@ -84,12 +84,22 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_RUN, "resource\\Texture\\Spritesheet\\Goomba2_Run.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_DIE, "resource\\Texture\\Spritesheet\\Goomba2_Die.png");
     Resource::mTexture.load(TextureIdentifier::GOOMBA2_DEATH, "resource\\Texture\\Spritesheet\\Goomba2_Death.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_GREEN_RUN, "resource/Texture/Spritesheet/Koopa_Green_Run.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_GREEN_SHELL, "resource/Texture/Spritesheet/Koopa_Green_Shell.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_GREEN_WIGGLE, "resource/Texture/Spritesheet/Koopa_Green_Wiggle.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_RED_RUN, "resource/Texture/Spritesheet/Koopa_Red_Run.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_RED_SHELL, "resource/Texture/Spritesheet/Koopa_Red_Shell.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_RED_WIGGLE, "resource/Texture/Spritesheet/Koopa_Red_Wiggle.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_BLUE_RUN, "resource/Texture/Spritesheet/Koopa_Blue_Run.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_BLUE_SHELL, "resource/Texture/Spritesheet/Koopa_Blue_Shell.png");
+    Resource::mTexture.load(TextureIdentifier::KOOPA_BLUE_WIGGLE, "resource/Texture/Spritesheet/Koopa_Blue_Wiggle.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA, "resource\\Texture\\Spritesheet\\Piranha.png");
     Resource::mTexture.load(TextureIdentifier::PIRANHA2, "resource\\Texture\\Spritesheet\\Piranha2.png");
     Resource::mTexture.load(TextureIdentifier::PODOBOO, "resource\\Texture\\Spritesheet\\Podoboo.png");
     Resource::mTexture.load(TextureIdentifier::FIREBAR, "resource\\Texture\\Spritesheet\\FireBar.png");
     Resource::mTexture.load(TextureIdentifier::BOWSER_MOVE, "resource\\Texture\\Spritesheet\\Bowser_Move.png");
     Resource::mTexture.load(TextureIdentifier::BOWSER_ATTACK, "resource\\Texture\\Spritesheet\\Bowser_Attack.png");
+    Resource::mTexture.load(TextureIdentifier::BOWSER_SHELL, "resource\\Texture\\Spritesheet\\Bowser_Shell.png");
     Resource::mTexture.load(TextureIdentifier::COIN_EFFECT, "resource\\Texture\\Spritesheet\\CoinEffect.png");
     Resource::mTexture.load(TextureIdentifier::EXPLOSION, "resource\\Texture\\Spritesheet\\Explosion.png");
     Resource::mTexture.load(TextureIdentifier::BOWSER_FIRE, "resource\\Texture\\Spritesheet\\Bowser_Fire.png");
@@ -100,6 +110,13 @@ Game::Game() {
 
     Resource::mSound.load(SoundIdentifier::NORMAL_JUMP, "resource\\Sound\\jumpNormal.wav");
     Resource::mSound.load(SoundIdentifier::SUPER_JUMP, "resource\\Sound\\jumpSuper.wav");
+    Resource::mSound.load(SoundIdentifier::FIREBALL, "resource\\Sound\\fireBall.wav");
+    Resource::mSound.load(SoundIdentifier::KICK, "resource\\Sound\\kick.wav");
+    Resource::mSound.load(SoundIdentifier::MARIO_DEATH, "resource\\Sound\\marioDeath.wav");
+    Resource::mSound.load(SoundIdentifier::POWER_UP, "resource\\Sound\\powerUp.wav");
+    Resource::mSound.load(SoundIdentifier::BOWSER_FIRE, "resource\\Sound\\bowserFire.wav");
+    Resource::mSound.load(SoundIdentifier::BLOCK_BREAK, "resource\\Sound\\breakBlock.wav");
+    Resource::mSound.load(SoundIdentifier::PIPE, "resource\\Sound\\pipe.wav");
 
     Resource::mMusic.load(MusicIdentifier::BACKGROUND_MUSIC, "resource\\Music\\backgroundMusic.ogg");
     SetMusicVolume(Resource::mMusic.get(MusicIdentifier::BACKGROUND_MUSIC), 1.0f);
