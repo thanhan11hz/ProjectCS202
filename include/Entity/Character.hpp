@@ -10,8 +10,6 @@
 #include "Global.hpp"
 
 class Character : public MovingEntity {
-    friend class EndingLevel;
-    friend class GoIntoPipe;
     public:
         enum class Move {
             IDLE, 
@@ -19,7 +17,6 @@ class Character : public MovingEntity {
             JUMP, 
             CROUCH, 
             SKID,
-            FLAGSLIP,
         };
 
         enum class Form {
@@ -75,10 +72,6 @@ class Character : public MovingEntity {
         float mLength;
 
         void damage();
-
-        bool mLockUpdate = false;
-        bool setLockUpdate(bool flag);
-        bool isLockUpdate();
 
         std::map<Action, KeyboardKey> &mKey;
 };

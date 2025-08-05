@@ -9,7 +9,6 @@ Character::Character(int length, int high) : MovingEntity(), mKey(mKeyBinding), 
 }
 
 void Character::handle() {
-    if (mLockUpdate) return;
     if (mMove == Move::CROUCH) {
         if (IsKeyReleased(mKey[Action::DOWN])) {
             if (!mPhysics.onGround()) setMove(Move::JUMP);
@@ -22,8 +21,13 @@ void Character::handle() {
     }
     if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) {
         mPhysics.startJump(mHigh);
-        if (mForm == Form::NORMAL) PlaySound(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP));
-        else PlaySound(Resource::mSound.get(SoundIdentifier::SUPER_JUMP));
+        if (mForm == Form::NORMAL) {
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP), sfxVolume);
+            PlaySound(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP));
+        } else {
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::SUPER_JUMP), sfxVolume);
+            PlaySound(Resource::mSound.get(SoundIdentifier::SUPER_JUMP));
+        }
     }
     if (IsKeyReleased(mKey[Action::JUMP])) mPhysics.endJump();
     if (mForm == Form::FIRE) {
@@ -62,7 +66,6 @@ void Character::update(float dt) {
 }
 
 void Character::updateMove() {
-    if (mLockUpdate) return;
     if (mMove == Move::CROUCH) return;
     Move next = mMove;           
     if (!mPhysics.onGround())                      
@@ -129,13 +132,15 @@ void Character::setImmortal(bool flag) {
 void Character::setForm(Form form) {
     if (mForm == form) return;
     if (mForm == Form::NORMAL) {
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::POWER_UP), sfxVolume);
         PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP));
         transitionProgress = 0.0f;
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y - 48});
     }
     if (form == Form::NORMAL) {
-        invincibleTimer = 0.0f;
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::PIPE), sfxVolume);
         PlaySound(Resource::mSound.get(SoundIdentifier::PIPE));
+        invincibleTimer = 0.0f;
         transitionProgress = 0.0f;
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 48});
     }
@@ -145,6 +150,7 @@ void Character::setForm(Form form) {
 
 void Character::fire() {
     mCooldown = 0.0f;
+    SetSoundVolume(Resource::mSound.get(SoundIdentifier::FIREBALL), sfxVolume);
     PlaySound(Resource::mSound.get(SoundIdentifier::FIREBALL));
     Vector2 position = mPhysics.isRight() ? mPhysics.getPosition() + Vector2{getSize().x, getSize().y / 2.0f} : mPhysics.getPosition() + Vector2{0, getSize().y / 2.0f};
     std::unique_ptr<FireBall> fireBall = FireBall::spawnFireBall(position, mPhysics.isRight());
@@ -155,6 +161,7 @@ void Character::damage() {
     if (isDie()) return;
     if (mForm == Form::NORMAL) {
         if (invincibleTimer < invincibleTime) return;
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::MARIO_DEATH), sfxVolume);
         PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, false));
@@ -164,31 +171,20 @@ void Character::damage() {
     }
 }
 
-bool Character::setLockUpdate(bool flag) {
-    mLockUpdate = flag;
-}
-        
-bool Character::isLockUpdate() {
-    return mLockUpdate;
-}
-
 std::unique_ptr<Character> Character::spawnMario() {
     std::unique_ptr<Character> mChar = std::make_unique<Character>(300, 5);
     mChar->mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
     mChar->mNormal[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
-    mChar->mNormal[Move::FLAGSLIP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_FLAGSLIP);
     mChar->mSuper[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_S_JUMP);
     mChar->mSuper[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_S_RUN);
     mChar->mSuper[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_S_IDLE);
     mChar->mSuper[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::MARIO_S_CROUCH);
-    mChar->mSuper[Move::FLAGSLIP] = Resource::mTexture.get(TextureIdentifier::MARIO_S_FLAGSLIP);
     mChar->mFire[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_F_JUMP);
     mChar->mFire[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_F_RUN);
     mChar->mFire[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_F_IDLE);
     mChar->mFire[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::MARIO_F_CROUCH);
-    mChar->mFire[Move::FLAGSLIP] = Resource::mTexture.get(TextureIdentifier::MARIO_F_FLAGSLIP);
     mChar->mDeath = Resource::mTexture.get(TextureIdentifier::MARIO_DEATH);
     mChar->setMove(Move::IDLE);
     return std::move(mChar);
@@ -200,17 +196,14 @@ std::unique_ptr<Character> Character::spawnLuigi() {
     mChar->mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_RUN);
     mChar->mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_IDLE);
     mChar->mNormal[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_IDLE);
-    mChar->mNormal[Move::FLAGSLIP] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_FLAGSLIP);
     mChar->mSuper[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_JUMP);
     mChar->mSuper[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_RUN);
     mChar->mSuper[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_IDLE);
     mChar->mSuper[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_CROUCH);
-    mChar->mSuper[Move::FLAGSLIP] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_FLAGSLIP);
     mChar->mFire[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_JUMP);
     mChar->mFire[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_RUN);
     mChar->mFire[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_IDLE);
     mChar->mFire[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_CROUCH);
-    mChar->mFire[Move::FLAGSLIP] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_FLAGSLIP);
     mChar->mDeath = Resource::mTexture.get(TextureIdentifier::LUIGI_DEATH);
     mChar->setMove(Move::IDLE);
     return std::move(mChar);
