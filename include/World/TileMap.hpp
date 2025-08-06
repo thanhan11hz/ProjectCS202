@@ -4,6 +4,8 @@
 #include "Resource/ResourceHolder.hpp"
 #include "Resource/ResourceIdentifier.hpp"
 #include "Entity/TileEntity.hpp"
+#include "Entity/FireBar.hpp"
+#include "Entity/Bowser.hpp"
 #include "Entity/Goomba.hpp"
 #include "Entity/Koopa.hpp"
 #include "Entity/Podoboo.hpp"
@@ -20,9 +22,7 @@ public:
     using Etr = std::unique_ptr<Enemy>;
                                             //hàm getBounds
                                             //fix bug sọc trắng
-                                            //load enemy
                                             //block màn 6
-                                            //sửa hiệu ứng vỡ gạch
                                             //warp, movingblock, rìu, hiệu ứng rút cầu
     TileMap(){};
     void loadFromFile(const std::string& directory);
@@ -39,19 +39,27 @@ public:
     void drawMain(Camera2D& camera);
 
     void update(float dt);
+    float getBound() const { 
+        if(!mMain.empty() && !mMain[0].empty()) {
+            return mMain[0].size() * 48.0f;
+        }
+        return 0.0f; }
     void setTexture(Texture2D tileBlock, Texture2D tileObject) {tileTexture = tileBlock; objectTexture = tileObject;};
     std::vector<std::vector<Btr>>& getMain() {return mMain;}
     std::vector<Etr>& getEnemy() {return Enemies;}
     std::vector<std::unique_ptr<Enemy>> takeEnemies() {return std::move(Enemies); }
+    std::vector<std::unique_ptr<TileObject>>& getItems() {return Items;}
+    std::vector<std::unique_ptr<TileObject>> takeItems() {return std::move(Items); }
 
 private:
     std::vector<std::vector<Btr>> mMain;
     std::vector<std::vector<Btr>> mBackground;
-    std::vector<std::vector<Btr>> mItem;
+    std::vector<std::pair<int, Vector2>> dataItem;
+    std::vector<std::vector<TileObject*>> mItem;
     std::vector<std::vector<Btr>> mBackground2;
     std::vector<std::pair<int, Vector2>> mEnemy;
     std::vector<Etr> Enemies;
-    std::vector<TileObject*> Items;
+    std::vector<std::unique_ptr<TileObject>> Items;
     Texture2D tileTexture;
     Texture2D objectTexture;
 };

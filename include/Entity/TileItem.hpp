@@ -13,10 +13,12 @@ public:
     virtual void onCollect(TileObject& item) = 0;
     virtual void update(TileObject& item, float dt) = 0;
     virtual ~IItemBehavior() = default;
-    void handleCollision(TileObject& item, Side side, Category other) {
-        this->side = side;
-        this->other = other;
-    }
+    virtual void handleCollision(TileObject& item) = 0;
+    virtual void setSide(Side side) { this->side = side; }
+    virtual void setOther(Category other) { this->other = other; }
+    virtual void setTag(std::string tag) { this->oTag = tag; }
+    virtual std::string getTag(){return "";};
+   
 };
 
 
@@ -25,47 +27,69 @@ public:
     void onCollect(TileObject& item) override ;
     void update(TileObject& item, float dt) override ;
     //void destroyFrag(TileObject& item, float dt);
+    void handleCollision(TileObject& item) override{};
 };  
 
 class SimpleBehavior : public IItemBehavior {
     public: 
         void onCollect(TileObject& item) override{} ;
-        virtual void update(TileObject& item, float dt) override  ;
+        virtual void update(TileObject& item, float dt) override;
+        virtual void handleCollision(TileObject& item) override;
         void moveUp(TileObject& item, float dt);
+        std::string getTag() override { return "Flower"; }
 };
 
 class NormalCoinBehavior : public IItemBehavior {
     public:
         void onCollect(TileObject& item) override ;
         void update(TileObject& item, float dt) override ;
+        void handleCollision(TileObject& item) override;
+        std::string getTag() override { return "Coin"; }
 };
 
 class SpecialCoinBehavior : public IItemBehavior {
     public:
         void onCollect(TileObject& item) override ;
         void update(TileObject& item, float dt) override;
-        void moveUp(TileObject& item, float dt) ;
+        void moveUp(TileObject& item, float dt);
+        void handleCollision(TileObject& item) override;
+        std::string getTag() override { return "Coin"; }
 };
 class MushroomBehavior : public SimpleBehavior{
     public:
         void onCollect(TileObject& item) override ;
-        void update(TileObject& item, float dt) override ;
-        
+        void update(TileObject& item, float dt) override; 
+        void handleCollision(TileObject& item) override;    
+        std::string getTag() override {  return "Mushroom";}
+};
+class GreenMushroomBehavior : public MushroomBehavior{
+    public:  
+        std::string getTag() override {  return "GreenMushroom";}
 };
 class StarBehavior : public SimpleBehavior{
     public:
         void onCollect(TileObject& item) override ;
         void update(TileObject& item, float dt) override;
+        void handleCollision(TileObject& item) override;
+        std::string getTag() override { return "Star"; }
 };
 class TileObject : public TileBlock {
 public:
     TileObject(int type, int row, int col);
     ~TileObject(){};
     TileItem getType();
+    std::string getTag();
     void createBehavior() override;
+    bool absorbed() const { return isAbsorbed; }
     void draw(Texture2D& background, Texture2D& object) override;
     void update(float dt) override;
+    void handleCollision(Side side, Collide other) override;
     void setOn(bool on) { isOn = on; };
+    bool on(){return isOn;}
+    bool up() {return isUp;}
+    void handleFootCollision() {
+       mPhysics.setOnGround(true);
+    }
     friend class FragmentBehavior;
     friend class SimpleBehavior;
     friend class NormalCoinBehavior;
@@ -75,7 +99,7 @@ public:
 protected:
     IItemBehavior* mBehavior = nullptr;
     
-    bool isUp = false;
+    bool isUp = true;
     bool isMoving = false;
     bool isAbsorbed = false;
 };

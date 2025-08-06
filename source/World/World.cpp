@@ -56,14 +56,14 @@ void World::update(float dt) {
         }
     }
 
-    // for (auto itr = mItem.begin(); itr != mItem.end(); ) {
-    //     if (*itr && !(*itr)->isDie()) {
-    //         (*itr)->update(dt);
-    //         ++itr;
-    //     } else {
-    //         itr = mItem.erase(itr);
-    //     }
-    // }
+    for (auto itr = mItem.begin(); itr != mItem.end(); ) {
+        if (*itr && !(*itr)->absorbed()) {
+            (*itr)->update(dt);
+            ++itr;
+        } else {
+            itr = mItem.erase(itr);
+        }
+    }
     
     mCollision.handleCollision();
 
@@ -219,7 +219,9 @@ void World::reset() {
     std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
     mCollision.addEnemy(Enemy);
     mEnemy = mMap[mCurrent]->takeEnemies();
-    mCollision.addItem(mItem);
+    std::vector<std::unique_ptr<TileObject>>& Items = mMap[mCurrent]->getItems();
+    mCollision.addItem(Items);
+    mItem = mMap[mCurrent]->takeItems();
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);

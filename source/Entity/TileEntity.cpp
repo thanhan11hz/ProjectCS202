@@ -20,8 +20,8 @@ std::vector<int> tileItemValues = {
     29,         // BrownCube
     237, 238, 239, // GrassPlatform1..3
     266, 267, 268, 277, // GreenDotPlatform1..3
-    234, 263, 556,      // HoriPipe1..2
-    60            // UnderTile
+    234, 263, 556, 700, 147,     // HoriPipe1..2
+    60, 382, 383, 384, 567,          // UnderTile
 };
 TileBlock::TileBlock(int type, int col, int row)
     : mType(type), mRect({(col * 48.0f), (row * 48.0f), 48, 48}), posTile({0, 0}), printed(false) {
@@ -29,6 +29,11 @@ TileBlock::TileBlock(int type, int col, int row)
     if(type >= 0){
         int x = type % 29;
         int y = type / 29;
+        if(type == 301 || type == 292) {
+           x = type % 36;
+           y = type / 36;
+        }
+        
         posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
         mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE };  
         addFragment();
@@ -39,12 +44,12 @@ TileBlock::TileBlock(int type, int col, int row)
             mBodyCollide.setLabel(Category::BLOCK);
         } 
         else {
-            //std::cout << mType << "\n";
             mBodyCollide.setLabel(Category::NONE);}
-        if(mType!= 556) isOn = true;
+        if(mType!= 556 && mType != 567) isOn = true;
         mBodyCollide.setStatic(true);
         mBodyCollide.setFilter(Category::NONE);
         mPhysics.setPosition({mRect.x, mRect.y});
+        
     }
     aniRect=mRect;
 
@@ -56,13 +61,24 @@ void TileBlock::createBehavior()  {
     else if(getType(calType()) == TileType::OwInitialTile || getType(calType()) == TileType::UnderTile) {
         mBehavior = new SimpleBlockBehavior();
     }
+    else if(getType(calType()) == TileType::HoriMovingBlock ) {
+        mPhysics.setVelocity({50.0f,0});
+        mBehavior = new MovingBlockBehavior();
+    }
+    else if(getType(calType()) == TileType::VertMovingBlock ) {
+        mPhysics.setVelocity({0,50.0f});
+        mBehavior = new MovingBlockBehavior();
+    }
 }
 
 void TileBlock::draw( Texture2D& background, Texture2D& object) {
     if (mType != -1 && !isDestroyed && isOn) {
         float posX = mPhysics.getPosition().x;
         float posY = mPhysics.getPosition().y;
-        {DrawTexturePro(background, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);}
+        if (mType == 301 || mType ==292){
+            DrawTexturePro(object, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);
+        }
+       else  {DrawTexturePro(background, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);}
     }
     else if(mType != -1 && isDestroyed ) {
         for(int i =0; i < 4; i++){
@@ -101,13 +117,18 @@ int TileBlock::calType() {
         case HoriPipe1:         return TileType::HoriPipe1;
         case HoriPipe2:         return TileType::HoriPipe2;
         case UnderTile:         return TileType::UnderTile;
-
+        case HoriMovingBlock: return TileType::HoriMovingBlock;
+        case VertMovingBlock: return TileType::VertMovingBlock;
 
         case GrassPlatform1:
         case GrassPlatform2:
         case GrassPlatform3:
             return TileType::GrassPlatform1;
 
+        case OrangeDotPlatForm1:
+        case OrangeDotPlatForm2:
+        case OrangeDotPlatForm3:
+            return TileType::OrangeDotPlatForm1;
 
         case GreenDotPlatForm1:
         case GreenDotPlatForm2:
@@ -118,7 +139,8 @@ int TileBlock::calType() {
             return TileType::BrownCube;
         case HiddenBox:
             return TileType::HiddenBox;
-
+        case EndingPoint:
+            return TileType::EndingPoint;
         default:
             break;
     }
@@ -154,22 +176,27 @@ TileType TileBlock::getType(int n) {
         case HoriPipe2:         return TileType::HoriPipe2;
         case UnderTile:         return TileType::UnderTile;
         case CastleTile:      return TileType::CastleTile;
-
+        case HoriMovingBlock: return TileType::HoriMovingBlock;
+        case VertMovingBlock: return TileType::VertMovingBlock;
         case GrassPlatform1:
         case GrassPlatform2:
         case GrassPlatform3:
             return TileType::GrassPlatform1;
-
-
+        case OrangeDotPlatForm1:
+        case OrangeDotPlatForm2:
+        case OrangeDotPlatForm3:
+            return TileType::OrangeDotPlatForm1;
         case GreenDotPlatForm1:
         case GreenDotPlatForm2:
         case GreenDotPlatForm3:
             return TileType::GreenDotPlatForm1;
-
+        case CastleBrigde:      return TileType::CastleBrigde;
         case BrownCube:
             return TileType::BrownCube;
         case HiddenBox:
             return TileType::HiddenBox;
+        case EndingPoint:
+            return TileType::EndingPoint;
         default:
              return TileType::Empty;
     }
@@ -219,7 +246,6 @@ void TileBlock::addFragment() {
         pos = 13;
     }
     if(isfrag){
-        std::cout << "Add fragment for " << pos << "\n";
         frag.clear();
         const float fragSize = 24.0f;
         const float texSize = 8.0f;
@@ -244,21 +270,21 @@ void TileBlock::addFragment() {
 void TileBlock::update(float dt){
     Vector2 mousePos = GetMousePosition();
     if (mType == -1) return;  
-    Vector2 postion = mPhysics.getPosition();
+    if (mBehavior) {
+        mBehavior->update(*this, dt);
+    }
+    Vector2 position = mPhysics.getPosition();
     Vector2 size = getSize();
     if(getType(calType())!= TileType::Empty && isSolid()) {
     mBodyCollide.setHitBox({
-        postion.x,
-        postion.y,
+        position.x,
+        position.y,
         size.x,
         size.y
         });
     } else {
         mBodyCollide.setHitBox({0, 0, 0, 0});
     }   
-    if (mBehavior) {
-        mBehavior->update(*this, dt);
-    }
     
 }
 
@@ -266,7 +292,15 @@ void TileBlock::update(float dt){
 bool TileBlock::isSolid(){
     return solid && !isDestroyed;
 }
-
+std::string TileBlock::getTag() {
+    if (mBehavior) {
+        return mBehavior->getTag();
+    }
+    if(mType == 567) {
+        return "EndingPoint";
+    }
+    return "TileBlock";
+}
 void TileBlock::draw() {}
 
 void TileBlock::handle() {}
@@ -283,6 +317,9 @@ void TileBlock::handleCollision(Side side, Collide other) {
         mBehavior->setSide(side);
         mBehavior->setOther(other.getLabel());
         mBehavior->setTag(other.getOwner()->getTag());
+    }
+    if (mBehavior) {
+        mBehavior->handleCollision(*this);
     }
     mColor = RED;
 }
