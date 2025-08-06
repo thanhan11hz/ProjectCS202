@@ -51,6 +51,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION9, "resource\\Texture\\StateAsset\\Instructions\\ins9.png");
     Resource::mTexture.load(TextureIdentifier::INSTRUCTION10, "resource\\Texture\\StateAsset\\Instructions\\ins10.png");
     Resource::mTexture.load(TextureIdentifier::KEYBOARD, "resource\\Texture\\StateAsset\\keybinds.png");
+    Resource::mTexture.load(TextureIdentifier::HEART, "resource\\Texture\\StateAsset\\heart.png");
 
     Resource::mTexture.load(TextureIdentifier::PAL1, "resource\\Texture\\StateAsset\\Palettes\\ITEMS.png");
     Resource::mTexture.load(TextureIdentifier::PAL2, "resource\\Texture\\StateAsset\\Palettes\\FOLIAGE1.png");
@@ -113,6 +114,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::BOWSER_FIRE, "resource\\Texture\\Spritesheet\\Bowser_Fire.png");
     Resource::mTexture.load(TextureIdentifier::FIREBALL, "resource\\Texture\\Spritesheet\\FireBall.png");
     
+    
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");
 
@@ -141,7 +143,8 @@ Game::Game() {
     mStateStack.registerState<GameState>(StateIdentifier::GAME1);
     mStateStack.registerState<MapEditor>(StateIdentifier::MAPEDITOR);
     mStateStack.registerState<GameOverState>(StateIdentifier::GAMEOVER);
-
+    mStateStack.registerState<CompleteState>(StateIdentifier::COMPLETE);
+    
     mStateStack.pushState(StateIdentifier::MENU);
     
     // mWorld.loadMap("resource\\Map\\01 - Field Area (1-1)");

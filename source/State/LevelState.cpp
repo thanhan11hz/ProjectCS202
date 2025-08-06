@@ -187,9 +187,9 @@ void LevelState::draw() {
             DrawTexture(preview1, 245, 229, WHITE);
             Texture2D preview2 = Resource::mTexture.get(TextureIdentifier::PREVIEW2);
             DrawTexture(preview2, 873, 229, WHITE);
-            Texture2D preview3 = Resource::mTexture.get(TextureIdentifier::PREVIEW5);
+            Texture2D preview3 = Resource::mTexture.get(TextureIdentifier::PREVIEW6);
             DrawTexture(preview3, 245, 575, WHITE);
-            Texture2D preview4 = Resource::mTexture.get(TextureIdentifier::PREVIEW6);
+            Texture2D preview4 = Resource::mTexture.get(TextureIdentifier::PREVIEW5);
             DrawTexture(preview4, 873, 575, WHITE);
             break;
         }

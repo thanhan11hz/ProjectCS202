@@ -49,13 +49,13 @@ GameState::GameState(StateStack& stack) : State(stack) {
     mContainer.pack(time);
 
     Label* hp = new Label();
-    hp->changeShape({229,806,187, 17});
+    hp->changeShape({562,794,187, 17});
     hp->changeSize(17);
-    hp->changeText("LIVES:  x3");
+    hp->changeText("LIVES   x3");
     hp->changeColor(WHITE);
     hp->changeCallback([this](Label* label) {
         size_t live = mWorld.getRestLive();
-        label->changeText("LIVES: x" + std::to_string(live));
+        label->changeText("LIVES   x" + std::to_string(live));
     });
     mContainer.pack(hp);
 
@@ -73,12 +73,19 @@ GameState::GameState(StateStack& stack) : State(stack) {
     });
     mContainer.pack(coins);
 
-    Label* items = new Label();
-    items->changeShape({565,806,830, 17});
-    items->changeSize(17);
-    items->changeText("ACTIVE POWER-UPS:");
-    items->changeColor(WHITE);
-    mContainer.pack(items);
+    Label* score = new Label();
+    score->changeShape({229,794,238, 17});
+    score->changeSize(17);
+    score->changeText("SCORE 00000000");
+    score->changeColor(WHITE);
+    // score->changeCallback([this](Label* label) {
+    //     size_t sc = mWorld.getScore();
+    //     std::string text = std::to_string(sc);
+    //     while (text.size() < 8) text = "0" + text;
+    //     text = "SCORE " + text; 
+    //     label->changeText(text);
+    // });
+    mContainer.pack(score);
     mWorld.reset();
 }
 
@@ -94,6 +101,8 @@ void GameState::draw() {
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
     DrawTexture(bricksTexture, 0, 772, WHITE);
     mContainer.draw();
+    Texture2D hrt = Resource::mTexture.get(TextureIdentifier::HEART);
+    DrawTexture(hrt, 665, 790, WHITE);
 }
 
 bool GameState::update(float dt) {
@@ -103,6 +112,10 @@ bool GameState::update(float dt) {
     if ((int)mWorld.getRestLive() <= 0 || (int)mWorld.getRestTime() <= 0) {
         requestStackClear();
         requestStackPush(StateIdentifier::GAMEOVER);
+    }
+    if (mWorld.isLevelComplete()) {
+        requestStackClear();
+        requestStackPush(StateIdentifier::COMPLETE);
     }
     return true;
 }

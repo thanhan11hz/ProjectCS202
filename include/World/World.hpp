@@ -39,6 +39,7 @@ class World {
         size_t getRestLive();
         size_t getCoinCollected();
         size_t getCurrentMap();
+        bool isLevelComplete();
         Camera2D& getCamera();
 
         void receiveCoin();
@@ -75,7 +76,7 @@ class World {
         size_t mLives = 3;
         size_t mCoins = 0;
 
-        bool isLevelComplete();
+        
         bool hasNextMap();
         void nextMap();
         void backMap();
