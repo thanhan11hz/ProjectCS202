@@ -129,7 +129,7 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
     mContainer_game.pack(game3);
 
     Button* fin = new Button();
-    fin->changeText("RETURN");
+    fin->changeText("FINISH");
     fin->changShape({615,574,211,56});
     mContainer_game.pack(ret);
     fin->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);

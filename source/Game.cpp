@@ -58,6 +58,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::PAL3, "resource\\Texture\\StateAsset\\Palettes\\FOLIAGE2.png");
     Resource::mTexture.load(TextureIdentifier::PAL4, "resource\\Texture\\StateAsset\\Palettes\\COINS.png");
     Resource::mTexture.load(TextureIdentifier::PAL5, "resource\\Texture\\StateAsset\\Palettes\\BLOCKS.png");
+    Resource::mTexture.load(TextureIdentifier::PAL6, "resource\\Texture\\StateAsset\\Palettes\\GOOMBA.png");
 
     Resource::mTexture.load(TextureIdentifier::PREVIEW2, "resource\\Texture\\StateAsset\\MapPreview\\preview2.png");
     Resource::mTexture.load(TextureIdentifier::PREVIEW3, "resource\\Texture\\StateAsset\\MapPreview\\preview3.png");

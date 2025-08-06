@@ -1,10 +1,11 @@
 #include "State/MapEditor.hpp"
 MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW), mPalette(Palette::NONE), hasChanges(false), selected(-1), tileX(0), tileY(0), showPalette(false), showGrid(true), isDropDown(false), confirm(false) {
     mMap = std::vector<std::vector<int>>(DEFAULT_MAP_HEIGHT, std::vector<int>(DEFAULT_MAP_WIDTH, -1));
+    mEnemies = std::vector<std::vector<int>>(DEFAULT_MAP_HEIGHT, std::vector<int>(DEFAULT_MAP_WIDTH, -1));
     mItems = std::vector<std::vector<int>>(DEFAULT_MAP_HEIGHT, std::vector<int>(DEFAULT_MAP_WIDTH, -1));
     name = "CustomMap";
     setupCamera();
-    dropdownRect = {885,259,284,519};
+    dropdownRect = {884,167,284,629};
     
     muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
@@ -275,7 +276,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     pal_items->changeText("ITEMS");
     pal_items->changeCallback([this]() {
             isDropDown = false;
-            selected = -1;
+            if (mPalette != Palette::ITEMS) selected = -1;
             mPalette = Palette::ITEMS;
         }
     );
@@ -287,7 +288,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     pal_fol1->changeText("FOLIAGE1");
     pal_fol1->changeCallback([this]() {
             isDropDown = false;
-            if (mPalette == Palette::ITEMS) selected = -1;
+            if (mPalette == Palette::ITEMS || mPalette == Palette::GOOMBA) selected = -1;
             mPalette = Palette::FOLIAGE1;
         }
     );
@@ -299,7 +300,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     pal_fol2->changeText("FOLIAGE2");
     pal_fol2->changeCallback([this]() {
             isDropDown = false;
-            if (mPalette == Palette::ITEMS) selected = -1;
+            if (mPalette == Palette::ITEMS || mPalette == Palette::GOOMBA) selected = -1;
             mPalette = Palette::FOLIAGE2;
         }
     );
@@ -311,7 +312,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     pal_coins->changeText("COINS");
     pal_coins->changeCallback([this]() {
             isDropDown = false;
-            if (mPalette == Palette::ITEMS) selected = -1;
+            if (mPalette == Palette::ITEMS || mPalette == Palette::GOOMBA) selected = -1;
             mPalette = Palette::COINS;
         }
     );
@@ -323,7 +324,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     pal_blocks->changeText("BLOCKS");
     pal_blocks->changeCallback([this]() {
             isDropDown = false;
-            if (mPalette == Palette::ITEMS) selected = -1;
+            if (mPalette == Palette::ITEMS || mPalette == Palette::GOOMBA) selected = -1;
             mPalette = Palette::BLOCKS;
         }
     );
@@ -340,6 +341,17 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
         }
     );
     mContainer_dropdown.pack(pal_clr);
+
+    Button* pal_enemy = new Button(); 
+    pal_enemy->changShape({920, 210, 211, 56});
+    pal_enemy->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    pal_enemy->changeText("ENEMY");
+    pal_enemy->changeCallback([this]() {
+            isDropDown = false;
+            if (mPalette != Palette::GOOMBA) selected = -1;
+            mPalette = Palette::GOOMBA;
+    });
+    mContainer_dropdown.pack(pal_enemy);
 
     Button* grid = new Button();
     grid->changShape({929, 812, 211, 56});
@@ -452,6 +464,7 @@ void MapEditor::stampingHandle() {
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && inBounds && mMode == MapEditorMode::PEN && !isDropDown) {
         if (mPalette == Palette::ITEMS) mItems[tileY][tileX] = selected;
+        else if (mPalette == Palette::GOOMBA) mEnemies[tileY][tileX] = selected;
         else mMap[tileY][tileX] = selected;
         hasChanges = true;
     } else if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && inBounds && mMode == MapEditorMode::ERASE) {
@@ -478,6 +491,7 @@ void MapEditor::drawUI() {
             mContainer_pen.draw();
             if (isDropDown) {
                 DrawRectangleRec(dropdownRect, {113,67,25,200});
+                DrawRectangleLinesEx(dropdownRect, 5.0f, BLACK);
                 mContainer_dropdown.draw();
             }
             break;
@@ -508,6 +522,7 @@ void MapEditor::drawUI() {
 void MapEditor::drawMapPreview() {
     Texture2D brickTiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
     Texture2D items = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
+    Texture2D enemies = Resource::mTexture.get(TextureIdentifier::TILE_SET_ENEMIES);
 
     BeginScissorMode(0,0,workspaceWidth,workspaceHeight);
     BeginMode2D(mCamera);
@@ -517,10 +532,10 @@ void MapEditor::drawMapPreview() {
             int tileID = mMap[y][x];
             if (tileID < 0) continue;
 
-            int tx = tileID % 29;
-            int ty = tileID / 29;
-            Rectangle srcRect = { tx * TILE_SIZE, ty * TILE_SIZE, TILE_SIZE, TILE_SIZE };
-            Vector2 dest = { static_cast<float>(x * TILE_SIZE), static_cast<float>(y * TILE_SIZE) };
+            int tx = tileID % TILES_PER_ROW_BLOCKS;
+            int ty = tileID / TILES_PER_ROW_BLOCKS;
+            Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
+            Vector2 dest = { float(x * TILE_SIZE), float(y * TILE_SIZE) };
             DrawTextureRec(brickTiles, srcRect, dest, WHITE);
         }
     }
@@ -530,32 +545,49 @@ void MapEditor::drawMapPreview() {
             int tileID = mItems[y][x];
             if (tileID < 0) continue;
             ///std::cout << "Drawing item with tileID" << tileID << std::endl;
-            int tx = tileID % 36;
-            int ty = tileID / 36;
-            Rectangle srcRect = { tx * TILE_SIZE, ty * TILE_SIZE, TILE_SIZE, TILE_SIZE };
-            Vector2 dest = { static_cast<float>(x * TILE_SIZE), static_cast<float>(y * TILE_SIZE) };
+            int tx = tileID % TILES_PER_ROW_ITEMS;
+            int ty = tileID / TILES_PER_ROW_ITEMS;
+            Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
+            Vector2 dest = { float(x * TILE_SIZE), float(y * TILE_SIZE) };
             DrawTextureRec(items, srcRect, dest, WHITE);
         }
     }
 
+    for (int y = 0; y < mEnemies.size(); ++y) {
+        for (int x = 0; x < mEnemies[y].size(); ++x) {
+            int tileID = mEnemies[y][x];
+            if (tileID < 0) continue;
+            int tx = tileID % TILES_PER_ROW_ENEMIES;
+            int ty = tileID / TILES_PER_ROW_ENEMIES;
+            Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
+            Vector2 dest = { float(x * TILE_SIZE), float(y * TILE_SIZE) };
+            DrawTextureRec(enemies, srcRect, dest, WHITE);
+        }
+    }
     //ghost preview at cursor
     if (mMode == MapEditorMode::PEN && selected >= 0) {
-        Texture2D tileset = items;
-        int tilesPerRow = TILES_PER_ROW_ITEMS;
-        if (mPalette != Palette::ITEMS) {
-            tileset = brickTiles;
-            tilesPerRow = TILES_PER_ROW_BLOCKS;
+        Texture2D tileset = brickTiles;
+        int tilesPerRow = TILES_PER_ROW_BLOCKS;
+        if (mPalette == Palette::ITEMS) {
+            tileset = items;
+            tilesPerRow = TILES_PER_ROW_ITEMS;
+        } else if (mPalette == Palette::GOOMBA) {
+            tileset = enemies;
+            tilesPerRow = TILES_PER_ROW_ENEMIES;
         }
         int tx = selected % tilesPerRow;
         int ty = selected / tilesPerRow;
-        Rectangle srcRect = { tx * TILE_SIZE, ty * TILE_SIZE, TILE_SIZE, TILE_SIZE };
-        Vector2 dest = { static_cast<float>(tileX * TILE_SIZE), static_cast<float>(tileY * TILE_SIZE) };
+        Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
+        Vector2 dest = { float(tileX * TILE_SIZE), float(tileY * TILE_SIZE) };
         DrawTextureRec(tileset, srcRect, dest, Fade(WHITE, 0.5f)); 
+
+        bool inBounds = tileX >= 0 && tileX < mMap[0].size() && tileY >= 0 && tileY < mMap.size();
+        if (!inBounds) DrawRectangleRec({float(tileX*TILE_SIZE), float(tileY*TILE_SIZE), TILE_SIZE, TILE_SIZE}, Fade(RED, 0.8f));
     } else if (mMode == MapEditorMode::ERASE) {
         DrawRectangle(tileX*TILE_SIZE, tileY*TILE_SIZE, TILE_SIZE, TILE_SIZE, Fade(BLACK, 0.2f));
     }
 
-    if (showGrid) drawGrid(mMap[0].size(), mMap.size(), TILE_SIZE);
+    if (showGrid) drawGrid(0, 0, mMap[0].size(), mMap.size(), TILE_SIZE);
     EndMode2D();
     EndScissorMode();
 }
@@ -566,6 +598,7 @@ void MapEditor::drawPalette() {
 
     if (showPalette) {
         DrawRectangleRec(palRect, Fade({113, 67, 25}, 0.7f));
+        
         Texture2D toDraw;
         switch (mPalette) {
             case Palette::ITEMS:
@@ -589,25 +622,36 @@ void MapEditor::drawPalette() {
                 DrawTexture(toDraw, 337, 388, WHITE);
                 break;
             }
+            case Palette::GOOMBA: {
+                toDraw = Resource::mTexture.get(TextureIdentifier::PAL6);
+                DrawTexture(toDraw, 1345, 676, WHITE);
+                break;
+            }
         }
-        if (selected >= 0) DrawRectangleRec(selectedTile, Fade(YELLOW, 0.8f));
+        
+        if (selected >= 0) {
+            DrawRectangleRec(selectedTile, Fade(YELLOW, 0.8f));
+            DrawRectangleLinesEx(selectedTile, 3.0f, BLACK);
+        }
+
     }
 }
 
-void MapEditor::drawGrid(int width, int height, int tileSize, Color lineColor) {
-    for (int y = 0; y <= height; y++) {
+void MapEditor::drawGrid(int startX, int startY, int width, int height, int tileSize, Color lineColor) {
+    for (int y = startY; y <= height; y++) {
         //if (y % 10 == 0) lineColor = Fade(DARKGRAY, 0.8f);
-        DrawLine(0, y * tileSize, width * tileSize, y * tileSize, lineColor);
+        DrawLine(startX, y * tileSize, width * tileSize, y * tileSize, lineColor);
     }
-    for (int x = 0; x <= width; x++) {
+    for (int x = startX; x <= width; x++) {
         //if (x % 10 == 0) lineColor = Fade(DARKGRAY, 0.8f);
-        DrawLine(x * tileSize, 0, x * tileSize, height * tileSize, lineColor);
+        DrawLine(x * tileSize, startY, x * tileSize, height * tileSize, lineColor);
     }
 }
 
 int MapEditor::getTilesPerRow() {
-    if (mPalette != Palette::ITEMS) return TILES_PER_ROW_BLOCKS;
-    return TILES_PER_ROW_ITEMS;
+    if (mPalette == Palette::ITEMS) return TILES_PER_ROW_ITEMS;
+    else if (mPalette == Palette::GOOMBA) return TILES_PER_ROW_ENEMIES;
+    return TILES_PER_ROW_BLOCKS;
 }
  
 void MapEditor::saveMap() {
@@ -636,6 +680,7 @@ void MapEditor::saveMap() {
     std::filesystem::path filePath1 = directory / (prefix + "_Main" + extension);
     std::filesystem::path filePath2 = directory / (prefix + "_Items" + extension);
     std::filesystem::path filePath3 = directory / (prefix + "_Background" + extension);
+    std::filesystem::path filePath4 = directory / (prefix + "_Enemies" + extension);
 
     std::ofstream outFile(filePath1);
     if (!outFile.is_open()) {
@@ -679,6 +724,21 @@ void MapEditor::saveMap() {
             outFile << 612 << ",";
         }
         outFile << 612 << "\n";
+    }
+    outFile.close();
+
+
+    outFile.open(filePath4);
+    if (!outFile.is_open()) {
+        std::cerr << "Cannot access output file at" << filePath4 << std::endl;
+        return;
+    }
+
+    for (const auto& row : mEnemies) {
+        for (int i = 0; i < row.size()-1; i++) {
+            outFile << row[i] << ",";
+        }
+        outFile << row[row.size()-1] << "\n";
     }
     outFile.close();
 
@@ -763,6 +823,7 @@ bool MapEditor::update(float dt) {
             else if (mPalette == Palette::FOLIAGE2) currentMode->changeText("EDIT MODE - PEN | PALETTE: FOLIAGE2");
             else if (mPalette == Palette::COINS) currentMode->changeText("EDIT MODE - PEN | PALETTE: COINS");
             else if (mPalette == Palette::ITEMS) currentMode->changeText("EDIT MODE - PEN | PALETTE: ITEMS");
+            else if (mPalette == Palette::GOOMBA) currentMode->changeText("EDIT MODE - PEN | PALETTE: ENEMY");
             subtext->changeText("PRESS B TO EXIT PEN MODE");
             break;
     }
@@ -789,8 +850,11 @@ bool MapEditor::update(float dt) {
             break;
         case Palette::ITEMS:
             pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-
             palRect = {1200, 340, 240, 432};
+            break;
+        case Palette::GOOMBA:
+            pals->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+            palRect = {1345, 676, 96, 96};
             break;
         case Palette::NONE:
             display->changeTexture(TextureIdentifier::INACTIVE_BUTTON_MEDIUM);
