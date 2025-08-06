@@ -54,6 +54,7 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                 int tileId = num;
                 int col =  j;              
                 Btr block = std::make_unique<TileBlock>(tileId, j, i);
+                
                 row.emplace_back(std::move(block));
             }
             mMain.emplace_back(std::move(row));
@@ -61,18 +62,46 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
         }
     }
 
-    else if(choice == 3){ //item
-        for(int i = 0; i < matrix.size(); i++){
+    else if(choice == 3){
+             //item
+            std::vector<TileObject*> rows;
+            for(int i = 0; i < matrix.size(); i++){
             for (int j = 0; j < matrix[i].size(); j++){
                 int num = matrix[i][j];
                 int tileId = num;
-                int col =  j;              
-                Btr block = std::make_unique<TileObject>(tileId, j, i);
-                row.emplace_back(std::move(block));
+                int col =  j; 
+                std::unique_ptr<TileObject> item = nullptr;
+                switch (num){
+                    case 0: 
+                    case 1: 
+                    case 10: 
+                    case 72: 
+                    case 108: 
+                    case 180: 
+                    case 216: 
+                    case 13: 
+                    case 189: 
+                    case 44: 
+                    case 252: 
+                        item = std::make_unique<TileObject>(tileId, j, i);
+                        
+                        dataItem.emplace_back(std::make_pair(tileId, Vector2{col * 48.0f, i * 48.0f}));
+                        break;
+                    default:
+                        // Handle unknown item
+                        break;
+                    }
+                TileObject* block= nullptr;
+                if(item){
+                    block = item.get();
+                    Items.emplace_back(std::move(item));
+                }
+                rows.emplace_back(block);
             }
-            mItem.emplace_back(std::move(row));
-            row.clear();
+            mItem.emplace_back(std::move(rows));
+            rows.clear();
         }
+    
     }
     else if (choice == 5){
         std::cout << "Load Enemies" << "\n";
@@ -82,6 +111,7 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                 if (num == -1) continue; 
                 int tileId = num;
                 int col =  j;
+                std::vector<std::unique_ptr<FireBar>> firebar;
                 Etr Enemy = nullptr;
                 switch (num)
                 {
@@ -100,11 +130,33 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                         Enemy = Piranha::spawnPiranha2({col * 48.0f, i * 48.0f});
                         mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
                         break;
+                    case 41:
+                        Enemy = Koopa::spawnKoopa({col * 48.0f, i * 48.0f},Koopa::Type::K_RED);
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
+                        break;
+                    case 77:
+                        Enemy = Koopa::spawnKoopa({col * 48.0f, i * 48.0f},Koopa::Type::K_BLUE);
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
+                        break;
+                    case 116:
+                        Enemy = Bowser::spawnBowser({col * 48.0f, i * 48.0f});
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
+                        break;
+                    case 55:
+                        Enemy = Podoboo::spawnPodoboo({col * 48.0f, i * 48.0f});
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
+                        break;
+                    case 330:
+                        firebar = std::move(FireBar::spawnFireBar({col * 48.0f, i * 48.0f}));
+                        for (auto& f : firebar) {
+                            Enemies.emplace_back(std::move(f));
+                        }
+                        mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
                     default:
                         break;
                 }
                 if (Enemy) {
-                    Enemy->mPhysics.setPosition({col * 48.0f, i * 48.0f});
+                    //Enemy->mPhysics.setPosition({col * 48.0f, i * 48.0f});
                     Enemies.emplace_back(std::move(Enemy));
                 }
             }
@@ -123,6 +175,7 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
             row.clear();
         }
     }
+    
      
 }
 
@@ -189,7 +242,8 @@ void TileMap::drawBackground(Camera2D& camera) {
     for (int i = clampedStartRow1; i <= clampedEndRow1; i++) {
         for (int j = clampedStartCol1; j <= clampedEndCol1; j++) {
             if (mBackground[i][j]) {
-                mBackground[i][j]->draw(tileTexture, objectTexture);
+                Color color = mBackground[i][j]->getCorlor();
+                ClearBackground(color);
             }
         }
     }
@@ -244,8 +298,8 @@ void TileMap::drawItem(Camera2D& camera) {
     // Loop only through the visible tiles
     for (int i = startRow; i <= endRow; i++) {
         for (int j = startCol; j <= endCol; j++) {
-            if (mItem[i][j]) { // Check if the tile exists
-                mItem[i][j]->draw(tileTexture, objectTexture);
+            if (mItem[i][j] ) { // Check if the tile exists
+                if(!mItem[i][j]->absorbed()) mItem[i][j]->draw(tileTexture, objectTexture);
             }
         }
     }
@@ -290,7 +344,6 @@ void TileMap::drawMain(Camera2D& camera) {
 }
 
 void TileMap::update(float dt){
- 
     for (int i = 0; i < mBackground.size(); i++) {
         for (int j = 0; j < mBackground[i].size(); j++) {
             const Rectangle& rect = mBackground[i][j]->getRect(); 
@@ -300,8 +353,7 @@ void TileMap::update(float dt){
             //     mItem[i][j]->update(dt);
             //     mMain[i][j]->update(dt);
             // }
-            mBackground[i][j]->update(dt);
-            mItem[i][j]->update(dt);
+            if (mItem[i][j]) mItem[i][j]->update(dt);
             mMain[i][j]->update(dt);
         }
     }

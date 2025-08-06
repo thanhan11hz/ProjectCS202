@@ -1,7 +1,8 @@
 #pragma once
-#include "Entity.hpp"
+#include "MovingEntity.hpp"
 #include <raylib.h>
 #include <vector>
+#include <string>
 #include <memory>
 
 enum TileType {
@@ -19,7 +20,8 @@ enum TileType {
     OwPipeBottom1=261,
     OwPipeBottom2=262,
     OWBridge = 32,
-    OwPole = 277, //Hitbox khác thường
+    OwPole = 277,
+    Finial =248,//Hitbox khác thường
     BrownCube = 29,
     GrassPlatform1 = 237,
     GrassPlatform2 = 238,
@@ -27,19 +29,28 @@ enum TileType {
     GreenDotPlatForm1 = 266,
     GreenDotPlatForm2 = 267,
     GreenDotPlatForm3 = 268,
+
+    OrangeDotPlatForm1 = 382,
+    OrangeDotPlatForm2 = 383,
+    OrangeDotPlatForm3 = 384,
     HoriPipe1 = 234,
     HoriPipe2 = 263,
     HiddenBox = 556,
     CastleTile = 147,
+    CastleBrigde = 700,
+    HoriMovingBlock = 301,
+    VertMovingBlock = 292,
 
+    EndingPoint = 567,
     UnderTile = 60,
 };
 
 
  extern std::vector<int> tileItemValues; 
 enum TileItem {
-    mushroom = 0, //Underground,... +=n*9
+    mushroom = 0,
     greenMushroom = 1,
+    underMushroom = 10,
     flower = 72,
     star = 108,
     normalCoin = 180,
@@ -47,6 +58,8 @@ enum TileItem {
     fragment = 4,
     underfragment = 13,
     underCoin = 189,
+    flag = 44,
+    hammer = 252,
     invalidItem = -1,
 };
 class TileBlock;
@@ -61,12 +74,15 @@ public:
 public:
     virtual void onHit(TileBlock& block, float dt) = 0;
     virtual void update(TileBlock& block, float dt) = 0;
-    virtual ~IBlockBehavior() = default;
+    virtual ~IBlockBehavior() ;
     virtual void setSide(Side side) { this->side = side; }
     virtual void setOther(Category other) { this->other = other; }
     virtual void setTag(std::string tag) { this->oTag = tag; }
+    virtual void handleCollision(TileBlock& block) = 0;
+    virtual std::string getTag(){return "";};
+    
 };
-class TileBlock : public Entity{
+class TileBlock : public MovingEntity{
     public:
     TileBlock(int type, int row, int col);
     void draw() override;
@@ -90,9 +106,14 @@ class TileBlock : public Entity{
     void setAnimation();
     void setState();
     bool isSolid();
+    virtual std::string getTag();
 
     virtual ~TileBlock();
-
+    Color getCorlor() const { 
+        if(mType == 42) {
+            return BLACK;}
+        return {99, 173, 255, 255};
+     }
 
     static constexpr int TileCollum = 29;
     static constexpr int ObjectRow = 35;
@@ -103,6 +124,7 @@ class TileBlock : public Entity{
     static constexpr float Gravity = 950.f;
     friend class SimpleBlockBehavior;
     friend class CoinBlockBehavior;
+    friend class MovingBlockBehavior;
 
 private:
     void setRect(Rectangle rect);
@@ -140,11 +162,23 @@ public:
     void update(TileBlock& block, float dt) override ;
     void bump(TileBlock& block, float dt) ;
     void destroy(TileBlock& bloc, float dt) ;
+    void handleCollision(TileBlock& block) override;
+    std::string getTag() override { return "SimpleBlock"; }
 };
 
 
 class CoinBlockBehavior : public SimpleBlockBehavior{
     public:
         void update(TileBlock& block, float dt) override ;
+        void handleCollision(TileBlock& block) override;
+        std::string getTag() override { return "CoinBlock"; }
+
 };
 
+class MovingBlockBehavior : public IBlockBehavior {
+public:
+    void onHit(TileBlock& block, float dt) override{} ;
+    void update(TileBlock& block, float dt) override ;
+    void handleCollision(TileBlock& block) override{};
+    std::string getTag() override {return "MovingBlock"; }
+};

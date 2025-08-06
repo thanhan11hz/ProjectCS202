@@ -86,6 +86,30 @@ void Collision::handleCollision() {
             itr = mEnemy.erase(itr);
         }
     }
+    // 2. Item vs Blocks
+    for (auto itr = mItem.begin(); itr != mItem.end();) {
+        if (*itr &&!(*itr)->isDie()) {
+            const float tileSize = 48.0f;
+            Vector2 itemPos = (*itr)->mPhysics.getPosition();
+            int itemCol = itemPos.x / tileSize;
+            int itemRow = itemPos.y / tileSize;
+            int radius = 4;
+            
+            for (int i = itemRow - radius; i <= itemRow + radius; ++i) {
+                for (int j = itemCol - radius; j <= itemCol + radius; ++j) {
+                    if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && (*itr)->up()) {
+                        checkCollision((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                        checkFootCollision((*itr)->mFootCollide, mMain[i][j]->mBodyCollide);
+                    }
+                }
+            }
+            itr++;
+        } 
+        else if(!(*itr)->on() && (*itr)->up()) {
+            itr = mItem.erase(itr);
+            std::cout << "Item erased" << std::endl;
+        }
+    }
 
     // if (mCharacter) {
     //     for (int i = 0; i < mEnemy.size(); ++i) {
@@ -149,7 +173,12 @@ void Collision::handleCollision() {
             itr = mProjectile.erase(itr);
         }
     }
-    
+    // Player vs. Items
+    if (mCharacter && !mCharacter->isDie()) {
+        for (int i = 0; i < mItem.size(); ++i) {
+            checkCollision(mCharacter->mBodyCollide, mItem[i]->mBodyCollide);
+        }
+    }
     // 4. Player vs. Enemies
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mEnemy.size(); ++i) {
@@ -224,6 +253,28 @@ void Collision::handleCollision() {
             itr = mEnemy.erase(itr);
         }
     }
+    //Item vs Blocks
+    for (auto itr = mItem.begin(); itr != mItem.end();) {
+        if (*itr && !(*itr)->isDie()) {
+            Vector2 itemPos = (*itr)->mPhysics.getPosition();
+            int itemCol = itemPos.x / tileSize;
+            int itemRow = itemPos.y / tileSize;
+            int radius = 4;
+
+            for (int i = itemRow - radius; i <= itemRow + radius; ++i) {
+                for (int j = itemCol - radius; j <= itemCol + radius; ++j) {
+                    if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j] && (*itr)->up()) {
+                        separate((*itr)->mBodyCollide, mMain[i][j]->mBodyCollide);
+                    }
+                }
+            }
+            itr++;
+        } 
+        else if(!(*itr)->on() && (*itr)->up()) {
+            itr = mItem.erase(itr);
+            std::cout << "Item erased" << std::endl;
+        }
+    }
 
     // 3. Projectile vs Blocks
     for (auto itr = mProjectile.begin(); itr != mProjectile.end();) {
@@ -250,6 +301,13 @@ void Collision::handleCollision() {
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mEnemy.size(); ++i) {
             separate(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
+    // Player vs. Items
+    if (mCharacter && !mCharacter->isDie()) {
+        for (int i = 0; i < mItem.size(); ++i) {
+            separate(mCharacter->mBodyCollide, mItem[i]->mBodyCollide);
         }
     }
 
@@ -294,6 +352,7 @@ void Collision::checkCollision(Collide A, Collide B) {
 
 void Collision::checkFootCollision(Collide A, Collide B) {
     if (!checkBroadPhase(A, B)) return;
+
     A.getOwner()->handleFootCollision();
 }
 
