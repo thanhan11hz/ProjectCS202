@@ -50,6 +50,8 @@ public:
     std::vector<std::unique_ptr<Enemy>> takeEnemies() {return std::move(Enemies); }
     std::vector<std::unique_ptr<TileObject>>& getItems() {return Items;}
     std::vector<std::unique_ptr<TileObject>> takeItems() {return std::move(Items); }
+    void resetItem() { Items.clear(); }
+    void reset();
 
 private:
     std::vector<std::vector<Btr>> mMain;
