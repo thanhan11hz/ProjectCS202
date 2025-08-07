@@ -23,7 +23,11 @@ void World::destroyInstance() {
 }
 
 World::~World() {
-
+    std::cout << "Save Snapshot";
+    std::ofstream out("resource\\save.json");
+    nlohmann::json j = mSnapshot;
+    out << std::setw(4) << j;
+    out.close();
 }
         
 void World::update(float dt) {
@@ -196,24 +200,12 @@ bool World::hasNextMap() {
 void World::nextMap() {
     mCurrent = (mCurrent + 1) % mMap.size();
 }
-        
-void World::backMap() {
-    mCurrent = (mCurrent - 1 + mMap.size()) % mMap.size();
-}
 
 void World::reset() {
     mEnemy.clear();
     if (mCharacter) {
         mCharacter->mPhysics.setPosition({150, 400});
     }
-    // std::vector<std::unique_ptr<FireBar>> mFireBar = FireBar::spawnFireBar({200, 600});
-    // for (int i = 0; i < mFireBar.size(); ++i) {
-    //     mEnemy.push_back(std::move(mFireBar[i]));
-    // }
-    // // mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
-    // // mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
-    // // mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
-    // //
 
     mCollision.clearCollidables();
     std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
@@ -265,7 +257,7 @@ void World::receiveCoin() {
     mCoins ++;
 }
         
-void World::damage() {
+void World::loseLives() {
     mLives --;
 }
 
@@ -288,10 +280,79 @@ bool World::isSolidTileAt(Vector2 worldPosition) {
         return false;
     }
 
-    // Check if the tile at the grid index exists and is collidable
+    // Check if the tile at the grid index exists and is collidables
     if (grid[row][col] && grid[row][col]->isSolid()) {
         return true;
     }
 
     return false;
+}
+
+void World::saveSnapshot() {
+    std::unique_ptr<Memento> snapshot = std::make_unique<Memento>();
+    snapshot->mCurrent = mCurrent;
+    snapshot->mTimer = mTimer;
+    snapshot->mLives = mLives;
+    snapshot->mCoins = mCoins;
+    snapshot->mCharacter = std::move(mCharacter);
+    
+    // for (int i = 0; i < mEnemy.size(); ++i) {
+    //     snapshot->mEnemy.push_back(std::move(mEnemy[i]));
+    // }
+
+    // mEnemy.clear();
+
+    // for (int i = 0; i < mItem.size(); ++i) {
+    //     snapshot->mItem.push_back(std::move(mItem[i]));
+    // }
+
+    // mItem.clear();
+
+    // for (int i = 0; i < mProjectile.size(); ++i) {
+    //     snapshot->mProjectile.push_back(std::move(mProjectile[i]));
+    // }
+
+    // mProjectile.clear();
+    
+    mSnapshot = std::move(snapshot);
+}
+
+void World::restore() {
+    if (mSnapshot) {
+
+        mCurrent = mSnapshot->mCurrent;
+        mCoins = mSnapshot->mCoins;
+        mLives = mSnapshot->mLives;
+        mTimer = mSnapshot->mTimer;
+
+        mCharacter = std::move(mSnapshot->mCharacter);
+
+        // for (int i = 0; i < mSnapshot->mEnemy.size(); ++i) {
+        //     mEnemy.push_back(std::move(mSnapshot->mEnemy[i]));
+        // }
+
+        // for (int i = 0; i < mSnapshot->mItem.size(); ++i) {
+        //     mItem.push_back(std::move(mSnapshot->mItem[i]));
+        // }
+
+        // for (int i = 0; i < mSnapshot->mProjectile.size(); ++i) {
+        //     mProjectile.push_back(std::move(mSnapshot->mProjectile[i]));
+        // }
+
+        mSnapshot = nullptr;
+    }
+}
+
+bool World::haveSnapshot() {
+    if (mSnapshot) return true;
+    return false;
+}
+
+void World::loadSnapshot() {
+    std::ifstream in("resource\\save.json");
+    if (in.is_open()) {
+        nlohmann::json j;
+        in >> j;
+        mSnapshot = j.get<std::unique_ptr<Memento>>();
+    }
 }

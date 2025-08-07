@@ -65,7 +65,7 @@ void Physics::endJump() {
     if (mVelocity.y < 0.f) mVelocity.y *= 0.5f;
 }
 
-bool Physics::isRest() {
+bool Physics::isRest() const {
     return std::fabs(getVelocity().x) < Eps && std::fabs(getVelocity().y) < Eps; 
 }
 
@@ -73,15 +73,15 @@ bool Physics::isRunning() {
     return std::fabs(getVelocity().x) >= Eps;
 }
 
-bool Physics::isRising() {
+bool Physics::isRising() const {
     return getVelocity().y < -Eps;
 }
 
-bool Physics::isRight() {
+bool Physics::isRight() const {
     return mIsRight;
 }
 
-bool Physics::onGround() {
+bool Physics::onGround() const {
     return mIsGround;
 }
 

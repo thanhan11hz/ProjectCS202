@@ -5,7 +5,7 @@ Game::Game() {
     // SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(targetWidth, targetHeight, "Project CS202 - Group 7 - Super Mario Game");
     InitAudioDevice();
-
+    std::cout << "Found";
     Resource::mTexture.load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\mainmenubg.png");
     Resource::mTexture.load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\cloudsbg.png");
     Resource::mTexture.load(TextureIdentifier::PLAY_BUTTON, "resource\\Texture\\Button\\PlayButton.png");
@@ -65,7 +65,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::PREVIEW6, "resource\\Texture\\StateAsset\\MapPreview\\preview6.png");
     Resource::mTexture.load(TextureIdentifier::PREVIEW7, "resource\\Texture\\StateAsset\\MapPreview\\preview7.png");
     Resource::mTexture.load(TextureIdentifier::PREVIEW8, "resource\\Texture\\StateAsset\\MapPreview\\preview8.png");
-    
+
     Resource::mTexture.load(TextureIdentifier::MARIO_N_IDLE, "resource\\Texture\\Spritesheet\\Mario_N_Idle.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_N_RUN, "resource\\Texture\\Spritesheet\\Mario_N_Run.png");
     Resource::mTexture.load(TextureIdentifier::MARIO_N_JUMP, "resource\\Texture\\Spritesheet\\Mario_N_Jump.png");
@@ -112,7 +112,7 @@ Game::Game() {
     Resource::mTexture.load(TextureIdentifier::EXPLOSION, "resource\\Texture\\Spritesheet\\Explosion.png");
     Resource::mTexture.load(TextureIdentifier::BOWSER_FIRE, "resource\\Texture\\Spritesheet\\Bowser_Fire.png");
     Resource::mTexture.load(TextureIdentifier::FIREBALL, "resource\\Texture\\Spritesheet\\FireBall.png");
-    
+
     Resource::mFont.load(FontIdentifier::PressStart2P, "resource\\Fonts\\PressStart2P-Regular.ttf");
     Resource::mFont.load(FontIdentifier::PixelifySans, "resource\\Fonts\\PixelifySans-Regular.ttf");
 
@@ -174,6 +174,7 @@ Game::Game() {
         }
     }
 
+    mWorld.loadSnapshot();
 }
 
 void Game::run() {

@@ -1,4 +1,5 @@
 #include "State/PauseState.hpp"
+#include "World/World.hpp"
 
 PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     Label* title = new Label();
@@ -77,6 +78,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
         [this]() {
             confirmMode = false;
             requestStackClear();
+            mWorld.saveSnapshot();
             requestStackPush(StateIdentifier::LEVEL);
         }
     );

@@ -2,16 +2,18 @@
 
 #include <memory>
 #include <map>
+#include <nlohmann/json.hpp>
 
 #include "Entity/MovingEntity.hpp"
 #include "Entity/Animation.hpp"
 #include "Entity/Projectile.hpp"
 #include "World/World.hpp"
 #include "Global.hpp"
+#include "Serialization.hpp"
 
 class Character : public MovingEntity {
     public:
-        enum class Move {
+        enum class Move : unsigned int {
             IDLE, 
             RUN, 
             JUMP, 
@@ -19,12 +21,13 @@ class Character : public MovingEntity {
             SKID,
         };
 
-        enum class Form {
+        enum class Form : unsigned int {
             NORMAL, 
             SUPER, 
             FIRE
         };
         
+        Character(const nlohmann::json& j);
         Character(int length, int high);
         virtual void handle();
         virtual void draw();
@@ -44,6 +47,8 @@ class Character : public MovingEntity {
         virtual void handleCollision(Side side, Collide other);
 
         virtual std::string getTag();
+
+        friend void to_json(nlohmann::json& j, const Character& c);
 
     private:
         Move mMove = Move::IDLE;

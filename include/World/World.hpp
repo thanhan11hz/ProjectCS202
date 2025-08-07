@@ -3,20 +3,26 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <fstream>
 
 #include "World/TileMap.hpp"
 #include "World/Collision.hpp"
-#include "Entity/Goomba.hpp"
-#include "Entity/Piranha.hpp"
-#include "Entity/Podoboo.hpp"
-#include "Entity/Bowser.hpp"
-#include "Entity/FireBar.hpp"
 #include "World/Effect.hpp"
 #include "Entity/Projectile.hpp"
+#include "World/Memento.hpp"
+
 
 class World {
 
     public:
+
+        // Memento
+        std::unique_ptr<Memento> mSnapshot;
+        void saveSnapshot();
+        void restore();
+        void loadSnapshot();
+        bool haveSnapshot();
+
         // Singleton
         World(const World& other) = delete;
         void operator=(const World&) = delete;
@@ -42,7 +48,7 @@ class World {
         Camera2D& getCamera();
 
         void receiveCoin();
-        void damage();
+        void loseLives();
 
         ~World();
 
@@ -50,6 +56,7 @@ class World {
         bool isSolidTileAt(Vector2 worldPosition);
 
     protected:
+        // Singleton
         World();
         static World* instance;
 
@@ -72,11 +79,14 @@ class World {
         EffectManager mEffect;
 
         float mTimer = 300.0f;
+
         size_t mLives = 3;
+
         size_t mCoins = 0;
 
         bool isLevelComplete();
+
         bool hasNextMap();
+
         void nextMap();
-        void backMap();
 };

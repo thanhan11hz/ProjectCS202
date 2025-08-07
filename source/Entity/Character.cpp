@@ -8,6 +8,50 @@ Character::Character(int length, int high) : MovingEntity(), mKey(mKeyBinding), 
     mBodyCollide.setLabel(Category::MARIO);
 }
 
+Character::Character(const nlohmann::json& j) : mKey(mKeyBinding) {
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setStatic(false);
+    mAnim.setFrameSize({16, 16});
+    mAnim.setFrameDuration(0.8f);
+    mBodyCollide.setLabel(Category::MARIO);
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    setForm(static_cast<Form>(j["form"].get<unsigned int>()));
+    setImmortal(j["immortal"].get<bool>());
+    if (j["length"].get<int>() == 300) {
+        mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
+        mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);
+        mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
+        mNormal[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
+        mSuper[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_S_JUMP);
+        mSuper[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_S_RUN);
+        mSuper[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_S_IDLE);
+        mSuper[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::MARIO_S_CROUCH);
+        mFire[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_F_JUMP);
+        mFire[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_F_RUN);
+        mFire[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_F_IDLE);
+        mFire[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::MARIO_F_CROUCH);
+        mDeath = Resource::mTexture.get(TextureIdentifier::MARIO_DEATH);
+    } else {
+        mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_JUMP);
+        mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_RUN);
+        mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_IDLE);
+        mNormal[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::LUIGI_N_IDLE);
+        mSuper[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_JUMP);
+        mSuper[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_RUN);
+        mSuper[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_IDLE);
+        mSuper[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_CROUCH);
+        mFire[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_JUMP);
+        mFire[Move::RUN] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_RUN);
+        mFire[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_IDLE);
+        mFire[Move::CROUCH] = Resource::mTexture.get(TextureIdentifier::LUIGI_S_CROUCH);
+        mDeath = Resource::mTexture.get(TextureIdentifier::LUIGI_DEATH);
+    }
+    setMove(static_cast<Move>(j["move"].get<unsigned int>()));
+}
+
 void Character::handle() {
     if (mMove == Move::CROUCH) {
         if (IsKeyReleased(mKey[Action::DOWN])) {

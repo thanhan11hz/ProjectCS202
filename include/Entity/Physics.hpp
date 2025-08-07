@@ -19,12 +19,12 @@ class Physics {
         void accelerate(float vx, float vy);
         void startJump(int high);
         void endJump();
-        bool onGround();
+        bool onGround() const;
         void setOnGround(bool flag);
         bool isRunning();
-        bool isRest();
-        bool isRising();
-        bool isRight();
+        bool isRest() const;
+        bool isRising() const;
+        bool isRight() const;
         void setDensity(float density);
         void setRight(bool flag);
         void update(float dt);
