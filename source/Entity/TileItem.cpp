@@ -49,7 +49,7 @@ void TileObject::createBehavior()  {
     else if(getType() == TileItem::star) {
         mBehavior = new StarBehavior();
     } 
-    else if(getType() == TileItem::normalCoin ) {
+    else if(getType() == TileItem::normalCoin || getType() == TileItem::underCoin) {
         mBehavior = new NormalCoinBehavior();
     }
     else if(getType() == TileItem::specialCoin ) {
@@ -123,6 +123,8 @@ void TileObject::update(float dt) {
         size.x - 8,
         1
     });
+    // float mSpeed = mPhysics.getVelocity().x;
+    // mPhysics.accelerate(Vector2{mSpeed, 0});
     mPhysics.setOnGround(false);
 }
 
