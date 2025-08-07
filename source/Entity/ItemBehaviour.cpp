@@ -283,6 +283,9 @@ void MushroomBehavior::handleCollision(TileObject& item) {
         item.setOn(true);
         item.setAnimation();
         item.mPhysics.setVelocity({0, -96.0f});
+        if(item.mType == 10) {
+            item.mPhysics.setVelocity({0, -96.0f});
+        }
     }
 
     if((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK  && item.isMoving) {

@@ -176,9 +176,14 @@ class CoinBlockBehavior : public SimpleBlockBehavior{
 };
 
 class MovingBlockBehavior : public IBlockBehavior {
+    int mType;
 public:
+    MovingBlockBehavior(int type = 0) : mType(type) {}
     void onHit(TileBlock& block, float dt) override{} ;
     void update(TileBlock& block, float dt) override ;
     void handleCollision(TileBlock& block) override{};
-    std::string getTag() override {return "MovingBlock"; }
+    std::string getTag() override { 
+        if (mType == 292) return "VertMovingBlock";
+        return "HoriMovingBlock";
+    }
 };

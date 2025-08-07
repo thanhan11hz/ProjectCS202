@@ -63,11 +63,11 @@ void TileBlock::createBehavior()  {
     }
     else if(getType(calType()) == TileType::HoriMovingBlock ) {
         mPhysics.setVelocity({50.0f,0});
-        mBehavior = new MovingBlockBehavior();
+        mBehavior = new MovingBlockBehavior(292);
     }
     else if(getType(calType()) == TileType::VertMovingBlock ) {
         mPhysics.setVelocity({0,50.0f});
-        mBehavior = new MovingBlockBehavior();
+        mBehavior = new MovingBlockBehavior(301);
     }
 }
 
@@ -241,7 +241,7 @@ void TileBlock::addFragment() {
         isfrag = true;
         pos =4;
     }
-    else if (getType(calType()) == TileType::OwAfterHitBlock) {
+    else if (getType(calType()) == TileType::UnderTile) {
         isfrag = true;
         pos = 13;
     }

@@ -55,24 +55,24 @@ void World::update(float dt) {
             itr = mEnemy.erase(itr);
         }
     }
-
     for (auto itr = mItem.begin(); itr != mItem.end(); ) {
-        if (*itr && !(*itr)->absorbed()) {
+        if (*itr && !(*itr)->isDie()) {
             (*itr)->update(dt);
             ++itr;
         } else {
             itr = mItem.erase(itr);
+            
         }
     }
     
     mCollision.handleCollision();
-
+    
     mEffect.update(dt);
-
+    
     mCam.target.x = mCharacter->mPhysics.getPosition().x;
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
     if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
-
+    
     mTimer -= dt;
 }
         
@@ -86,10 +86,10 @@ void World::draw() {
     // mMap[mCurrent]->drawBackground();
     mMap[mCurrent]->drawBackground(mCam);
 
-
     // mMap[mCurrent]->drawItem();
-    mMap[mCurrent]->drawItem(mCam);
 
+    mMap[mCurrent]->drawItem(mCam);
+    
     if (!mCharacter->isDie() && mCharacter->isAfterBlock()) mCharacter->draw();
 
     // Rectangle that represents what the camera can currently see.
@@ -202,6 +202,7 @@ void World::backMap() {
 }
 
 void World::reset() {
+    mMap[mCurrent]->reset();
     mEnemy.clear();
     if (mCharacter) {
         mCharacter->mPhysics.setPosition({150, 400});
@@ -216,12 +217,15 @@ void World::reset() {
     // //
 
     mCollision.clearCollidables();
+    mItem.clear();
     std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
     mCollision.addEnemy(Enemy);
     mEnemy = mMap[mCurrent]->takeEnemies();
+
     std::vector<std::unique_ptr<TileObject>>& Items = mMap[mCurrent]->getItems();
     mCollision.addItem(Items);
     mItem = mMap[mCurrent]->takeItems();
+    mMap[mCurrent]->resetItem();
     mCollision.addCharacter(mCharacter.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
