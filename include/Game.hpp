@@ -18,6 +18,7 @@
 #include "State/GameState.hpp"
 #include "State/MapEditor.hpp"
 #include "State/GameOverState.hpp"
+#include "State/CompleteState.hpp"
 class Game {
     public:
         Game();

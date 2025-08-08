@@ -52,7 +52,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     );
 
     Label* confirm = new Label();
-    confirm->changeShape({496, 343, 458, 35});
+    confirm->changeShape({496, 355, 458, 35});
     confirm->changeSize(35);
     confirm->changeText("ARE YOU SURE?");
     confirm->changeColor(WHITE);
@@ -61,7 +61,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     Button* ret = new Button();
     ret->changeText("RETURN");
     ret->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    ret->changShape({484, 426, 211, 56});
+    ret->changShape({484, 438, 211, 56});
     mConfirmContainer.pack(ret);
     ret->changeCallback(
         [this]() {
@@ -72,7 +72,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     yes->changeText("YES");
     yes->changeTextColor(RED);
     yes->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
-    yes->changShape({745, 426, 211, 56});
+    yes->changShape({745, 438, 211, 56});
     mConfirmContainer.pack(yes);
     yes->changeCallback(
         [this]() {

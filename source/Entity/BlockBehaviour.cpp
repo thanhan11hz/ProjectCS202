@@ -3,6 +3,7 @@
 #include "Entity/TileItem.hpp"
 #include <iostream>
 using namespace std;
+IBlockBehavior::~IBlockBehavior() = default;
 void SimpleBlockBehavior::update(TileBlock& block, float dt) {
     Vector2 mousePos = GetMousePosition();
     if(CheckCollisionPointRec(mousePos, block.mRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON) ) {
@@ -10,7 +11,13 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
             std::cout << "Block is solid, cannot hit." << std::endl;
         }
     }
-    if (block.getType(block.calType()) == TileType::OwInitialTile && side==Side::BOTTOM && other == Category::MARIO && oTag == "Normal") {
+    
+    if(block.bumped) bump(block, dt);
+    if(block.isDestroyed) destroy(block, dt);
+}
+
+void SimpleBlockBehavior::handleCollision(TileBlock& block) {
+    if ((block.getType(block.calType()) == TileType::OwInitialTile || block.getType(block.calType()) == TileType::UnderTile) && side==Side::BOTTOM && other == Category::MARIO && oTag == "Normal") {
         if(block.isDoneAnimation){
             block.mPhysics.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;
@@ -18,21 +25,21 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
             block.bumped = true;
         }
     }
-    if(block.bumped) bump(block, dt);
-    if (block.getType(block.calType()) == TileType::OwInitialTile && side == Side::BOTTOM && other == Category::MARIO && oTag == "Super") {
-        block.frag[0]->mPhysics.setVelocity({-10.0f, block.frag[0]->calculateVec(0.2f, 10)});
+    if ((block.getType(block.calType()) == TileType::OwInitialTile || block.getType(block.calType()) == TileType::UnderTile)  && side == Side::BOTTOM && other == Category::MARIO && (oTag == "Super" || oTag == "Fire")) {
+        std::cout << "Destroying block" << "\n";
+        block.frag[0]->mPhysics.setVelocity({-80.0f, 300});
         block.frag[0]->setOn(true);
         block.frag[0]->setAnimation();
 
-        block.frag[1]->mPhysics.setVelocity({10.0f, block.frag[1]->calculateVec(0.2f, 10)});
+        block.frag[1]->mPhysics.setVelocity({80.0f, 300});
         block.frag[1]->setOn(true);
         block.frag[1]->setAnimation();
 
-        block.frag[2]->mPhysics.setVelocity({-10.0f, block.frag[2]->calculateVec(0.2f, 5)});
+        block.frag[2]->mPhysics.setVelocity({-80.0f, 200});
         block.frag[2]->setOn(true);
         block.frag[2]->setAnimation();
 
-        block.frag[3]->mPhysics.setVelocity({10.0f, block.frag[3]->calculateVec(0.2f, 5)});
+        block.frag[3]->mPhysics.setVelocity({80.0f, 200});
         block.frag[3]->setOn(true);
         block.frag[3]->setAnimation();
 
@@ -41,7 +48,6 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
         block.isDoneAnimation = false;
         block.aniTime = 0.0f;
     }
-    if(block.isDestroyed) destroy(block, dt);
 }
 
 void SimpleBlockBehavior::onHit(TileBlock& block, float dt) {
@@ -56,7 +62,6 @@ void SimpleBlockBehavior::bump(TileBlock& block, float dt) {
     float startY = block.mRect.y;
     block.mPhysics.accelerate({0, -TileBlock::Gravity * dt});
     block.mPhysics.setPosition({block.mPhysics.getPosition().x, block.mPhysics.getPosition().y - block.mPhysics.getVelocity().y * dt});
-
     if (block.mPhysics.getPosition().y >= startY) {
         block.mPhysics.setPosition({block.mPhysics.getPosition().x, startY});
         block.isDoneAnimation = true;
@@ -71,9 +76,11 @@ void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
     //std::cout << "SimpleBlockBehavior destroy called" << std::endl;
     if (block.isDoneAnimation) return;
     block.aniTime += dt;
-    if(block.aniTime < 100.0f){
+    if(block.aniTime < 1.0f){
         for (int i = 0; i < 4; i++){
+            
             block.frag[i]->update(dt);
+           
         }
     }
     else{
@@ -86,21 +93,7 @@ void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
 /// @param dt 
 void CoinBlockBehavior::update(TileBlock& block, float dt) {
     Vector2 mousePos = GetMousePosition();
-
-    if(side == Side::BOTTOM && (oTag == "Normal" || oTag == "Super") && other == Category::ITEM && block.mType != 26){
-        if(block.isDoneAnimation){
-            block.setVelocity({0, 192.5f});
-            block.isDoneAnimation = false;
-            block.aniTime = 0.0f;
-            block.bumped = true;
-        }
-        block.mType = 26;
-        int x = (block.mType) % 29;
-        int y = (block.mType) / 29;
-        block.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE}; 
-        block.mSource = {block.posTile.x, block.posTile.y, TileBlock::TILE_SIZE, TileBlock::TILE_SIZE}; 
-    }
-    else if(block.mType!=26 && block.mType!=556){
+    if(block.mType!=26 && block.mType!=556){
         if(block.aniTime <= 0.2f){
             block.aniTime+=dt;
         }
@@ -115,5 +108,73 @@ void CoinBlockBehavior::update(TileBlock& block, float dt) {
             block.aniTime = 0.0f;
         }
     }
-    if(block.bumped) bump(block, dt);
+    if(block.bumped) {
+        bump(block, dt);};
+}
+
+void CoinBlockBehavior::handleCollision(TileBlock& block) {
+    if(side == Side::BOTTOM  && other == Category::MARIO && block.mType != 26){
+        if(block.isDoneAnimation){
+            block.mPhysics.setVelocity({0, 192.5f});
+            block.isDoneAnimation = false;
+            block.aniTime = 0.0f;
+            block.bumped = true;
+        }
+        int pre = block.mType;
+        block.mType = 26;
+        if(block.mType == 26 && pre == 556) std::cout << "Hidden block is hit" << std::endl;
+        int x = (block.mType) % 29;
+        int y = (block.mType) / 29;
+        block.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE}; 
+        block.mSource = {block.posTile.x, block.posTile.y, TileBlock::TILE_SIZE, TileBlock::TILE_SIZE}; 
+    }
+}
+
+void MovingBlockBehavior::update(TileBlock& block, float dt) {
+    if (block.mType == 292) {
+        float minY = block.mRect.y - 48.0f * 3;
+        float maxY = block.mRect.y + 48.0f * 3;
+
+        Vector2 pos = block.mPhysics.getPosition();
+        Vector2 vel = block.mPhysics.getVelocity();
+
+        pos.y += vel.y * dt;
+
+        if (pos.y <= minY) {
+            pos.y = minY;
+            vel.y = 50.0f;
+        }
+        if (pos.y >= maxY) {
+            pos.y = maxY;
+            vel.y = -50.0f;
+        }
+
+        block.mPhysics.setPosition(pos);
+        block.mPhysics.setVelocity(vel);
+    }
+
+    if (block.mType == 301) { 
+        float minX = block.mRect.x - 48.0f * 3;
+        float maxX = block.mRect.x + 48.0f * 3;
+
+        Vector2 pos = block.mPhysics.getPosition();
+        Vector2 vel = block.mPhysics.getVelocity();
+
+        pos.x += vel.x * dt;
+
+        if (pos.x <= minX) {
+            pos.x = minX;
+            vel.x = 50.0f;
+        }
+        if (pos.x >= maxX) {
+            pos.x = maxX;
+            vel.x = -50.0f;
+        }
+
+        block.mPhysics.setPosition(pos);
+        block.mPhysics.setVelocity(vel);
+    }
+
+    
+    
 }

@@ -13,5 +13,6 @@ enum class StateIdentifier {
     GAME2,
     GAME3,
     GAME4,
-    GAMEOVER
+    GAMEOVER,
+    COMPLETE
 };

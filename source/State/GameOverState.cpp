@@ -1,7 +1,5 @@
 #include "State/GameOverState.hpp"
 
-#include "State/GameState.hpp"
-
 GameOverState::GameOverState(StateStack& stack) : State(stack) {
     Label* header = new Label();
     header->changeShape({359,325,722,50});
@@ -15,6 +13,7 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     Button* retry = new Button();
     retry->changeText("RETRY");
     retry->changShape({615,433,211,56});
+    retry->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     mContainer.pack(retry);
     retry->changeCallback(
         [this]() {
@@ -25,6 +24,7 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
 
     Button* quit = new Button();
     quit->changeText("QUIT");
+    quit->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     quit->changShape({615,545,211,56});
     mContainer.pack(quit);
     quit->changeCallback(
@@ -59,14 +59,14 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     });
     mContainer.pack(time);
 
-    Label* hp = new Label();
-    hp->changeShape({229,806,187, 17});
+   Label* hp = new Label();
+    hp->changeShape({562,806,187, 17});
     hp->changeSize(17);
-    hp->changeText("LIVES:  x3");
+    hp->changeText("LIVES   x3");
     hp->changeColor(WHITE);
     hp->changeCallback([this](Label* label) {
         size_t live = mWorld.getRestLive();
-        label->changeText("LIVES: x" + std::to_string(live));
+        label->changeText("LIVES   x" + std::to_string(live));
     });
     mContainer.pack(hp);
 
@@ -84,12 +84,19 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     });
     mContainer.pack(coins);
 
-    Label* items = new Label();
-    items->changeShape({565,806,830, 17});
-    items->changeSize(17);
-    items->changeText("ACTIVE POWER-UPS:");
-    items->changeColor(WHITE);
-    mContainer.pack(items);
+    Label* score = new Label();
+    score->changeShape({229,806,238, 17});
+    score->changeSize(17);
+    score->changeText("SCORE 00000000");
+    score->changeColor(WHITE);
+    // score->changeCallback([this](Label* label) {
+    //     size_t sc = mWorld.getScore();
+    //     std::string text = std::to_string(sc);
+    //     while (text.size() < 8) text = "0" + text;
+    //     text = "SCORE " + text; 
+    //     label->changeText(text);
+    // });
+    mContainer.pack(score);
 }
 
 void GameOverState::draw() {
@@ -97,6 +104,8 @@ void GameOverState::draw() {
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
     DrawTexture(bricksTexture, 0, 772, WHITE);
     mContainer.draw();
+    Texture2D hrt = Resource::mTexture.get(TextureIdentifier::HEART);
+    DrawTexture(hrt, 665, 802, WHITE);
 }
 
 bool GameOverState::update(float dt) {

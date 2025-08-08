@@ -27,11 +27,13 @@ enum class Palette {
     COINS,
     FOLIAGE1,
     FOLIAGE2,
-    ITEMS
+    ITEMS,
+    GOOMBA
 };
 
 const int TILES_PER_ROW_BLOCKS = 29;
 const int TILES_PER_ROW_ITEMS = 36; 
+const int TILES_PER_ROW_ENEMIES = 18; 
 const int DEFAULT_MAP_HEIGHT = 19;
 const int DEFAULT_MAP_WIDTH = 30;
 const int TILE_SIZE = 16;
@@ -55,12 +57,13 @@ class MapEditor : public State {
         void drawUI();
         void drawMapPreview();
         void drawPalette();
-        void drawGrid(int width, int height, int tileSize, Color lineColor = Fade(GRAY, 0.5f));
+        void drawGrid(int startX, int startY, int width, int height, int tileSize, Color lineColor = Fade(GRAY, 0.5f));
         void createMap();
         int getTilesPerRow();
 
         std::vector<std::vector<int>> mMap;
         std::vector<std::vector<int>> mItems;
+        std::vector<std::vector<int>> mEnemies;
         void saveMap();
                 
         std::string name;
