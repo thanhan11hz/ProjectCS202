@@ -1,7 +1,7 @@
 #include "World/Collision.hpp"
 #include "Entity/Character.hpp"
 
-Collision::Collision() : mCharacter(nullptr) {
+Collision::Collision() : mCharacter(nullptr), mCharacter2(nullptr) {
 
 }
 
@@ -36,8 +36,13 @@ void Collision::addCharacter(Character* character) {
     mCharacter = character;
 }
 
+void Collision::addCharacter2(Character* character) {
+    mCharacter2 = character;
+}
+
 void Collision::clearCollidables() {
     mCharacter = nullptr;
+    mCharacter2 = nullptr;
     mMain.clear();
     mEnemy.clear();
     mItem.clear();
@@ -59,6 +64,22 @@ void Collision::handleCollision() {
                 if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
                     checkCollision(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
                     checkFootCollision(mCharacter->mFootCollide, mMain[i][j]->mBodyCollide);
+                }
+            }
+        }
+    }
+
+    if (mCharacter2 && !mCharacter2->isDie()) {
+        Vector2 charPos = mCharacter2->mPhysics.getPosition();
+        int charCol = charPos.x / tileSize;
+        int charRow = charPos.y / tileSize;
+        int radius = 4;
+
+        for (int i = charRow - radius; i <= charRow + radius; ++i) {
+            for (int j = charCol - radius; j <= charCol + radius; ++j) {
+                if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
+                    checkCollision(mCharacter2->mBodyCollide, mMain[i][j]->mBodyCollide);
+                    checkFootCollision(mCharacter2->mFootCollide, mMain[i][j]->mBodyCollide);
                 }
             }
         }
@@ -173,16 +194,30 @@ void Collision::handleCollision() {
             itr = mProjectile.erase(itr);
         }
     }
+
     // Player vs. Items
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mItem.size(); ++i) {
             checkCollision(mCharacter->mBodyCollide, mItem[i]->mBodyCollide);
         }
     }
+
+    if (mCharacter2 && !mCharacter2->isDie()) {
+        for (int i = 0; i < mItem.size(); ++i) {
+            checkCollision(mCharacter2->mBodyCollide, mItem[i]->mBodyCollide);
+        }
+    }
+
     // 4. Player vs. Enemies
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mEnemy.size(); ++i) {
             checkCollision(mCharacter->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
+    if (mCharacter2 && !mCharacter->isDie()) {
+        for (int i = 0; i < mEnemy.size(); ++i) {
+            checkCollision(mCharacter2->mBodyCollide, mEnemy[i]->mBodyCollide);
         }
     }
 
@@ -197,6 +232,12 @@ void Collision::handleCollision() {
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mProjectile.size(); ++i) {
             checkCollision(mCharacter->mBodyCollide, mProjectile[i]->mBodyCollide);
+        }
+    }
+
+    if (mCharacter2 && !mCharacter2->isDie()) {
+        for (int i = 0; i < mProjectile.size(); ++i) {
+            checkCollision(mCharacter2->mBodyCollide, mProjectile[i]->mBodyCollide);
         }
     }
 
@@ -228,6 +269,21 @@ void Collision::handleCollision() {
             for (int j = charCol - radius; j <= charCol + radius; ++j) {
                 if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
                     separate(mCharacter->mBodyCollide, mMain[i][j]->mBodyCollide);
+                }
+            }
+        }
+    }
+
+    if (mCharacter2 && !mCharacter2->isDie()) {
+        Vector2 charPos = mCharacter2->mPhysics.getPosition();
+        int charCol = charPos.x / tileSize;
+        int charRow = charPos.y / tileSize;
+        int radius = 4;
+
+        for (int i = charRow - radius; i <= charRow + radius; ++i) {
+            for (int j = charCol - radius; j <= charCol + radius; ++j) {
+                if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
+                    separate(mCharacter2->mBodyCollide, mMain[i][j]->mBodyCollide);
                 }
             }
         }
@@ -304,10 +360,22 @@ void Collision::handleCollision() {
         }
     }
 
+    if (mCharacter2 && !mCharacter2->isDie()) {
+        for (int i = 0; i < mEnemy.size(); ++i) {
+            separate(mCharacter2->mBodyCollide, mEnemy[i]->mBodyCollide);
+        }
+    }
+
     // Player vs. Items
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mItem.size(); ++i) {
             separate(mCharacter->mBodyCollide, mItem[i]->mBodyCollide);
+        }
+    }
+
+    if (mCharacter2 && !mCharacter2->isDie()) {
+        for (int i = 0; i < mItem.size(); ++i) {
+            separate(mCharacter2->mBodyCollide, mItem[i]->mBodyCollide);
         }
     }
 
@@ -322,6 +390,12 @@ void Collision::handleCollision() {
     if (mCharacter && !mCharacter->isDie()) {
         for (int i = 0; i < mProjectile.size(); ++i) {
             separate(mCharacter->mBodyCollide, mProjectile[i]->mBodyCollide);
+        }
+    }
+
+    if (mCharacter2 && !mCharacter2->isDie()) {
+        for (int i = 0; i < mProjectile.size(); ++i) {
+            separate(mCharacter2->mBodyCollide, mProjectile[i]->mBodyCollide);
         }
     }
 

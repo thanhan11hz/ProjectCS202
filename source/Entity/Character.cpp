@@ -62,6 +62,12 @@ void Character::update(float dt) {
     if (invincibleTimer < invincibleTime) invincibleTimer += dt;
     
     mAnim.update(dt);
+
+    if (GetWorldToScreen2D(mPhysics.getPosition(), mWorld.getCamera()).y > targetHeight) {
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, false));
+        setDie(true);
+    } 
+
     mPhysics.setOnGround(false);
 }
 

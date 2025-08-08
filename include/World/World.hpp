@@ -49,6 +49,10 @@ class World {
 
         // For Koopa ledging logic
         bool isSolidTileAt(Vector2 worldPosition);
+        bool isEndEffect() const;
+
+        void setMultiPlayers(bool flag);
+        bool isMultiPlayers() const;
 
     protected:
         World();
@@ -59,6 +63,8 @@ class World {
         size_t mCurrent = 0;
 
         std::unique_ptr<Character> mCharacter;
+
+        std::unique_ptr<Character> mCharacter2;
 
         std::vector<std::unique_ptr<Enemy>> mEnemy;
 
@@ -76,7 +82,10 @@ class World {
         size_t mLives = 3;
         size_t mCoins = 0;
 
-        
+        bool mIsMultiPlayers = true;
+
+        bool isComplete = false;
+
         bool hasNextMap();
         void nextMap();
         void backMap();

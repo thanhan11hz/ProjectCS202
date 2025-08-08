@@ -50,7 +50,7 @@ class Character : public MovingEntity {
         void updateMove();
         void setMove(Move move);
 
-        Form mForm = Form::FIRE;
+        Form mForm = Form::NORMAL;
         void setForm(Form form);
 
         static constexpr float mImmortalTime = 5.0f;
