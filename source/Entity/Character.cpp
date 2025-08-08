@@ -1,6 +1,6 @@
 #include "Entity/Character.hpp"
 
-Character::Character(int length, int high) : MovingEntity(), mKey(mKeyBinding), mLength(length), mHigh(high) {
+Character::Character(int length, int high) : MovingEntity(), mKey(&mKeyBinding), mLength(length), mHigh(high) {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setStatic(false);
     mAnim.setFrameSize({16, 16});
@@ -10,16 +10,16 @@ Character::Character(int length, int high) : MovingEntity(), mKey(mKeyBinding), 
 
 void Character::handle() {
     if (mMove == Move::CROUCH) {
-        if (IsKeyReleased(mKey[Action::DOWN])) {
+        if (IsKeyReleased((*mKey)[Action::DOWN])) {
             if (!mPhysics.onGround()) setMove(Move::JUMP);
             else setMove(Move::IDLE);
         }
     } else {
-        if (IsKeyDown(mKey[Action::DOWN])) setMove(Move::CROUCH);
-        if (IsKeyDown(mKey[Action::LEFT])) mPhysics.accelerate({mIsImmortal ? -3 * mLength : -mLength, 0});
-        if (IsKeyDown(mKey[Action::RIGHT])) mPhysics.accelerate({mIsImmortal ? 3 * mLength : mLength, 0});
+        if (IsKeyDown((*mKey)[Action::DOWN])) setMove(Move::CROUCH);
+        if (IsKeyDown((*mKey)[Action::LEFT])) mPhysics.accelerate({mIsImmortal ? -3 * mLength : -mLength, 0});
+        if (IsKeyDown((*mKey)[Action::RIGHT])) mPhysics.accelerate({mIsImmortal ? 3 * mLength : mLength, 0});
     }
-    if (IsKeyDown(mKey[Action::JUMP]) && mPhysics.onGround()) {
+    if (IsKeyDown((*mKey)[Action::JUMP]) && mPhysics.onGround()) {
         mPhysics.startJump(mHigh);
         if (mForm == Form::NORMAL) {
             SetSoundVolume(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP), sfxVolume);
@@ -29,9 +29,9 @@ void Character::handle() {
             PlaySound(Resource::mSound.get(SoundIdentifier::SUPER_JUMP));
         }
     }
-    if (IsKeyReleased(mKey[Action::JUMP])) mPhysics.endJump();
+    if (IsKeyReleased((*mKey)[Action::JUMP])) mPhysics.endJump();
     if (mForm == Form::FIRE) {
-        if (IsKeyPressed(mKey[Action::FIRE])) 
+        if (IsKeyPressed((*mKey)[Action::FIRE])) 
             if (mCooldown >= mCooldownTime) fire();
     }
 }
@@ -175,6 +175,10 @@ void Character::damage() {
         invincibleTimer = 0.0f;
         setForm(Form::NORMAL);
     }
+}
+
+void Character::setKeyBind(std::map<Action, KeyboardKey> &key) {
+    mKey = &key;
 }
 
 std::unique_ptr<Character> Character::spawnMario() {

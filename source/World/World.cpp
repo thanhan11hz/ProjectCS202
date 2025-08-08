@@ -27,7 +27,6 @@ World::~World() {
 }
         
 void World::update(float dt) {
-    std::cout << "Begin\n";
     if (mCharacter->isDie() && mLives > 0) {
         if (mEffect.isEmpty()) {
             mLives--;
@@ -43,10 +42,8 @@ void World::update(float dt) {
     }
 
     mMap[mCurrent]->update(dt);
-    std::cout << "End\n";
     mCharacter->update(dt);
 
-    std::cout << mCharacter->mPhysics.getPosition().x << " " << mCharacter->mPhysics.getPosition().y << "\n";
     if (mIsMultiPlayers) mCharacter2->update(dt);
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ) {
@@ -167,6 +164,8 @@ void World::draw() {
 void World::handle() {
     if (!mCharacter->isDie()) mCharacter->handle();
 
+    if (mIsMultiPlayers && !mCharacter2->isDie()) mCharacter2->handle();
+
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
         (*itr)->handle();
     }
@@ -226,6 +225,8 @@ void World::reset() {
     if (mIsMultiPlayers) {
         mCharacter = Character::spawnMario();
         mCharacter2 = Character::spawnLuigi();
+        mCharacter->setKeyBind(mKeyBinding);
+        mCharacter2->setKeyBind(mKeyBinding2);
     } else mCharacter2 = nullptr;
     if (mCurrent == 0) mCharacter->mPhysics.setPosition({150, 672});
     else if (mCurrent == 1) mCharacter->mPhysics.setPosition({150, 624});

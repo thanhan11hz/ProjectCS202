@@ -44,7 +44,11 @@ enum class Action {
     DOWN
 };
 
+extern std::map<Action, KeyboardKey> mFunctionKey;
+
 extern std::map<Action, KeyboardKey> mKeyBinding;
+
+extern std::map<Action, KeyboardKey> mKeyBinding2;
 
 extern Music mPlayingMusic;
 extern float musicVolume;
