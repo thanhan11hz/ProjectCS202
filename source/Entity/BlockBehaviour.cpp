@@ -17,7 +17,7 @@ void SimpleBlockBehavior::update(TileBlock& block, float dt) {
 }
 
 void SimpleBlockBehavior::handleCollision(TileBlock& block) {
-    if (block.getType(block.calType()) == TileType::OwInitialTile && side==Side::BOTTOM && other == Category::MARIO && oTag == "Normal") {
+    if ((block.getType(block.calType()) == TileType::OwInitialTile || block.getType(block.calType()) == TileType::UnderTile) && side==Side::BOTTOM && other == Category::MARIO && oTag == "Normal") {
         if(block.isDoneAnimation){
             block.mPhysics.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;
@@ -25,7 +25,7 @@ void SimpleBlockBehavior::handleCollision(TileBlock& block) {
             block.bumped = true;
         }
     }
-    if (block.getType(block.calType()) == TileType::OwInitialTile && side == Side::BOTTOM && other == Category::MARIO && (oTag == "Super" || oTag == "Fire")) {
+    if ((block.getType(block.calType()) == TileType::OwInitialTile || block.getType(block.calType()) == TileType::UnderTile)  && side == Side::BOTTOM && other == Category::MARIO && (oTag == "Super" || oTag == "Fire")) {
         std::cout << "Destroying block" << "\n";
         block.frag[0]->mPhysics.setVelocity({-80.0f, 300});
         block.frag[0]->setOn(true);
@@ -120,7 +120,9 @@ void CoinBlockBehavior::handleCollision(TileBlock& block) {
             block.aniTime = 0.0f;
             block.bumped = true;
         }
+        int pre = block.mType;
         block.mType = 26;
+        if(block.mType == 26 && pre == 556) std::cout << "Hidden block is hit" << std::endl;
         int x = (block.mType) % 29;
         int y = (block.mType) / 29;
         block.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE}; 

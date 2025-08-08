@@ -32,7 +32,7 @@ void SimpleBehavior::handleCollision(TileObject& item) {
     if(side == Side::BOTTOM && other == Category::MARIO && !item.isUp){
         item.setOn(true);
         item.setAnimation();
-        item.mPhysics.setVelocity({0, 96.0f});
+        item.mPhysics.setVelocity({0, -96.0f});
 
     }
     if(other == Category::MARIO && item.isUp) {
@@ -45,10 +45,13 @@ void SimpleBehavior::handleCollision(TileObject& item) {
 void SimpleBehavior::moveUp(TileObject& item, float dt) { 
     if (item.isDoneAnimation) return;
     item.aniTime += dt;
-    if(item.aniTime < 0.2f) return;
+    if(item.aniTime < 0.5f){
+        return;
+    } 
+        
     float startY = item.mRect.y-48.0f;
 
-    item.mPhysics.setPosition({item.mPhysics.getPosition().x, item.mPhysics.getPosition().y - item.mPhysics.getVelocity().y * dt});
+    item.mPhysics.setPosition({item.mPhysics.getPosition().x, item.mPhysics.getPosition().y + item.mPhysics.getVelocity().y * dt});
 
     if (item.mPhysics.getPosition().y <= startY) {
         item.mPhysics.setPosition({item.mPhysics.getPosition().x, startY});
@@ -64,7 +67,6 @@ void SimpleBehavior::moveUp(TileObject& item, float dt) {
         other = Category::NONE;
         oTag = "";
         if(getTag() == "Star") {
-            std::cout << "Star velocity: " << item.mPhysics.getVelocity().x << ", " << item.mPhysics.getVelocity().y << std::endl;
             std::cout << item.mPhysics.getPosition().x << " " << item.mPhysics.getPosition().y << std::endl;
         } 
     }
@@ -97,7 +99,7 @@ void NormalCoinBehavior::update(TileObject& item, float dt) {
             item.aniTime+=dt;
         }
         else{
-            if(item.mType==180 || item.mType==180) item.mType +=1 ;
+            if(item.mType==180 || item.mType==189) item.mType +=1 ;
             else if (item.mType == 181 || item.mType==190) item.mType+=1;
             else item.mType -= 2;
             int x = (item.mType) % 36;
@@ -240,6 +242,7 @@ void MushroomBehavior::onCollect(TileObject& item) {
 void MushroomBehavior::update(TileObject& item, float dt) {
     SimpleBehavior::update(item, dt);
     if(item.isOn && item.isUp){
+
         if(!item.mPhysics.onGround()){
             item.mPhysics.accelerate({0, TileObject::Gravity*dt});
         }
@@ -279,7 +282,10 @@ void MushroomBehavior::handleCollision(TileObject& item) {
     if(side == Side::BOTTOM && other == Category::MARIO  && !item.isUp){
         item.setOn(true);
         item.setAnimation();
-        item.mPhysics.setVelocity({0, 96.0f});
+        item.mPhysics.setVelocity({0, -96.0f});
+        if(item.mType == 10) {
+            item.mPhysics.setVelocity({0, -96.0f});
+        }
     }
 
     if((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK  && item.isMoving) {
@@ -309,81 +315,132 @@ void StarBehavior::onCollect(TileObject& item) {
 void StarBehavior::update(TileObject& item, float dt) {
     SimpleBehavior::update(item, dt);
 
-    if(item.isOn && item.isUp){
-        if(!item.mPhysics.onGround()){
-            item.mPhysics.accelerate({0, TileObject::Gravity*dt});
-        }
-        else {
-            Vector2 vec = item.mPhysics.getVelocity();
-            item.mPhysics.setVelocity({vec.x, 0-vec.y});
-        }
-        Vector2 v = item.mPhysics.getVelocity();
-        Vector2 pos = item.mPhysics.getPosition();
-        item.mPhysics.setPosition({pos.x + v.x * dt, pos.y + v.y * dt});
-        // std::cout << "Star velocity: " << v.x << ", " << v.y << std::endl;
-        // std::cout << item.mPhysics.getPosition().x << " " << item.mPhysics.getPosition().y << std::endl;
+    if (!item.isOn || !item.isUp) return;
+
+    if (!item.mPhysics.onGround()) {
+        item.mPhysics.accelerate({0, TileObject::Gravity * dt});
     }
 
+    Vector2 v = item.mPhysics.getVelocity();
+    if(v.x < 0 && v.x >-100) item.mPhysics.setVelocity({-100, v.y});
+    else if(v.x > 0 && v.x < 100) item.mPhysics.setVelocity({100, v.y});
+    Vector2 pos = item.mPhysics.getPosition();
+    item.mPhysics.setPosition({pos.x + v.x * dt, pos.y + v.y * dt});
 }
 
-void StarBehavior::handleCollision(TileObject& item) {
-    // if(side == Side::BOTTOM && other == Category::MARIO && !item.isAbsorbed && !item.isUp){
-    //     item.setOn(true);
-    //     item.setAnimation();
-    //     item.mPhysics.setVelocity({0, 96.0f});
-    // }
+// void StarBehavior::update(TileObject& item, float dt) {
+//     SimpleBehavior::update(item, dt);
 
-    // if((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK && !item.isAbsorbed && item.isMoving) {
-    //     Vector2 velocity = item.mPhysics.getVelocity();
-    //     item.mPhysics.setVelocity({0-velocity.x, velocity.y});
-    //     side = Side::NONE;
-    //     other = Category::NONE; 
-    //     oTag = "";
-    // }
-    // if(( side == Side::TOP) && other == Category::BLOCK && !item.isAbsorbed && item.isMoving) {
-    //     Vector2 velocity = item.mPhysics.getVelocity();
-    //     item.mPhysics.setVelocity({velocity.x, 0-velocity.y});
-    //     side = Side::NONE;
-    //     other = Category::NONE; 
-    //     oTag = "";
-    // }
-    // if(other == Category::MARIO && !item.isAbsorbed && item.isUp) {
-    //     item.setOn(false);
-    //     item.mBodyCollide.setFilter(Category::MARIO);
-    //     item.mBodyCollide.setLabel(Category::NONE);
-    //     side = Side::NONE;
-    //     other = Category::NONE; 
-    //     oTag = "";
-    //     item.isAbsorbed = true;
-    // }
-    if(side == Side::BOTTOM && other == Category::MARIO  && !item.isUp){
+//     if(item.isOn && item.isUp){
+//         if(!item.mPhysics.onGround()){
+//             item.mPhysics.accelerate({0, TileObject::Gravity*dt});
+//         }
+//         else {
+//             Vector2 vec = item.mPhysics.getVelocity();
+//             item.mPhysics.setVelocity({vec.x, 0-vec.y});
+//         }
+//         Vector2 v = item.mPhysics.getVelocity();
+//         Vector2 pos = item.mPhysics.getPosition();
+//         item.mPhysics.setPosition({pos.x + v.x * dt, pos.y + v.y * dt});
+//         // std::cout << "Star velocity: " << v.x << ", " << v.y << std::endl;
+//         // std::cout << item.mPhysics.getPosition().x << " " << item.mPhysics.getPosition().y << std::endl;
+//     }
+
+// }
+
+// void StarBehavior::handleCollision(TileObject& item) {
+//     // if(side == Side::BOTTOM && other == Category::MARIO && !item.isAbsorbed && !item.isUp){
+//     //     item.setOn(true);
+//     //     item.setAnimation();
+//     //     item.mPhysics.setVelocity({0, 96.0f});
+//     // }
+
+//     // if((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK && !item.isAbsorbed && item.isMoving) {
+//     //     Vector2 velocity = item.mPhysics.getVelocity();
+//     //     item.mPhysics.setVelocity({0-velocity.x, velocity.y});
+//     //     side = Side::NONE;
+//     //     other = Category::NONE; 
+//     //     oTag = "";
+//     // }
+//     // if(( side == Side::TOP) && other == Category::BLOCK && !item.isAbsorbed && item.isMoving) {
+//     //     Vector2 velocity = item.mPhysics.getVelocity();
+//     //     item.mPhysics.setVelocity({velocity.x, 0-velocity.y});
+//     //     side = Side::NONE;
+//     //     other = Category::NONE; 
+//     //     oTag = "";
+//     // }
+//     // if(other == Category::MARIO && !item.isAbsorbed && item.isUp) {
+//     //     item.setOn(false);
+//     //     item.mBodyCollide.setFilter(Category::MARIO);
+//     //     item.mBodyCollide.setLabel(Category::NONE);
+//     //     side = Side::NONE;
+//     //     other = Category::NONE; 
+//     //     oTag = "";
+//     //     item.isAbsorbed = true;
+//     // }
+//     if(side == Side::BOTTOM && other == Category::MARIO  && !item.isUp){
+//         item.setOn(true);
+//         item.setAnimation();
+//         item.mPhysics.setVelocity({0, 96.0f});
+//     }
+
+//     if((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK  && item.isMoving) {
+//         Vector2 velocity = item.mPhysics.getVelocity();
+//         item.mPhysics.setVelocity({0-velocity.x, velocity.y});
+//         side = Side::NONE;
+//         other = Category::NONE; 
+//         oTag = "";
+//     }
+//     if(( side == Side::TOP) && other == Category::BLOCK  && item.isMoving) {
+//         Vector2 velocity = item.mPhysics.getVelocity();
+//         item.mPhysics.setVelocity({velocity.x, 0-velocity.y});
+//         side = Side::NONE;
+//         other = Category::NONE; 
+//         oTag = "";
+//     }
+//     if(other == Category::MARIO  && item.isUp) {
+//         item.setDie(true);
+//         item.setOn(false);
+//         item.mBodyCollide.setFilter(Category::MARIO);
+//         item.mBodyCollide.setLabel(Category::NONE);
+//         side = Side::NONE;
+//         other = Category::NONE; 
+//         oTag = "";
+//     }
+    
+// }
+
+void StarBehavior::handleCollision(TileObject& item) {
+    if (side == Side::BOTTOM && other == Category::MARIO && !item.isUp) {
+
         item.setOn(true);
         item.setAnimation();
-        item.mPhysics.setVelocity({0, 96.0f});
+        item.mPhysics.setVelocity({0, -96.0f});
     }
 
-    if((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK  && item.isMoving) {
+    if ((side == Side::LEFT || side == Side::RIGHT) && other == Category::BLOCK && item.isMoving) {
+
         Vector2 velocity = item.mPhysics.getVelocity();
-        item.mPhysics.setVelocity({0-velocity.x, velocity.y});
-        side = Side::NONE;
-        other = Category::NONE; 
-        oTag = "";
+        item.mPhysics.setVelocity({-velocity.x, velocity.y});
     }
-    if(( side == Side::TOP) && other == Category::BLOCK  && item.isMoving) {
+
+    if (side == Side::TOP && other == Category::BLOCK && item.isMoving) {
         Vector2 velocity = item.mPhysics.getVelocity();
-        item.mPhysics.setVelocity({velocity.x, 0-velocity.y});
-        side = Side::NONE;
-        other = Category::NONE; 
-        oTag = "";
+        item.mPhysics.setVelocity({velocity.x, -velocity.y});
     }
-    if(other == Category::MARIO  && item.isUp) {
+
+    if (side == Side::BOTTOM && other == Category::BLOCK && item.isMoving) {
+        item.mPhysics.setVelocity({item.mPhysics.getVelocity().x, -400.0f});
+    }
+
+    if (other == Category::MARIO && item.isUp) {
         item.setDie(true);
         item.setOn(false);
         item.mBodyCollide.setFilter(Category::MARIO);
         item.mBodyCollide.setLabel(Category::NONE);
-        side = Side::NONE;
-        other = Category::NONE; 
-        oTag = "";
     }
-    
+
+    side = Side::NONE;
+    other = Category::NONE;
+    oTag = "";
 }
