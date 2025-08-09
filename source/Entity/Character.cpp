@@ -331,6 +331,7 @@ void Character::serialize(nlohmann::json& j) {
         {"length", mLength},
         {"class", "character"}
     };
+}
 
 bool Character::isImmortal() const {
     return mIsImmortal;
