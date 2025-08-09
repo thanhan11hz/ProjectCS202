@@ -1,10 +1,14 @@
 #include "State/SettingState.hpp"
+// #include <iostream>
 
-SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(4), changeMade(false), mReassigned(nullptr), isReassigning(false) {
+SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(4), changeMade(false), mReassigned(nullptr), isReassigning(false), duplicate(false) {
     mLocalKeybinds = mKeyBinding;
     mLocalKeybinds2 = mKeyBinding2;
     mLocalFuncKeybinds = mFunctionKey;
-
+    // std::cout << "mLocalFuncKeybinds contents:\n";
+    // for (const auto& pair : mLocalFuncKeybinds) {
+    //     std::cout << "Action: " << (int)pair.first << ", Key: " << (int)pair.second << " (" << mapKeyToChar(pair.second) << ")\n";
+    // }
     Label* title = new Label();
     title->changeShape({560, 92, 320, 40});
     title->changeSize(40);
@@ -31,7 +35,6 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     next->changeCallback(
         [this]() {
             mCurrentPage = mCurrentPage % mMaxPage + 1;
-            //setupPage(mCurrentPage);
         }
     );
 
@@ -42,7 +45,6 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     previous->changeCallback(
         [this]() {
             mCurrentPage = (mCurrentPage - 2 + mMaxPage) % mMaxPage + 1;
-            //setupPage(mCurrentPage);
         }
     );
 
@@ -58,6 +60,13 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         }
     );
 
+    duplicateWarning = new Label();
+    duplicateWarning->changeText("");
+    duplicateWarning->changeShape({355, 721, 731, 17});
+    duplicateWarning->changeSize(17);
+    duplicateWarning->changeColor(WHITE);
+    mContainer.pack(duplicateWarning);
+
     save = new Button();
     save->changeTexture(TextureIdentifier::INACTIVE_BUTTON);
     save->changeText("SAVE");
@@ -65,11 +74,13 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mContainer.pack(save);
     save->changeCallback(
         [this]() {
-            changeMade = false;
-            mKeyBinding = mLocalKeybinds;
-            mKeyBinding2 = mLocalKeybinds2;
-            mFunctionKey = mLocalFuncKeybinds;
-            requestStackPop();
+            if (!duplicate){
+                changeMade = false;
+                mKeyBinding = mLocalKeybinds;
+                mKeyBinding2 = mLocalKeybinds2;
+                mFunctionKey = mLocalFuncKeybinds;
+                requestStackPop();
+            } else duplicateWarning->changeText("Duplicate keybinding detected! Cannot save.");
         }
     );
 
@@ -445,13 +456,21 @@ bool SettingState::handle() {
     }
 
     if (isReassigning && mReassigned) {
-        KeyboardKey key = (KeyboardKey)GetKeyPressed();
+        KeyboardKey key = (KeyboardKey) GetKeyPressed();
         if (key != 0) {
             if (mCurrentPage == 2) mLocalFuncKeybinds[mReassigningKey] = key;
             else if (mCurrentPage == 3) mLocalKeybinds[mReassigningKey] = key;
             else if (mCurrentPage == 4) mLocalKeybinds2[mReassigningKey] = key;
+            if (isKeybindDuplicate(key, mReassigningKey)) { 
+                mReassigned->changeTextColor(RED);
+                duplicate = true;
+            }
+            else {
+                mReassigned->changeTextColor(WHITE);
+                duplicate = false;
+            }
             int curSize = 17;
-            while (MeasureTextEx(Resource::mFont.get(FontIdentifier::PressStart2P), mapKeyToChar(key).c_str(), curSize, 0.0f).x >= Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON_SMALL).width) curSize--;
+            while (MeasureTextEx(Resource::mFont.get(FontIdentifier::PressStart2P), mapKeyToChar(key).c_str(), curSize, 0.0f).x >= Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON_SMALL).width-10) curSize--;
             mReassigned->changeFontSize(curSize);
             mReassigned->changeText(mapKeyToChar(key));
             changeMade = true;
@@ -464,7 +483,7 @@ bool SettingState::handle() {
 bool SettingState::update(float dt) {
     if (mWorld.isMultiPlayers()) mMaxPage = 4;
     else mMaxPage = 3;
-    
+    if (!duplicate) duplicateWarning->changeText("");
     if (changeMade) save->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
     else save->changeTexture(TextureIdentifier::INACTIVE_BUTTON);
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
@@ -587,4 +606,33 @@ std::string SettingState::mapKeyToChar(KeyboardKey key) {
 
         default: return ""; break; // Non-character keys (e.g., ESC, F1, arrows) return empty string
     }
+}
+
+bool SettingState::isKeybindDuplicate(KeyboardKey key, Action reassign) {
+    for (const auto& pair : mLocalKeybinds) {
+        if (pair.second == key && (mCurrentPage != 3 || pair.first != reassign)) {
+            // std::cout << "mLocalKeybinds" << std::endl;
+            // std::cout << "Duplicated key: " << key << " versus" << pair.second << std::endl;
+            return true;
+        }
+    }
+    for (const auto& pair : mLocalKeybinds2) {
+        if (pair.second == key && (mCurrentPage != 4 || pair.first != reassign)) {
+            // std::cout << "mLocalKeybinds2" << std::endl;
+            // std::cout << "Duplicated key: " << key << " versus" << pair.second << std::endl;
+            return true;
+        }
+    }
+    for (const auto& pair : mLocalFuncKeybinds) {
+        if (pair.second == key && (mCurrentPage != 2 || pair.first != reassign)) {
+            // for (const auto& pair : mLocalFuncKeybinds) {
+            //     std::cout << "Action: " << (int)pair.first << ", Key: " << (int)pair.second << " (" << mapKeyToChar(pair.second) << ")\n";
+            // }
+            // std::cout << "mLocalFuncKeybinds" << std::endl;
+            // std::cout << "Duplicated key: " << key << " versus " << pair.second << std::endl;
+            return true;
+        }
+    }
+
+    return false;
 }

@@ -18,6 +18,7 @@ class SettingState : public State {
         virtual void draw();
         virtual bool handle();
         virtual bool update(float dt);
+        bool isKeybindDuplicate(KeyboardKey key, Action reassign);
         void changeKeybind(Action action);
         std::string mapKeyToChar(KeyboardKey key);
 
@@ -37,6 +38,7 @@ class SettingState : public State {
         Container mContainer_movement2;
 
         bool changeMade;
+        bool duplicate;
 
         Button* save;
         Button* fireKey;
@@ -56,4 +58,5 @@ class SettingState : public State {
         Slider* master;
         Slider* mus;
         Slider* sfx;
+        Label* duplicateWarning;
 };
