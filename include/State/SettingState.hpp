@@ -20,6 +20,9 @@ class SettingState : public State {
         std::string mapKeyToChar(KeyboardKey key);
 
         std::map<Action, KeyboardKey> mLocalKeybinds;
+        std::map<Action, KeyboardKey> mLocalFuncKeybinds;
+        std::map<Action, KeyboardKey> mLocalKeybinds2;
+
         Button* mReassigned;
         Button* muteButton;
         Action mReassigningKey;
@@ -29,6 +32,7 @@ class SettingState : public State {
         Container mContainer_sound;
         Container mContainer_general;
         Container mContainer_movement;
+        Container mContainer_movement2;
 
         bool changeMade;
 
@@ -40,6 +44,12 @@ class SettingState : public State {
         Button* down;
         Button* right;
         Button* left;
+        
+        Button* fireKey2;
+        Button* up2;
+        Button* down2;
+        Button* right2;
+        Button* left2;
         
         Slider* master;
         Slider* mus;
