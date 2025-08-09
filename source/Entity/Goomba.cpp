@@ -1,5 +1,6 @@
 #include "Entity/Goomba.hpp"
 #include "World/World.hpp"
+#include "Entity/Character.hpp"
 
 Goomba::Goomba(Type type) : mType(type) {
     mBodyCollide.setFilter(Category::NONE);
@@ -51,6 +52,12 @@ void Goomba::handleCollision(Side side, Collide other) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
         PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         setMove(Move::DEAD);
+    }
+
+    if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, true));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
     }
 
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {

@@ -101,7 +101,7 @@ void Character::update(float dt) {
             transitionProgress = 1.0f;
         }
     }
-
+    
     if (mCooldown < mCooldownTime) mCooldown += dt;
     if (invincibleTimer < invincibleTime) invincibleTimer += dt;
     
@@ -265,13 +265,36 @@ void Character::handleCollision(Side side, Collide other) {
         mPhysics.setVelocity({mPhysics.getVelocity().x, 0});
     }
 
-    if (otherLabel == Category::ENEMY && side != Side::BOTTOM) {
+    if (otherLabel == Category::ENEMY && side != Side::BOTTOM && !mIsImmortal) {
         if (other.getOwner()->getTag() != "Goomba" || !other.getOwner()->mPhysics.isRest())
         damage();
     }
 
-    if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "BowserFire") {
+    if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "BowserFire" && !mIsImmortal) {
         damage();
+    }
+
+    if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Mushroom") {
+        if (!static_cast<TileObject*>(other.getOwner())->up()) setForm(Form::SUPER);
+    }
+
+    if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "GreenMushroom") {
+        if (!static_cast<TileObject*>(other.getOwner())->up()) {
+            mWorld.heal();
+            mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "1-UP"));
+        }
+    }
+
+    if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Flower") {
+        if (!static_cast<TileObject*>(other.getOwner())->up()) setForm(Form::FIRE);
+    }
+
+    if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Coin") {
+        if (!static_cast<TileObject*>(other.getOwner())->up()) mWorld.receiveCoin();
+    }
+
+    if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Star") {
+        if (!static_cast<TileObject*>(other.getOwner())->up()) setImmortal(true);
     }
 }
 
@@ -308,4 +331,7 @@ void Character::serialize(nlohmann::json& j) {
         {"length", mLength},
         {"class", "character"}
     };
+
+bool Character::isImmortal() const {
+    return mIsImmortal;
 }

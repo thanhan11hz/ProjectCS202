@@ -49,7 +49,7 @@ class World {
         Camera2D& getCamera();
 
         void receiveCoin();
-        void loseLives();
+        void heal();
 
         ~World();
 

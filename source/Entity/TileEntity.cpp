@@ -63,11 +63,11 @@ void TileBlock::createBehavior()  {
     }
     else if(getType(calType()) == TileType::HoriMovingBlock ) {
         mPhysics.setVelocity({50.0f,0});
-        mBehavior = new MovingBlockBehavior(292);
+        mBehavior = new MovingBlockBehavior(301);
     }
     else if(getType(calType()) == TileType::VertMovingBlock ) {
         mPhysics.setVelocity({0,50.0f});
-        mBehavior = new MovingBlockBehavior(301);
+        mBehavior = new MovingBlockBehavior(292);
     }
 }
 

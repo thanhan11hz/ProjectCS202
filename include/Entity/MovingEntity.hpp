@@ -2,6 +2,7 @@
 
 #include "Entity/Entity.hpp"
 #include "Animation.hpp"
+#include "Global.hpp"
 
 class MovingEntity : public Entity {
     public:
@@ -16,7 +17,7 @@ class MovingEntity : public Entity {
         virtual void handleCollision(Side side, Collide other) = 0;
         virtual Vector2 getSize() = 0;
 
-        virtual void handleFootCollision();
+        virtual void handleFootCollision(Collide other);
 
         virtual std::string getTag() = 0;
 
@@ -36,4 +37,5 @@ class MovingEntity : public Entity {
     private:
         bool mIsDie = false;
         bool afterBlock = true;
+        bool mCheckStandingMovingBlock = false;
 };

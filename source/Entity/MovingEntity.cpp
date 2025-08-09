@@ -15,6 +15,7 @@ void MovingEntity::update(float dt) {
         size.x - 8,
         1
     });
+    mCheckStandingMovingBlock = false;
 }
 
 void MovingEntity::setDie(bool flag) {
@@ -25,8 +26,16 @@ bool MovingEntity::isDie() {
     return mIsDie;
 }
 
-void MovingEntity::handleFootCollision() {
+void MovingEntity::handleFootCollision(Collide other) {
     mPhysics.setOnGround(true);
+    if (other.getLabel() == Category::BLOCK && other.getOwner()->getTag() == "VertMovingBlock" && !mCheckStandingMovingBlock) {
+        mPhysics.setPosition({mPhysics.getPosition().x, other.getHitBox().y - getSize().y});
+    }
+
+    if (other.getLabel() == Category::BLOCK && other.getOwner()->getTag() == "HoriMovingBlock" && !mCheckStandingMovingBlock) {
+        mPhysics.setPosition(mPhysics.getPosition() + other.getOwner()->mPhysics.getVelocity() * timePerFrame);
+        mCheckStandingMovingBlock = true;
+    }
 }
 
 void MovingEntity::setAfterBlock(bool flag) {

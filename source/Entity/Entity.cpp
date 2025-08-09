@@ -20,6 +20,6 @@ std::string Entity::getTag() {
     return "Entity";
 }
 
-void Entity::handleFootCollision() {
+void Entity::handleFootCollision(Collide other) {
     
 }

@@ -1,5 +1,6 @@
 #include "Entity/Piranha.hpp"
 #include "World/World.hpp"
+#include "Entity/Character.hpp"
 
 Piranha::Piranha(Type type) : mType(type) {
     mPhysics.setDensity(0.0f);
@@ -68,6 +69,11 @@ void Piranha::handleCollision(Side side, Collide other) {
     }
 
     if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
+        setDie(true);
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+    }
+
+    if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
         setDie(true);
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
     }
