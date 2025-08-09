@@ -462,6 +462,9 @@ bool SettingState::handle() {
 }
 
 bool SettingState::update(float dt) {
+    if (mWorld.isMultiPlayers()) mMaxPage = 4;
+    else mMaxPage = 3;
+    
     if (changeMade) save->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
     else save->changeTexture(TextureIdentifier::INACTIVE_BUTTON);
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);

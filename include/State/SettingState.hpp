@@ -6,6 +6,8 @@
 #include "GUI/Label.hpp"
 #include "GUI/Slider.hpp"
 #include "Resource/ResourceHolder.hpp"
+#include "World/World.hpp"
+#include "Global.hpp"
 #include <map>
 class SettingState : public State {
     public:
