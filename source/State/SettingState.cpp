@@ -1,7 +1,9 @@
 #include "State/SettingState.hpp"
 
-SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(3), changeMade(false), mReassigned(nullptr), isReassigning(false) {
+SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mMaxPage(4), changeMade(false), mReassigned(nullptr), isReassigning(false) {
     mLocalKeybinds = mKeyBinding;
+    mLocalKeybinds2 = mKeyBinding2;
+    mLocalFuncKeybinds = mFunctionKey;
 
     Label* title = new Label();
     title->changeShape({560, 92, 320, 40});
@@ -65,6 +67,8 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         [this]() {
             changeMade = false;
             mKeyBinding = mLocalKeybinds;
+            mKeyBinding2 = mLocalKeybinds2;
+            mFunctionKey = mLocalFuncKeybinds;
             requestStackPop();
         }
     );
@@ -134,14 +138,21 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mContainer_general.pack(subtitleGen);
 
     Label* fire = new Label();
-    fire->changeShape({170, 263, 350, 25});
+    fire->changeShape({170, 263, 425, 25});
     fire->changeSize(25);
-    fire->changeText("Use ability: ");
+    fire->changeText("Use ability (P1): ");
     fire->changeColor(WHITE);
     mContainer_general.pack(fire);
 
+    Label* fire2 = new Label();
+    fire2->changeShape({170, 379, 425, 25});
+    fire2->changeSize(25);
+    fire2->changeText("Use ability (P2): ");
+    fire2->changeColor(WHITE);
+    mContainer_general.pack(fire2);
+
     Label* pause = new Label();
-    pause->changeShape({170, 379, 350, 25});
+    pause->changeShape({170, 609, 350, 25});
     pause->changeSize(25);
     pause->changeText("Pause game: ");
     pause->changeColor(WHITE);
@@ -158,7 +169,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     fireKey->changeText(mapKeyToChar(mKeyBinding[Action::FIRE]));
     fireKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
     fireKey->changeTextColor(WHITE);
-    fireKey->changShape({498, 253, 170, 45});
+    fireKey->changShape({618, 253, 170, 45});
     mContainer_general.pack(fireKey);
     fireKey->changeCallback(
         [this]() {
@@ -167,11 +178,24 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         }
     );
 
+    fireKey2 = new Button();
+    fireKey2->changeText(mapKeyToChar(mKeyBinding2[Action::FIRE]));
+    fireKey2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+    fireKey2->changeTextColor(WHITE);
+    fireKey2->changShape({618, 369, 170, 45});
+    mContainer_general.pack(fireKey2);
+    fireKey2->changeCallback(
+        [this]() {
+            mReassigned = fireKey2;
+            changeKeybind(Action::FIRE);
+        }
+    );
+
     pauseKey = new Button();
-    pauseKey->changeText(mapKeyToChar(mKeyBinding[Action::PAUSE]));
+    pauseKey->changeText(mapKeyToChar(mFunctionKey[Action::PAUSE]));
     pauseKey->changeTextColor(WHITE);
     pauseKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
-    pauseKey->changShape({498, 369, 170, 45});
+    pauseKey->changShape({618, 591, 170, 45});
     mContainer_general.pack(pauseKey);
     pauseKey->changeCallback(
         [this]() {
@@ -179,11 +203,12 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
             changeKeybind(Action::PAUSE);
         }
     );
+    
     muteKey = new Button();
-    muteKey->changeText(mapKeyToChar(mKeyBinding[Action::MUTE]));
+    muteKey->changeText(mapKeyToChar(mFunctionKey[Action::MUTE]));
     muteKey->changeTextColor(WHITE);
     muteKey->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
-    muteKey->changShape({498, 485, 170, 45});
+    muteKey->changShape({618, 475, 170, 45});
     mContainer_general.pack(muteKey);
     muteKey->changeCallback(
         [this]() {
@@ -192,7 +217,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         }
     );
 
-    //Movement config
+    //Movement config 1
     Label* subtitleMove = new Label();
     subtitleMove->changeShape({610, 151, 220, 20});
     subtitleMove->changeSize(20);
@@ -281,6 +306,98 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
         }
     );
 
+    //Movement config 2
+    Label* subtitleMove2 = new Label();
+    subtitleMove2->changeShape({610, 151, 220, 20});
+    subtitleMove2->changeSize(20);
+    subtitleMove2->changeText("P2 Keybinds");
+    subtitleMove2->changeColor(WHITE);
+    mContainer_movement2.pack(subtitleMove2);
+
+
+    Label* upLabel2 = new Label();
+    upLabel2->changeShape({424, 229, 100, 25});
+    upLabel2->changeSize(25);
+    upLabel2->changeText("Jump");
+    upLabel2->changeColor(WHITE);
+    mContainer_movement2.pack(upLabel2);
+
+    up2 = new Button();
+    up2->changeText(mapKeyToChar(mKeyBinding2[Action::JUMP]));
+    up2->changeTextColor(WHITE);
+    up2->changeFontSize(15);
+    up2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+    up2->changShape({391, 265, 170, 45});
+    mContainer_movement2.pack(up2);
+    up2->changeCallback(
+        [this]() {
+            mReassigned = up2;
+            changeKeybind(Action::JUMP);
+        }
+    );
+
+    Label* downLabel2 = new Label();
+    downLabel2->changeShape({584, 624, 100, 25});
+    downLabel2->changeSize(25);
+    downLabel2->changeText("Move Down");
+    downLabel2->changeColor(WHITE);
+    mContainer_movement2.pack(downLabel2);
+
+    down2 = new Button();
+    down2->changeText(mapKeyToChar(mKeyBinding2[Action::DOWN]));
+    down2->changeTextColor(WHITE);
+    down2->changeFontSize(15);
+    down2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+    down2->changShape({612, 569, 170, 45});
+    mContainer_movement2.pack(down2);
+    down2->changeCallback(
+        [this]() {
+            mReassigned = down2;
+            changeKeybind(Action::DOWN);
+        }
+    );
+
+    Label* leftLabel2 = new Label();
+    leftLabel2->changeShape({199, 535, 100, 25});
+    leftLabel2->changeSize(25);
+    leftLabel2->changeText("Move Left");
+    leftLabel2->changeColor(WHITE);
+    mContainer_movement2.pack(leftLabel2);
+
+    left2 = new Button();
+    left2->changeText(mapKeyToChar(mKeyBinding2[Action::LEFT]));
+    left2->changeTextColor(WHITE);
+    left2->changeFontSize(15);
+    left2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+    left2->changShape({225, 572, 170, 45});
+    mContainer_movement2.pack(left2);
+    left2->changeCallback(
+        [this]() {
+            mReassigned = left2;
+            changeKeybind(Action::LEFT);
+        }
+    );
+
+    Label* rightLabel2 = new Label();
+    rightLabel2->changeShape({958, 540, 100, 25});
+    rightLabel2->changeSize(25);
+    rightLabel2->changeText("Move Right");
+    rightLabel2->changeColor(WHITE);
+    mContainer_movement2.pack(rightLabel2);
+
+    right2 = new Button();
+    right2->changeText(mapKeyToChar(mKeyBinding2[Action::RIGHT]));
+    right2->changeTextColor(WHITE);
+    right2->changeFontSize(15);
+    right2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+    right2->changShape({1000, 579, 170, 45});
+    mContainer_movement2.pack(right2);
+    right2->changeCallback(
+        [this]() {
+            mReassigned = right2;
+            changeKeybind(Action::RIGHT);
+        }
+    );
 }
 
 void SettingState::draw() {
@@ -294,6 +411,10 @@ void SettingState::draw() {
         Texture2D keys = Resource::mTexture.get(TextureIdentifier::KEYBOARD);
         DrawTexture(keys, 394, 288, WHITE);
         mContainer_movement.draw();
+    } else if (mCurrentPage == 4) {
+        Texture2D keys = Resource::mTexture.get(TextureIdentifier::KEYBOARD);
+        DrawTexture(keys, 394, 288, WHITE);
+        mContainer_movement2.draw();
     }
 
     if (isReassigning && mReassigned) {
@@ -319,12 +440,19 @@ bool SettingState::handle() {
         mContainer_general.handle();
     } else if (mCurrentPage == 3) {
         mContainer_movement.handle();
+    } else if (mCurrentPage == 4) {
+        mContainer_movement2.handle();
     }
 
     if (isReassigning && mReassigned) {
         KeyboardKey key = (KeyboardKey)GetKeyPressed();
         if (key != 0) {
-            mLocalKeybinds[mReassigningKey] = key;
+            if (mCurrentPage == 2) mLocalFuncKeybinds[mReassigningKey] = key;
+            else if (mCurrentPage == 3) mLocalKeybinds[mReassigningKey] = key;
+            else if (mCurrentPage == 4) mLocalKeybinds2[mReassigningKey] = key;
+            int curSize = 17;
+            while (MeasureTextEx(Resource::mFont.get(FontIdentifier::PressStart2P), mapKeyToChar(key).c_str(), curSize, 0.0f).x >= Resource::mTexture.get(TextureIdentifier::ACTIVE_BUTTON_SMALL).width) curSize--;
+            mReassigned->changeFontSize(curSize);
             mReassigned->changeText(mapKeyToChar(key));
             changeMade = true;
             isReassigning = false;
