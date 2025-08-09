@@ -295,3 +295,17 @@ std::string Character::getTag() {
     }
 }
 
+void Character::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"form", (unsigned int)mForm},
+        {"move", (unsigned int)mMove},
+        {"immortal", mIsImmortal},
+        {"height", mHigh},
+        {"length", mLength},
+        {"class", "character"}
+    };
+}

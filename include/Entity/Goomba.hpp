@@ -9,12 +9,18 @@
 
 class Goomba : public Enemy {
     public:
-        enum class Move {
+        enum class Move : unsigned int {
             RUN,
             DEAD
         };
 
-        Goomba();
+        enum class Type : unsigned int {
+            BROWN_GOOMBA,
+            BLUE_GOOMBA
+        };
+
+        Goomba(Type type);
+        Goomba(const nlohmann::json& j);
 
         virtual void update(float dt);
         virtual void handle();
@@ -25,16 +31,15 @@ class Goomba : public Enemy {
 
         virtual std::string getTag();
 
-        Texture2D mRun;
-        Texture2D mDie;
-        Texture2D mDeath;
+        virtual void serialize(nlohmann::json& j);
 
         static std::unique_ptr<Goomba> spawnGoomba1(Vector2 position);
         static std::unique_ptr<Goomba> spawnGoomba2(Vector2 position);
 
     private:
         Move mMove;
-        static constexpr float mDeadTime = 2.0f;
+        Type mType;
+        static constexpr float mDeadTime = 1.0f;
         float mDeadTimer = 0.f;
         float mSpeed = -100.0f;
         void setMove(Move move);

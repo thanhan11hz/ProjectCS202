@@ -19,6 +19,8 @@ class Enemy : public MovingEntity {
         void setActive(bool flag);
         bool isActive();
 
+        virtual void serialize(nlohmann::json& j) = 0;
+
         virtual ~Enemy() = default;
     private:
         bool mIsActive = false;

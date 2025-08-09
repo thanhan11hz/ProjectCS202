@@ -1,13 +1,41 @@
 #include "Entity/Piranha.hpp"
 #include "World/World.hpp"
 
-Piranha::Piranha() {
+Piranha::Piranha(Type type) : mType(type) {
     mPhysics.setDensity(0.0f);
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setLabel(Category::ENEMY);
     mPhysics.setDensity(0.0f);
     mAnim.setFrameSize({16, 24});
     mAnim.setFrameDuration(0.5f);
+    if (mType == Type::GREEN_PIRANHA) {
+        mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::PIRANHA), getSize().x / 3, getSize().y / 3);
+    } else {
+        mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::PIRANHA2), getSize().x / 3, getSize().y / 3);
+    }
+}
+
+Piranha::Piranha(const nlohmann::json& j) {
+    mPhysics.setDensity(0.0f);
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setLabel(Category::ENEMY);
+    mPhysics.setDensity(0.0f);
+    mAnim.setFrameSize({16, 24});
+    mAnim.setFrameDuration(0.5f);
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    mMove = static_cast<Move>(j["move"].get<unsigned int>());
+    mType = static_cast<Type>(j["type"].get<unsigned int>());
+    if (mType == Type::GREEN_PIRANHA) {
+        mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::PIRANHA), getSize().x / 3, getSize().y / 3);
+    } else {
+        mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::PIRANHA2), getSize().x / 3, getSize().y / 3);
+    }
+    attackTimer = j["attackTimer"].get<float>();
+    mSpeed = j["speed"].get<float>();
+    mFixedPoint = j["fixedPoint"].get<Vector2>();
 }
 
 void Piranha::update(float dt) {
@@ -69,15 +97,13 @@ void Piranha::updateMove(float dt) {
 }
 
 std::unique_ptr<Piranha> Piranha::spawnPiranha1(Vector2 position) {
-    std::unique_ptr<Piranha> mPiranha = std::make_unique<Piranha>();
-    mPiranha->setTexture(Resource::mTexture.get(TextureIdentifier::PIRANHA));
+    std::unique_ptr<Piranha> mPiranha = std::make_unique<Piranha>(Type::GREEN_PIRANHA);
     mPiranha->setFixedPoint(position);
     return std::move(mPiranha);
 }
 
 std::unique_ptr<Piranha> Piranha::spawnPiranha2(Vector2 position) {
-    std::unique_ptr<Piranha> mPiranha = std::make_unique<Piranha>();
-    mPiranha->setTexture(Resource::mTexture.get(TextureIdentifier::PIRANHA2));
+    std::unique_ptr<Piranha> mPiranha = std::make_unique<Piranha>(Type::BLUE_PIRANHA);
     mPiranha->setFixedPoint(position);
     return std::move(mPiranha);
 }
@@ -91,8 +117,17 @@ std::string Piranha::getTag() {
     return "Piranha";
 }
 
-void Piranha::setTexture(Texture2D& texture) {
-    mAnim.setTexture(&texture, 16, 24);
-    mAnim.setRepeating(true, false);
-    mAnim.restart();  
+void Piranha::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"move", (unsigned int) mMove},
+        {"type", (unsigned int) mType},
+        {"attackTimer", attackTimer},
+        {"speed", mSpeed},
+        {"fixedPoint", mFixedPoint},
+        {"class", "piranha"}
+    };
 }

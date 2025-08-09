@@ -9,8 +9,20 @@ FireBall::FireBall(bool isRight) {
     mPhysics.setDensity(2.0f);
     mBodyCollide.setStatic(false);
     mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::FIREBALL), 9, 9);
-
     if (!isRight) mSpeedX *= -1;
+}
+
+FireBall::FireBall(const nlohmann::json& j) {
+    mBodyCollide.setLabel(Category::PROJECTILE);
+    mBodyCollide.setFilter(Category::NONE);
+    mPhysics.setDensity(2.0f);
+    mBodyCollide.setStatic(false);
+    mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::FIREBALL), 9, 9);
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    mSpeedX = j["speed"].get<float>();
 }
 
 void FireBall::update(float dt) {
@@ -62,6 +74,17 @@ std::unique_ptr<FireBall> FireBall::spawnFireBall(Vector2 position, bool isRight
     return std::move(mFireBall);
 }
 
+void FireBall::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"speed", mSpeedX},
+        {"class", "fireBall"}
+    };
+}
+
 // BowserFire
 
 BowserFire::BowserFire(bool isRight) {
@@ -71,6 +94,20 @@ BowserFire::BowserFire(bool isRight) {
     mPhysics.setDensity(0.0f);
     mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::BOWSER_FIRE), 24, 8);
     this->isRight = isRight;
+    if (!isRight) mSpeed *= -1;
+}
+
+BowserFire::BowserFire(const nlohmann::json& j) {
+    mBodyCollide.setLabel(Category::PROJECTILE);
+    mBodyCollide.setFilter(static_cast<Category>(Category::BLOCK | Category::ITEM | Category::ENEMY));
+    mBodyCollide.setStatic(false);
+    mPhysics.setDensity(0.0f);
+    mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::BOWSER_FIRE), 24, 8);
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    isRight = j["isRight"].get<bool>();
     if (!isRight) mSpeed *= -1;
 }
 
@@ -106,4 +143,15 @@ std::unique_ptr<BowserFire> BowserFire::spawnBowserFire(Vector2 position, bool i
     std::unique_ptr<BowserFire> mBowserFire = std::make_unique<BowserFire>(isRight);
     mBowserFire->mPhysics.setPosition(position);
     return std::move(mBowserFire);
+}
+
+void BowserFire::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"isRight", isRight},
+        {"class", "bowserFire"}
+    };
 }

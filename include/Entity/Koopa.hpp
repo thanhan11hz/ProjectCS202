@@ -28,6 +28,8 @@ public:
     virtual Vector2 getSize() override;
     virtual std::string getTag() override;
 
+    virtual void serialize(nlohmann::json& j);
+
     static std::unique_ptr<Koopa> spawnKoopa(Vector2 position, Type type);
 
 private:

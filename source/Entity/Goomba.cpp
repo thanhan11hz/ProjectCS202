@@ -1,10 +1,24 @@
 #include "Entity/Goomba.hpp"
 #include "World/World.hpp"
 
-Goomba::Goomba() {
+Goomba::Goomba(Type type) : mType(type) {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setLabel(Category::ENEMY);
     mAnim.setFrameSize({16, 16});
+    setMove(Move::RUN);
+}
+
+Goomba::Goomba(const nlohmann::json& j) {
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setLabel(Category::ENEMY);
+    mAnim.setFrameSize({16, 16});
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    mType = static_cast<Type>(j["type"].get<unsigned int>());
+    setMove(static_cast<Move>(j["move"].get<unsigned int>()));
+    mSpeed = j["speed"].get<float>();
 }
 
 void Goomba::update(float dt) {
@@ -45,7 +59,8 @@ void Goomba::handleCollision(Side side, Collide other) {
 
     if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
         setDie(true);
-        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, true));
+        if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
+        else if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
     }
 
@@ -57,7 +72,8 @@ void Goomba::handleCollision(Side side, Collide other) {
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "KOOPA") {
         setDie(true);
-        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, true));
+        if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
+        else if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
     }
 }
@@ -71,9 +87,13 @@ Vector2 Goomba::getSize() {
 void Goomba::setMove(Move move) {
     Texture2D* texture = nullptr;
 
-    if (move == Move::RUN) texture = &mRun;
+    if (move == Move::RUN) {
+        if (mType == Type::BROWN_GOOMBA) texture = &Resource::mTexture.get(TextureIdentifier::GOOMBA_RUN);
+        else texture = &Resource::mTexture.get(TextureIdentifier::GOOMBA2_RUN);
+    }
     else {
-        texture = &mDie;
+        if (mType == Type::BROWN_GOOMBA) texture = &Resource::mTexture.get(TextureIdentifier::GOOMBA_DIE);
+        else texture = &Resource::mTexture.get(TextureIdentifier::GOOMBA2_DIE);
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 24});
     }
 
@@ -87,25 +107,30 @@ void Goomba::setMove(Move move) {
 }
 
 std::unique_ptr<Goomba> Goomba::spawnGoomba1(Vector2 position) {
-    std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
-    mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA_RUN);
-    mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA_DIE);
-    mGoomba->mDeath = Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH);
-    mGoomba->setMove(Move::RUN);
+    std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>(Type::BROWN_GOOMBA);
     mGoomba->mPhysics.setPosition(position);
     return std::move(mGoomba);
 }
         
 std::unique_ptr<Goomba> Goomba::spawnGoomba2(Vector2 position) {
-    std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>();
-    mGoomba->mRun = Resource::mTexture.get(TextureIdentifier::GOOMBA2_RUN);
-    mGoomba->mDie = Resource::mTexture.get(TextureIdentifier::GOOMBA2_DIE);
-    mGoomba->mDeath = Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH);
-    mGoomba->setMove(Move::RUN);
+    std::unique_ptr<Goomba> mGoomba = std::make_unique<Goomba>(Type::BLUE_GOOMBA);
     mGoomba->mPhysics.setPosition(position);
     return std::move(mGoomba);
 }
 
 std::string Goomba::getTag() {
     return "Goomba";
+}
+
+void Goomba::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"move", (unsigned int) mMove},
+        {"type", (unsigned int) mType},
+        {"speed", mSpeed},
+        {"class", "goomba"}
+    };
 }

@@ -9,6 +9,8 @@
 class FireBall : public MovingEntity {
     public:
         FireBall(bool isRight);
+        FireBall(const nlohmann::json& j);
+
         virtual void update(float dt);
         virtual void handle();
         virtual void draw();
@@ -19,15 +21,18 @@ class FireBall : public MovingEntity {
 
         virtual std::string getTag();
 
+        virtual void serialize(nlohmann::json& j);
+
         static std::unique_ptr<FireBall> spawnFireBall(Vector2 position, bool isRight);
     private:
         float mSpeedX = 400.0f;
-        float mBoundSpeed = -std::sqrt(2 * 850 * 2 * 48.0f);
 };
 
 class BowserFire: public MovingEntity {
     public:
         BowserFire(bool isRight);
+        BowserFire(const nlohmann::json& j);
+
         virtual void update(float dt);
         virtual void handle();
         virtual void draw();
@@ -37,6 +42,8 @@ class BowserFire: public MovingEntity {
         virtual Vector2 getSize();
 
         virtual std::string getTag();
+
+        virtual void serialize(nlohmann::json& j);
 
         static std::unique_ptr<BowserFire> spawnBowserFire(Vector2 position, bool isRight);
         

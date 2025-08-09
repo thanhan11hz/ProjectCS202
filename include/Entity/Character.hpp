@@ -2,14 +2,12 @@
 
 #include <memory>
 #include <map>
-#include <nlohmann/json.hpp>
 
 #include "Entity/MovingEntity.hpp"
 #include "Entity/Animation.hpp"
 #include "Entity/Projectile.hpp"
 #include "World/World.hpp"
 #include "Global.hpp"
-#include "Serialization.hpp"
 
 class Character : public MovingEntity {
     public:
@@ -48,7 +46,7 @@ class Character : public MovingEntity {
 
         virtual std::string getTag();
 
-        friend void to_json(nlohmann::json& j, const Character& c);
+        virtual void serialize(nlohmann::json& j);
 
     private:
         Move mMove = Move::IDLE;

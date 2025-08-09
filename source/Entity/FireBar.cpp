@@ -10,6 +10,23 @@ FireBar::FireBar() {
     setAfterBlock(false);
 }
 
+FireBar::FireBar(const nlohmann::json& j) {
+    mBodyCollide.setFilter(static_cast<Category>(Category::BLOCK | Category::ENEMY));
+    mBodyCollide.setLabel(Category::ENEMY);
+    mPhysics.setDensity(0.0f);
+    mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::FIREBAR), 9, 9);
+    mAnim.setRepeating(true, false);
+    mAnim.restart();   
+    setAfterBlock(false);
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    mCenter = j["center"].get<Vector2>();
+    mRadius = j["radius"].get<float>();
+    mAngle = j["angle"].get<float>();
+}
+
 void FireBar::update(float dt) {
     Enemy::update(dt);
     mAngle += angularVelocity;
@@ -56,4 +73,17 @@ std::vector<std::unique_ptr<FireBar>> FireBar::spawnFireBar(Vector2 position) {
         mFireBar.push_back(std::move(firebar));
     }
     return mFireBar;
+}
+
+void FireBar::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"center", mCenter},
+        {"radius", mRadius},
+        {"angle", mAngle},
+        {"class", "fireBar"}
+    };
 }

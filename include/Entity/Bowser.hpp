@@ -12,7 +12,9 @@ class Bowser : public Enemy {
             MOVE,
             ATTACK
         };
+
         Bowser();
+        Bowser(const nlohmann::json& j);
 
         virtual void update(float dt);
         virtual void handle();
@@ -23,9 +25,10 @@ class Bowser : public Enemy {
 
         virtual std::string getTag();
 
-        void setCenter(Vector2 position);
+        virtual void serialize(nlohmann::json& j);
 
         static std::unique_ptr<Bowser> spawnBowser(Vector2 position);
+
     private:
         Move mMove = Move::MOVE;
         static constexpr float mAttackTime = 3.0f;
@@ -38,7 +41,7 @@ class Bowser : public Enemy {
         Vector2 mCenter;
         float mAmplitude = 144.0f;
         float jumpChance = 0.05f;
+        size_t mLives = 3;
         void setMove(Move move);
         void fire();
-        size_t mLives = 3;
 };

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include "Entity/Physics.hpp"
 #include "Entity/Collide.hpp"
+#include "Serialization.hpp"
 
 class Entity {
     public:
@@ -19,6 +22,8 @@ class Entity {
         virtual Vector2 getSize() = 0;
 
         virtual std::string getTag();
+
+        virtual void serialize(nlohmann::json& j) = 0;
 
         virtual ~Entity() = default;
 };

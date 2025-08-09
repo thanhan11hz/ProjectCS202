@@ -12,7 +12,14 @@ class Piranha : public Enemy {
             FLY,
             ATTACK
         };
-        Piranha();
+
+        enum class Type {
+            GREEN_PIRANHA,
+            BLUE_PIRANHA
+        };
+
+        Piranha(Type type);
+        Piranha(const nlohmann::json& j);
 
         virtual void update(float dt);
         virtual void handle();
@@ -23,13 +30,15 @@ class Piranha : public Enemy {
 
         virtual std::string getTag();
 
+        virtual void serialize(nlohmann::json& j);
+
         static std::unique_ptr<Piranha> spawnPiranha1(Vector2 position);
         static std::unique_ptr<Piranha> spawnPiranha2(Vector2 position);
 
         void setFixedPoint(Vector2 point);
-        void setTexture(Texture2D& texture);
 
     private:
+        Type mType;
         Move mMove = Move::FLY;
         static constexpr float attackTime = 2.0f;
         float attackTimer = 0.0f;

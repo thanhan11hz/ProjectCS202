@@ -6,6 +6,22 @@ Bowser::Bowser() {
     mBodyCollide.setLabel(Category::ENEMY);
 }
 
+Bowser::Bowser(const nlohmann::json& j) {
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setLabel(Category::ENEMY);
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    setMove(static_cast<Move>(j["move"].get<unsigned int>()));
+    mAttackTimer = j["attackTimer"].get<float>();
+    mCooldownTimer = j["cooldownTimer"].get<float>();
+    mJumpTimer = j["jumpTimer"].get<float>();
+    mSpeed = j["speed"].get<float>();
+    mCenter = j["center"].get<Vector2>();
+    mLives = j["lives"].get<size_t>();
+}
+
 void Bowser::update(float dt) {
     Enemy::update(dt);
     if (!isActive()) return;
@@ -69,7 +85,8 @@ std::string Bowser::getTag() {
 
 std::unique_ptr<Bowser> Bowser::spawnBowser(Vector2 position) {
     std::unique_ptr<Bowser> mBowser = std::make_unique<Bowser>();
-    mBowser->setCenter(position);
+    mBowser->mPhysics.setPosition(position);
+    mBowser->mCenter = position;
     mBowser->setMove(Move::MOVE);
     return std::move(mBowser);
 }
@@ -101,7 +118,19 @@ void Bowser::setMove(Move move) {
     }
 }
 
-void Bowser::setCenter(Vector2 position) {
-    mCenter = position;
-    mPhysics.setPosition(position);
+void Bowser::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"move", (unsigned int) mMove},
+        {"attackTimer", mAttackTimer},
+        {"cooldownTimer", mCooldownTimer},
+        {"jumpTimer", mJumpTimer},
+        {"speed", mSpeed},
+        {"center", mCenter},
+        {"lives", mLives},
+        {"class", "bowser"}
+    };
 }

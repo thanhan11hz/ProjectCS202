@@ -10,6 +10,7 @@
 class FireBar : public Enemy {
     public:
         FireBar();
+        FireBar(const nlohmann::json& j);
 
         virtual void update(float dt);
         virtual void handle();
@@ -20,7 +21,7 @@ class FireBar : public Enemy {
 
         virtual std::string getTag();
 
-        void setCircle(Vector2 center, float radius);
+        virtual void serialize(nlohmann::json& j);
 
         static std::vector<std::unique_ptr<FireBar>> spawnFireBar(Vector2 position);
 
@@ -29,5 +30,6 @@ class FireBar : public Enemy {
         float mRadius;
         static constexpr float angularVelocity = 5.0f;
         float mAngle = 0.0f;
+        void setCircle(Vector2 center, float radius);
 
 };

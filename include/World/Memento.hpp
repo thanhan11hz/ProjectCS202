@@ -18,8 +18,8 @@ class Memento {
         size_t mLives;
         size_t mCoins;
         std::unique_ptr<Character> mCharacter;
-        // std::vector<std::unique_ptr<Enemy>> mEnemy;
+        std::vector<std::unique_ptr<Enemy>> mEnemy;
         // std::vector<std::unique_ptr<TileObject>> mItem;
-        // std::vector<std::unique_ptr<MovingEntity>> mProjectile;
+        std::vector<std::unique_ptr<MovingEntity>> mProjectile;
         // std::vector<std::vector<std::unique_ptr<TileBlock>>> mBlock;
     };

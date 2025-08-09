@@ -9,6 +9,22 @@ Podoboo::Podoboo() {
     mAnim.restart(); 
 }
 
+Podoboo::Podoboo(const nlohmann::json& j) {
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setLabel(Category::ENEMY);
+    mAnim.setFrameSize({14, 17});
+    mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::PODOBOO), 14, 17);
+    mAnim.setRepeating(true, false);
+    mAnim.restart();
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    mRestTimer = j["restTimer"].get<float>();
+    mIsRest = j["isRest"].get<bool>();
+    mRestPoint = j["restPoint"].get<Vector2>();
+}
+
 void Podoboo::update(float dt) {
     Enemy::update(dt);
     if (!isActive()) return;
@@ -62,4 +78,17 @@ std::unique_ptr<Podoboo> Podoboo::spawnPodoboo(Vector2 position) {
     std::unique_ptr<Podoboo> mPodoboo = std::make_unique<Podoboo>();
     mPodoboo->setRestPoint(position);
     return std::move(mPodoboo);
+}
+
+void Podoboo::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"restTimer", mRestTimer},
+        {"isRest", mIsRest},
+        {"restPoint", mRestPoint},
+        {"class", "podoboo"}
+    };
 }

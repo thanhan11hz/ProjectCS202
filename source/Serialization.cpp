@@ -1,6 +1,4 @@
 #include "Serialization.hpp"
-#include "Entity/Physics.hpp"
-#include "Entity/Collide.hpp"
 #include "Entity/Goomba.hpp"
 #include "Entity/Koopa.hpp"
 #include "Entity/FireBar.hpp"
@@ -30,29 +28,31 @@ void from_json(const nlohmann::json& j, Rectangle& r) {
     r.height = j.value("height", 0.0f);
 }
 
-void to_json(nlohmann::json& j, const Character& c) {
-    j = {
-        {"position", c.mPhysics.getPosition()},
-        {"velocity", c.mPhysics.getVelocity()},
-        {"ground", c.mPhysics.onGround()},
-        {"right", c.mPhysics.isRight()},
-        {"form", (unsigned int)c.mForm},
-        {"move", (unsigned int)c.mMove},
-        {"immortal", c.mIsImmortal},
-        {"height", c.mHigh},
-        {"length", c.mLength},
-        {"class", "character"}
-    };
-}
-
 void to_json(nlohmann::json& j, const Memento& s) {
     j["current"] = s.mCurrent;
     j["timer"] = s.mTimer;
     j["lives"] = s.mLives;
     j["coins"] = s.mCoins;
 
-    if (s.mCharacter)
-    j["character"] = *s.mCharacter;
+    if (s.mCharacter) {
+        nlohmann::json js;
+        s.mCharacter->serialize(js);
+        j["character"] = js;
+    }
+    
+    j["enemy"] = nlohmann::json::array();
+    for (const auto& e: s.mEnemy) {
+        nlohmann::json js;
+        e->serialize(js);
+        j["enemy"].push_back(js);
+    }
+
+    j["projectile"] = nlohmann::json::array();
+    for (const auto& e: s.mProjectile) {
+        nlohmann::json js;
+        e->serialize(js);
+        j["projectile"].push_back(js);
+    }
 }
 
 void to_json(nlohmann::json& j, const std::unique_ptr<Memento>& s) {
@@ -73,12 +73,28 @@ void from_json(const nlohmann::json& j, Memento& s) {
 
     if (j.contains("character")) {
         auto c = createEntityFromJson(j["character"]);
-        s.mCharacter = std::unique_ptr<Character>(dynamic_cast<Character*>(c.release()));
+        s.mCharacter = std::unique_ptr<Character>(static_cast<Character*>(c.release()));
     }
 
+    for (const auto& je : j["enemy"]) {
+        auto e = createEntityFromJson(je);
+        s.mEnemy.push_back(std::unique_ptr<Enemy>(static_cast<Enemy*>(e.release())));
+    }
+
+    for (const auto& jp : j["projectile"]) {
+        auto p = createEntityFromJson(jp);
+        s.mProjectile.push_back(std::unique_ptr<MovingEntity>(static_cast<MovingEntity*>(p.release())));
+    }
 }
 
 std::unique_ptr<Entity> createEntityFromJson(const nlohmann::json& j) {
     std::string type = j["class"];
     if (type == "character") return std::make_unique<Character>(j);
+    else if (type == "goomba") return std::make_unique<Goomba>(j);
+    else if (type == "piranha") return std::make_unique<Piranha>(j);
+    else if (type == "bowser") return std::make_unique<Bowser>(j);
+    else if (type == "fireBar") return std::make_unique<FireBar>(j);
+    else if (type == "podoboo") return std::make_unique<Podoboo>(j);
+    else if (type == "fireBall") return std::make_unique<FireBall>(j);
+    else if (type == "bowserFire") return std::make_unique<BowserFire>(j);
 }

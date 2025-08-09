@@ -26,6 +26,8 @@ class MovingEntity : public Entity {
         void setAfterBlock(bool flag);
         bool isAfterBlock();
 
+        virtual void serialize(nlohmann::json& j) = 0;
+
         virtual ~MovingEntity() = default;
     
     protected:
