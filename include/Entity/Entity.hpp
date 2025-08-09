@@ -15,7 +15,7 @@ class Entity {
         virtual void draw() = 0;
 
         virtual void handleCollision(Side side, Collide other) = 0;
-        virtual void handleFootCollision();
+        virtual void handleFootCollision(Collide other);
         virtual Vector2 getSize() = 0;
 
         virtual std::string getTag();

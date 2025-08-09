@@ -27,7 +27,7 @@ class FireBar : public Enemy {
     private:
         Vector2 mCenter;
         float mRadius;
-        static constexpr float angularVelocity = 5.0f;
+        static constexpr float angularVelocity = 3.0f;
         float mAngle = 0.0f;
 
 };

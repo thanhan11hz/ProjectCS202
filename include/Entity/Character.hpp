@@ -44,13 +44,14 @@ class Character : public MovingEntity {
         virtual void handleCollision(Side side, Collide other);
 
         virtual std::string getTag();
+        bool isImmortal() const;
 
     private:
         Move mMove = Move::IDLE;
         void updateMove();
         void setMove(Move move);
 
-        Form mForm = Form::FIRE;
+        Form mForm = Form::NORMAL;
         void setForm(Form form);
 
         static constexpr float mImmortalTime = 5.0f;

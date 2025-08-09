@@ -1,5 +1,6 @@
 #include "Entity/Bowser.hpp"
 #include "World/World.hpp"
+#include "Entity/Character.hpp"
 
 Bowser::Bowser() {
     mBodyCollide.setFilter(Category::NONE);
@@ -56,6 +57,18 @@ void Bowser::handleCollision(Side side, Collide other) {
             mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
             mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
         }
+    }
+
+    if (otherLabel == Category::MARIO && side == Side::TOP) {
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
+    }
+
+    if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
     }
 }
 

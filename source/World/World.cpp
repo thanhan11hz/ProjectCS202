@@ -27,7 +27,6 @@ World::~World() {
 }
         
 void World::update(float dt) {
-
     mMap[mCurrent]->update(dt);
 
     if (!mCharacter->isDie()) mCharacter->update(dt);
@@ -271,8 +270,8 @@ void World::receiveCoin() {
     mCoins ++;
 }
         
-void World::damage() {
-    mLives --;
+void World::heal() {
+    mLives ++;
 }
 
 Camera2D& World::getCamera() {
