@@ -40,7 +40,7 @@ void World::update(float dt) {
             restart();
         }
     }
-
+    
     mMap[mCurrent]->update(dt);
     mCharacter->update(dt);
 
@@ -298,8 +298,8 @@ void World::receiveCoin() {
     mCoins ++;
 }
         
-void World::damage() {
-    mLives --;
+void World::heal() {
+    mLives ++;
 }
 
 Camera2D& World::getCamera() {

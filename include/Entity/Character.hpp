@@ -44,6 +44,7 @@ class Character : public MovingEntity {
         virtual void handleCollision(Side side, Collide other);
 
         virtual std::string getTag();
+        bool isImmortal() const;
 
         void setKeyBind(std::map<Action, KeyboardKey> &key);
 

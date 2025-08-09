@@ -50,9 +50,9 @@ void FireBar::setCircle(Vector2 center, float radius) {
 
 std::vector<std::unique_ptr<FireBar>> FireBar::spawnFireBar(Vector2 position) {
     std::vector<std::unique_ptr<FireBar>> mFireBar;
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 5; ++i) {
         std::unique_ptr<FireBar> firebar = std::make_unique<FireBar>();
-        firebar->setCircle(position, 27 * i);
+        firebar->setCircle(position + Vector2{10.5, 10.5}, 27 * i);
         mFireBar.push_back(std::move(firebar));
     }
     return mFireBar;

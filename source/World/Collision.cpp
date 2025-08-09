@@ -57,8 +57,7 @@ void Collision::handleCollision() {
         Vector2 charPos = mCharacter->mPhysics.getPosition();
         int charCol = charPos.x / tileSize;
         int charRow = charPos.y / tileSize;
-        int radius = 4;
-
+        int radius = 6;
         for (int i = charRow - radius; i <= charRow + radius; ++i) {
             for (int j = charCol - radius; j <= charCol + radius; ++j) {
                 if (i >= 0 && i < mMain.size() && j >= 0 && j < mMain[i].size() && mMain[i][j]) {
@@ -92,7 +91,7 @@ void Collision::handleCollision() {
             Vector2 enemyPos = (*itr)->mPhysics.getPosition();
             int enemyCol = enemyPos.x / tileSize;
             int enemyRow = enemyPos.y / tileSize;
-            int radius = 4;
+            int radius = 6;
 
             for (int i = enemyRow - radius; i <= enemyRow + radius; ++i) {
                 for (int j = enemyCol - radius; j <= enemyCol + radius; ++j) {
@@ -179,7 +178,7 @@ void Collision::handleCollision() {
             Vector2 projectilePos = (*itr)->mPhysics.getPosition();
             int projectileCol = projectilePos.x / tileSize;
             int projectileRow = projectilePos.y / tileSize;
-            int radius = 4;
+            int radius = 6;
 
             for (int i = projectileRow - radius; i <= projectileRow + radius; ++i) {
                 for (int j = projectileCol - radius; j <= projectileCol + radius; ++j) {
@@ -263,7 +262,7 @@ void Collision::handleCollision() {
         Vector2 charPos = mCharacter->mPhysics.getPosition();
         int charCol = charPos.x / tileSize;
         int charRow = charPos.y / tileSize;
-        int radius = 4;
+        int radius = 6;
 
         for (int i = charRow - radius; i <= charRow + radius; ++i) {
             for (int j = charCol - radius; j <= charCol + radius; ++j) {
@@ -295,7 +294,7 @@ void Collision::handleCollision() {
             Vector2 enemyPos = (*itr)->mPhysics.getPosition();
             int enemyCol = enemyPos.x / tileSize;
             int enemyRow = enemyPos.y / tileSize;
-            int radius = 4;
+            int radius = 6;
 
             for (int i = enemyRow - radius; i <= enemyRow + radius; ++i) {
                 for (int j = enemyCol - radius; j <= enemyCol + radius; ++j) {
@@ -315,7 +314,7 @@ void Collision::handleCollision() {
             Vector2 itemPos = (*itr)->mPhysics.getPosition();
             int itemCol = itemPos.x / tileSize;
             int itemRow = itemPos.y / tileSize;
-            int radius = 4;
+            int radius = 6;
 
             for (int i = itemRow - radius; i <= itemRow + radius; ++i) {
                 for (int j = itemCol - radius; j <= itemCol + radius; ++j) {
@@ -338,7 +337,7 @@ void Collision::handleCollision() {
             Vector2 projectilePos = (*itr)->mPhysics.getPosition();
             int projectileCol = projectilePos.x / tileSize;
             int projectileRow = projectilePos.y / tileSize;
-            int radius = 4;
+            int radius = 6;
 
             for (int i = projectileRow - radius; i <= projectileRow + radius; ++i) {
                 for (int j = projectileCol - radius; j <= projectileCol + radius; ++j) {
@@ -426,8 +425,7 @@ void Collision::checkCollision(Collide A, Collide B) {
 
 void Collision::checkFootCollision(Collide A, Collide B) {
     if (!checkBroadPhase(A, B)) return;
-
-    A.getOwner()->handleFootCollision();
+    A.getOwner()->handleFootCollision(B);
 }
 
 bool Collision::checkBroadPhase(Collide A, Collide B) {
