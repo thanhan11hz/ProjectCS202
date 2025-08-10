@@ -91,7 +91,7 @@ class World {
 
         size_t mCoins = 0;
 
-        bool isLevelComplete();
+        //bool isLevelComplete();
 
         bool mIsMultiPlayers = true;
 
