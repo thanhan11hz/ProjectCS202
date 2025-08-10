@@ -42,6 +42,10 @@ void EffectManager::addEffect(std::unique_ptr<Effect> effect) {
     mEffect.push_back(std::move(effect));
 }
 
+bool EffectManager::isEmpty() const {
+    return mEffect.size() == 0;
+}
+
 // Point Effect
 
 PointEffect::PointEffect(Vector2 position, std::string text) : mText(text) {

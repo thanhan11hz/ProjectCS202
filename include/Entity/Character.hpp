@@ -46,6 +46,8 @@ class Character : public MovingEntity {
         virtual std::string getTag();
         bool isImmortal() const;
 
+        void setKeyBind(std::map<Action, KeyboardKey> &key);
+
     private:
         Move mMove = Move::IDLE;
         void updateMove();
@@ -74,5 +76,5 @@ class Character : public MovingEntity {
 
         void damage();
 
-        std::map<Action, KeyboardKey> &mKey;
+        std::map<Action, KeyboardKey> *mKey;
 };

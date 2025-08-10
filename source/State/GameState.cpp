@@ -91,13 +91,6 @@ GameState::GameState(StateStack& stack) : State(stack) {
 
 void GameState::draw() {
     mWorld.draw();
-    // Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
-    // Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
-    // mMap.setTexture(tiles, object);
-    // mMap.drawBackground();
-    // mMap.drawItem();
-    // mMap.drawMain();
-
     Texture2D bricksTexture = Resource::mTexture.get(TextureIdentifier::BRICKS_TEXTURE);
     DrawTexture(bricksTexture, 0, 772, WHITE);
     mContainer.draw();
@@ -109,7 +102,7 @@ bool GameState::update(float dt) {
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     mWorld.update(dt);
-    if ((int)mWorld.getRestLive() <= 0 || (int)mWorld.getRestTime() <= 0) {
+    if (((int)mWorld.getRestLive() <= 0 || (int)mWorld.getRestTime() <= 0) && mWorld.isEndEffect()) {
         requestStackClear();
         requestStackPush(StateIdentifier::GAMEOVER);
     }

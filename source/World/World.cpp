@@ -27,9 +27,24 @@ World::~World() {
 }
         
 void World::update(float dt) {
-    mMap[mCurrent]->update(dt);
+    if (mCharacter->isDie() && mLives > 0) {
+        if (mEffect.isEmpty()) {
+            mLives--;
+            restart();
+        }
+    }
 
-    if (!mCharacter->isDie()) mCharacter->update(dt);
+    if (mIsMultiPlayers && mCharacter2->isDie() && mLives > 0) {
+        if (mEffect.isEmpty()) {
+            mLives--;
+            restart();
+        }
+    }
+    
+    mMap[mCurrent]->update(dt);
+    mCharacter->update(dt);
+
+    if (mIsMultiPlayers) mCharacter2->update(dt);
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ) {
         if (*itr && !(*itr)->isDie()) {
@@ -119,7 +134,9 @@ void World::draw() {
     // mMap[mCurrent]->drawMain();
     mMap[mCurrent]->drawMain(mCam);
 
-    if (!mCharacter->isDie() && !mCharacter->isAfterBlock()) mCharacter->draw();
+    if (!mCharacter->isDie()) mCharacter->draw();
+
+    if (mIsMultiPlayers && !mCharacter2->isDie()) mCharacter2->draw();
 
     for (auto itr = mProjectile.begin(); itr != mProjectile.end(); ++itr) {
         (*itr)->draw();
@@ -146,6 +163,8 @@ void World::draw() {
 
 void World::handle() {
     if (!mCharacter->isDie()) mCharacter->handle();
+
+    if (mIsMultiPlayers && !mCharacter2->isDie()) mCharacter2->handle();
 
     for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
         (*itr)->handle();
@@ -184,7 +203,7 @@ void World::addProjectile(std::unique_ptr<MovingEntity> projectile) {
 }
         
 bool World::isLevelComplete() {
-    return false;
+    return isComplete;
 }
         
 bool World::hasNextMap() {
@@ -203,18 +222,18 @@ void World::backMap() {
 void World::reset() {
     mMap[mCurrent]->reset();
     mEnemy.clear();
-    if (mCharacter) {
-        mCharacter->mPhysics.setPosition({150, 400});
-    }
-    // std::vector<std::unique_ptr<FireBar>> mFireBar = FireBar::spawnFireBar({200, 600});
-    // for (int i = 0; i < mFireBar.size(); ++i) {
-    //     mEnemy.push_back(std::move(mFireBar[i]));
-    // }
-    // // mEnemy.push_back(Koopa::spawnKoopa({700, 300}, Koopa::Type::K_GREEN));
-    // // mEnemy.push_back(Koopa::spawnKoopa({800, 300}, Koopa::Type::K_RED));
-    // // mEnemy.push_back(Koopa::spawnKoopa({900, 300}, Koopa::Type::K_BLUE));
-    // //
-
+    if (mIsMultiPlayers) {
+        mCharacter = Character::spawnMario();
+        mCharacter2 = Character::spawnLuigi();
+        mCharacter->setKeyBind(mKeyBinding);
+        mCharacter2->setKeyBind(mKeyBinding2);
+    } else mCharacter2 = nullptr;
+    if (mCurrent == 0) mCharacter->mPhysics.setPosition({150, 672});
+    else if (mCurrent == 1) mCharacter->mPhysics.setPosition({150, 624});
+    else if (mCurrent == 4) mCharacter->mPhysics.setPosition({96, 576});
+    else if (mCurrent == 10) mCharacter->mPhysics.setPosition({0, 336});
+    else mCharacter->mPhysics.setPosition({150, 624});
+    if (mIsMultiPlayers) mCharacter2->mPhysics.setPosition(mCharacter->mPhysics.getPosition() + Vector2{60, 0});
     mCollision.clearCollidables();
     mItem.clear();
     std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
@@ -226,9 +245,10 @@ void World::reset() {
     mItem = mMap[mCurrent]->takeItems();
     mMap[mCurrent]->resetItem();
     mCollision.addCharacter(mCharacter.get());
+    if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
-    mTimer = 300.0f;
+    mTimer = 100.0f;
     mLives = 3;
     mCoins = 0;
     mCam.target = {0, 500};
@@ -237,14 +257,22 @@ void World::reset() {
 
 void World::restart() {
     mEnemy.clear();
-    if (mCharacter) {
-        mCharacter->mPhysics.setPosition({150, 400});
+    if (mCurrent == 0) mCharacter->mPhysics.setPosition({150, 672});
+    else if (mCurrent == 1) mCharacter->mPhysics.setPosition({150, 624});
+    else if (mCurrent == 4) mCharacter->mPhysics.setPosition({96, 576});
+    else if (mCurrent == 10) mCharacter->mPhysics.setPosition({0, 336});
+    else mCharacter->mPhysics.setPosition({150, 624});
+    mCharacter->setDie(false);
+    if (mIsMultiPlayers) {
+        mCharacter2->setDie(false);
+        mCharacter2->mPhysics.setPosition(mCharacter->mPhysics.getPosition() + Vector2{60, 0});
     }
     mCollision.clearCollidables();
     std::vector<std::unique_ptr<Enemy>>& mEnemy = mMap[mCurrent]->getEnemy();
     mCollision.addEnemy(mEnemy);
     mCollision.addItem(mItem);
     mCollision.addCharacter(mCharacter.get());
+    if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
     std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
     mCollision.addBlock(mBlock);
     mCam.target = {0, 500};
@@ -299,4 +327,16 @@ bool World::isSolidTileAt(Vector2 worldPosition) {
     }
 
     return false;
+}
+        
+void World::setMultiPlayers(bool flag) {
+    mIsMultiPlayers = flag;
+}
+        
+bool World::isMultiPlayers() const {
+    return mIsMultiPlayers;
+}
+
+bool World::isEndEffect() const {
+    return mEffect.isEmpty();
 }

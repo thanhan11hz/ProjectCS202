@@ -1,6 +1,6 @@
 #include "State/MenuState.hpp"
 
-MenuState::MenuState(StateStack& stack): State(stack) {
+MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
@@ -25,8 +25,7 @@ MenuState::MenuState(StateStack& stack): State(stack) {
     playButton->changeText("NEW GAME");
     playButton->changeCallback(
         [this]() {
-            requestStackPop();
-            requestStackPush(StateIdentifier::LEVEL);
+            gamemode = true;
         }
     );
     mContainer.pack(playButton);
@@ -75,6 +74,43 @@ MenuState::MenuState(StateStack& stack): State(stack) {
         }
     );
     mContainer.pack(exitButton);
+
+    Label* modeselect = new Label();
+    modeselect->changeShape({477,342,486,30});
+    modeselect->changeSize(30);
+    modeselect->changeText("SELECT GAME MODE");
+    modeselect->changeFont(FontIdentifier::PressStart2P);
+    modeselect->changeColor(WHITE);
+    mContainer_gamemode.pack(modeselect);
+
+    Button* p1 = new Button();
+    p1->changShape({615,415,211,56});
+    p1->changeText("1P GAME");
+    p1->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    p1->changeCallback(
+        [this]() {
+            mWorld.setMultiPlayers(false);
+            gamemode = false;
+            requestStackPop();
+            requestStackPush(StateIdentifier::LEVEL);
+        }
+    ); 
+    mContainer_gamemode.pack(p1);
+
+    Button* p2 = new Button();
+    p2->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
+    p2->changShape({615,503,211,56});
+    p2->changeText("2P GAME");
+    p2->changeCallback(
+        [this]() {
+            mWorld.setMultiPlayers(true);
+            gamemode = false;
+            requestStackPop();
+            requestStackPush(StateIdentifier::LEVEL);
+        }
+    );
+    mContainer_gamemode.pack(p2);
+
 }
 
 void MenuState::draw() {
@@ -84,6 +120,12 @@ void MenuState::draw() {
     Texture2D gameLogo = Resource::mTexture.get(TextureIdentifier::LOGO);
     DrawTexture(gameLogo, 51, 75, WHITE);
     mContainer.draw();
+    if (gamemode) {
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade({83,83,83,255}, 0.6f));
+        Texture2D box = Resource::mTexture.get(TextureIdentifier::CONFIRM_BOX);
+        DrawTexture(box, 426, 257, WHITE);
+        mContainer_gamemode.draw();
+    }
 }
 
 bool MenuState::update(float dt) {
@@ -97,6 +139,7 @@ bool MenuState::handle() {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }
-    mContainer.handle();
+    if (!gamemode) mContainer.handle();
+    else mContainer_gamemode.handle();
     return true;
 }
