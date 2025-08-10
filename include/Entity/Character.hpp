@@ -48,6 +48,7 @@ class Character : public MovingEntity {
         bool isImmortal() const;
 
         virtual void serialize(nlohmann::json& j);
+        void setKeyBind(std::map<Action, KeyboardKey> &key);
 
     private:
         Move mMove = Move::IDLE;
@@ -77,5 +78,5 @@ class Character : public MovingEntity {
 
         void damage();
 
-        std::map<Action, KeyboardKey> &mKey;
+        std::map<Action, KeyboardKey> *mKey;
 };

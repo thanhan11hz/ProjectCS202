@@ -124,25 +124,41 @@ void LevelState::setupPage(int page) {
             header_lv1->changeText("LEVEL 1");
             level1->changeCallback([this]() {
                     mWorld.setMap(0);
-                    requestStackPush(StateIdentifier::CHARSELECT);
+                    if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                    else {
+                        mWorld.reset();
+                        requestStackPush(StateIdentifier::GAME1);
+                    }
                 }
             );
             header_lv2->changeText("LEVEL 2");
             level2->changeCallback([this]() {
                     mWorld.setMap(1);
-                    requestStackPush(StateIdentifier::CHARSELECT);
+                    if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                    else {
+                        mWorld.reset();
+                        requestStackPush(StateIdentifier::GAME1);
+                    }
                 }
             );  
             header_lv3->changeText("LEVEL 3");
             level3->changeCallback([this]() {
                     mWorld.setMap(4);
-                    requestStackPush(StateIdentifier::CHARSELECT);
+                    if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                    else {
+                        mWorld.reset();
+                        requestStackPush(StateIdentifier::GAME1);
+                    }
                 }
             );
             header_lv4->changeText("LEVEL 4");
             level4->changeCallback([this]() {
                     mWorld.setMap(5);
-                    requestStackPush(StateIdentifier::CHARSELECT);
+                    if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                    else {
+                        mWorld.reset();
+                        requestStackPush(StateIdentifier::GAME1);
+                    }
                 }
             );
             break;
@@ -152,22 +168,38 @@ void LevelState::setupPage(int page) {
             if (createdCount >= 1) {
                 level1->changeCallback([this]() {
                     mWorld.setMap(8);
-                    requestStackPush(StateIdentifier::CHARSELECT);
+                    if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                    else {
+                        mWorld.reset();
+                        requestStackPush(StateIdentifier::GAME1);
+                    }
                 });
                 if (createdCount >= 2) {
                     level2->changeCallback([this]() {
                         mWorld.setMap(9);
-                        requestStackPush(StateIdentifier::CHARSELECT);
+                        if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                        else {
+                            mWorld.reset();
+                            requestStackPush(StateIdentifier::GAME1);
+                        }
                     });
                     if (createdCount >=3) {
                         level3->changeCallback([this]() {
                             mWorld.setMap(10);
-                            requestStackPush(StateIdentifier::CHARSELECT);
+                            if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                            else {
+                                mWorld.reset();
+                                requestStackPush(StateIdentifier::GAME1);
+                            }
                     });
                         if (createdCount >= 4) {
                             level4->changeCallback([this]() {
                                 mWorld.setMap(7+createdCount);
-                                requestStackPush(StateIdentifier::CHARSELECT);
+                                if (!mWorld.isMultiPlayers()) requestStackPush(StateIdentifier::CHARSELECT);
+                                else {
+                                    mWorld.reset();
+                                    requestStackPush(StateIdentifier::GAME1);
+                                }
                             });
                         }
                     }

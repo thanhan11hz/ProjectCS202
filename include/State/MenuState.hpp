@@ -1,7 +1,8 @@
 #pragma once
 
 #include <raylib.h>
-
+#include "Global.hpp"
+#include "World/World.hpp"
 #include "State/State.hpp"
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
@@ -15,5 +16,8 @@ class MenuState : public State {
         virtual bool update(float dt);
         virtual bool handle();
         Container mContainer;
+        Container mContainer_gamemode;
         Button* muteButton;
+
+        bool gamemode;
 };

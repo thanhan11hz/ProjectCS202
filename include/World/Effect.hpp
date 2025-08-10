@@ -24,6 +24,7 @@ class EffectManager {
         void draw(Camera2D& camera);
         void update(float dt);
         void addEffect(std::unique_ptr<Effect> effect);
+        bool isEmpty() const;
         
     private:
         std::vector<std::unique_ptr<Effect>> mEffect;

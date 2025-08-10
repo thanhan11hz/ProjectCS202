@@ -15,12 +15,14 @@ class Collision {
         void addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& block);
         void addProjectile(MovingEntity* projectile);
         void addCharacter(Character* character);
+        void addCharacter2(Character* character);
         void handleCollision();
         void clearCollidables();
 
     private:
 
         Character* mCharacter;
+        Character* mCharacter2;
         std::vector<std::vector<TileBlock*>> mMain;
         std::vector<TileObject*> mItem;
         std::vector<Enemy*> mEnemy;
