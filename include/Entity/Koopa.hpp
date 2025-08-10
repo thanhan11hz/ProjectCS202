@@ -6,20 +6,21 @@
 
 class Koopa : public Enemy {
 public:
-    enum class State {
+    enum class State : unsigned int {
         WALKING,
         SHELL,
         SLIDING,
         WIGGLING
     };
 
-    enum class Type {
+    enum class Type : unsigned int {
         K_GREEN,
         K_RED,
         K_BLUE
     };
 
     Koopa(Type type);
+    Koopa(const nlohmann::json& j);
 
     virtual void update(float dt) override;
     virtual void handle() override;

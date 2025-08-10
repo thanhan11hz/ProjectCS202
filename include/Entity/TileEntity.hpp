@@ -91,6 +91,7 @@ class TileBlock : public MovingEntity{
     Vector2 getSize() override;
     virtual void update(float dt) override;
     float calculateVec(float duration, float dis);
+    void serialize(nlohmann::json& j) override {}
     
 
     virtual void draw(Texture2D& background, Texture2D& object);

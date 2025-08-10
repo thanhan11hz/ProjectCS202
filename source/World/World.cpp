@@ -337,11 +337,11 @@ void World::saveSnapshot() {
     snapshot->mCoins = mCoins;
     snapshot->mCharacter = std::move(mCharacter);
     
-    // for (int i = 0; i < mEnemy.size(); ++i) {
-    //     snapshot->mEnemy.push_back(std::move(mEnemy[i]));
-    // }
+    for (int i = 0; i < mEnemy.size(); ++i) {
+        snapshot->mEnemy.push_back(std::move(mEnemy[i]));
+    }
 
-    // mEnemy.clear();
+    mEnemy.clear();
 
     // for (int i = 0; i < mItem.size(); ++i) {
     //     snapshot->mItem.push_back(std::move(mItem[i]));
@@ -349,11 +349,11 @@ void World::saveSnapshot() {
 
     // mItem.clear();
 
-    // for (int i = 0; i < mProjectile.size(); ++i) {
-    //     snapshot->mProjectile.push_back(std::move(mProjectile[i]));
-    // }
+    for (int i = 0; i < mProjectile.size(); ++i) {
+        snapshot->mProjectile.push_back(std::move(mProjectile[i]));
+    }
 
-    // mProjectile.clear();
+    mProjectile.clear();
     
     mSnapshot = std::move(snapshot);
 }
@@ -368,17 +368,17 @@ void World::restore() {
 
         mCharacter = std::move(mSnapshot->mCharacter);
 
-        // for (int i = 0; i < mSnapshot->mEnemy.size(); ++i) {
-        //     mEnemy.push_back(std::move(mSnapshot->mEnemy[i]));
-        // }
+        for (int i = 0; i < mSnapshot->mEnemy.size(); ++i) {
+            mEnemy.push_back(std::move(mSnapshot->mEnemy[i]));
+        }
 
         // for (int i = 0; i < mSnapshot->mItem.size(); ++i) {
         //     mItem.push_back(std::move(mSnapshot->mItem[i]));
         // }
 
-        // for (int i = 0; i < mSnapshot->mProjectile.size(); ++i) {
-        //     mProjectile.push_back(std::move(mSnapshot->mProjectile[i]));
-        // }
+        for (int i = 0; i < mSnapshot->mProjectile.size(); ++i) {
+            mProjectile.push_back(std::move(mSnapshot->mProjectile[i]));
+        }
 
         mSnapshot = nullptr;
     }

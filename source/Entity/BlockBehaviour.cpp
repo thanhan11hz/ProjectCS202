@@ -174,7 +174,4 @@ void MovingBlockBehavior::update(TileBlock& block, float dt) {
         block.mPhysics.setPosition(pos);
         block.mPhysics.setVelocity(vel);
     }
-
-    
-    
 }

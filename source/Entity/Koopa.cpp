@@ -1,40 +1,67 @@
 #include "Entity/Koopa.hpp"
 #include "World/World.hpp"
 
-Koopa::Koopa(Type type) 
-    : mType(type), mState(State::WALKING), mShellTimer(0.f) {
-    
+Koopa::Koopa(Type type) : mType(type), mState(State::WALKING), mShellTimer(0.f) {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setLabel(Category::ENEMY);
-
     mAnim.setFrameSize({16, 24}); 
-
     mSpeed = (mType == Type::K_BLUE) ? -150.0f : -100.0f;
+    switch (type) {
+        case Type::K_GREEN:
+            mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_RUN);
+            mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_SHELL);
+            mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_WIGGLE);
+            break;
+        case Type::K_RED:
+            mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_RUN);
+            mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_SHELL);
+            mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_WIGGLE);
+            break;
+        case Type::K_BLUE:
+            mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_RUN);
+            mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_SHELL);
+            mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_WIGGLE);
+            break;
+    }
+    setState(State::WALKING);
+}
+
+Koopa::Koopa(const nlohmann::json& j) {
+    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setLabel(Category::ENEMY);
+    mAnim.setFrameSize({16, 24});
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    mType = static_cast<Type>(j["type"].get<unsigned int>());
+    switch (mType) {
+        case Type::K_GREEN:
+            mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_RUN);
+            mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_SHELL);
+            mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_WIGGLE);
+            break;
+        case Type::K_RED:
+            mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_RUN);
+            mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_SHELL);
+            mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_WIGGLE);
+            break;
+        case Type::K_BLUE:
+            mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_RUN);
+            mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_SHELL);
+            mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_WIGGLE);
+            break;
+    }
+    setState(static_cast<State>(j["state"].get<unsigned int>()));
+    mSpeed = j["speed"].get<float>();
+    mLedgeCooldown = j["ledgeCooldown"].get<float>();
+    mShellTimer = j["shellTimer"].get<float>();
 }
 
 std::unique_ptr<Koopa> Koopa::spawnKoopa(Vector2 position, Type type) {
     std::unique_ptr<Koopa> koopa = std::make_unique<Koopa>(type);
-
-    switch (type) {
-        case Type::K_GREEN:
-            koopa->mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_RUN);
-            koopa->mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_SHELL);
-            koopa->mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_WIGGLE);
-            break;
-        case Type::K_RED:
-            koopa->mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_RUN);
-            koopa->mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_SHELL);
-            koopa->mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_WIGGLE);
-            break;
-        case Type::K_BLUE:
-            koopa->mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_RUN);
-            koopa->mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_SHELL);
-            koopa->mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_WIGGLE);
-            break;
-    }
-
     koopa->mPhysics.setPosition(position);
-    koopa->setState(State::WALKING);
+    
     return std::move(koopa);
 }
 
@@ -43,7 +70,6 @@ void Koopa::update(float dt) {
     Enemy::update(dt);
     if (!isActive() || isDie()) return;
     MovingEntity::update(dt);
-
     switch (mState) {
         case State::WALKING:
             // Ledge Detection for Red and Blue Koopas
@@ -185,4 +211,20 @@ std::string Koopa::getTag() {
 }
 
 void Koopa::handle() {
+
+}
+
+void Koopa::serialize(nlohmann::json& j) {
+    j = {
+        {"position", mPhysics.getPosition()},
+        {"velocity", mPhysics.getVelocity()},
+        {"ground", mPhysics.onGround()},
+        {"right", mPhysics.isRight()},
+        {"state", (unsigned int) mState},
+        {"type", (unsigned int) mType},
+        {"speed", mSpeed},
+        {"ledgeCooldown", mLedgeCooldown},
+        {"shellTimer", mShellTimer},
+        {"class", "koopa"}
+    };
 }
