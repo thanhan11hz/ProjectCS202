@@ -20,10 +20,7 @@ class TileMap {
 public:
     using Btr = std::unique_ptr<TileBlock>;
     using Etr = std::unique_ptr<Enemy>;
-                                            //hàm getBounds
-                                            //fix bug sọc trắng
-                                            //block màn 6
-                                            //warp, movingblock, rìu, hiệu ứng rút cầu
+                                            
     TileMap(){};
     void loadFromFile(const std::string& directory);
     std::vector<std::vector<int>> loadMatrixFromCSV(const std::string& filepath);
@@ -32,9 +29,11 @@ public:
 
     // void drawBackground();
     void drawBackground(Camera2D& camera);
-    void drawEnemy();
+    void drawEnemy1(Rectangle& camera);
+    void drawEnemy2(Rectangle& camera);
     // void drawItem();
-    void drawItem(Camera2D& camera);
+
+    void drawItem(Rectangle& camera);
     // void drawMain();
     void drawMain(Camera2D& camera);
 
@@ -51,15 +50,20 @@ public:
     std::vector<std::unique_ptr<TileObject>>& getItems() {return Items;}
     std::vector<std::unique_ptr<TileObject>> takeItems() {return std::move(Items); }
     void resetItem() { Items.clear(); }
-    void reset();
-
+    //void reset();
+    TileMap(const TileMap&);
+    std::unique_ptr<TileMap> clone() const {
+        return std::make_unique<TileMap>(*this);
+    }
+    void updateEnemy(float dt);
+    void updateItem(float dt);
 private:
     std::vector<std::vector<Btr>> mMain;
     std::vector<std::vector<Btr>> mBackground;
-    std::vector<std::pair<int, Vector2>> dataItem;
-    std::vector<std::vector<TileObject*>> mItem;
+    //std::vector<std::pair<int, Vector2>> dataItem;
+    //std::vector<std::vector<TileObject*>> mItem;
     std::vector<std::vector<Btr>> mBackground2;
-    std::vector<std::pair<int, Vector2>> mEnemy;
+    //std::vector<std::pair<int, Vector2>> mEnemy;
     std::vector<Etr> Enemies;
     std::vector<std::unique_ptr<TileObject>> Items;
     Texture2D tileTexture;

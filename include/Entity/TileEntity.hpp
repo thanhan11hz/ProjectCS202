@@ -82,9 +82,12 @@ public:
     virtual std::string getTag(){return "";};
     
 };
+
+
 class TileBlock : public MovingEntity{
     public:
-    TileBlock(int type, int row, int col);
+    TileBlock(int type, int col, int row);
+    int type() const { return mType; }
     void draw() override;
     void handle() override;
     void handleCollision(Side side, Collide other) override;
@@ -104,7 +107,6 @@ class TileBlock : public MovingEntity{
     void applyGravity(float dt);
     void addFragment();
     void setAnimation();
-    void setState();
     bool isSolid();
     virtual std::string getTag();
 
@@ -114,6 +116,9 @@ class TileBlock : public MovingEntity{
             return BLACK;}
         return {99, 173, 255, 255};
      }
+    std::unique_ptr<TileBlock> clone() const {
+        return std::make_unique<TileBlock>(mType, mCol, mRow);
+    }
 
     static constexpr int TileCollum = 29;
     static constexpr int ObjectRow = 35;
@@ -146,6 +151,8 @@ protected:
     bool solid = false;
     float aniTime = 0.0f;
     IBlockBehavior* mBehavior = nullptr;
+    int mRow;
+    int mCol;
     std::vector<std::unique_ptr<TileObject>> frag;
     Color mColor = BLACK;
 };

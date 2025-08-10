@@ -22,6 +22,9 @@ class Piranha : public Enemy {
         virtual Vector2 getSize();
 
         virtual std::string getTag();
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Piranha>();
+        }
 
         static std::unique_ptr<Piranha> spawnPiranha1(Vector2 position);
         static std::unique_ptr<Piranha> spawnPiranha2(Vector2 position);

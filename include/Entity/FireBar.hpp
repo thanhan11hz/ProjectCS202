@@ -21,6 +21,9 @@ class FireBar : public Enemy {
         virtual std::string getTag();
 
         void setCircle(Vector2 center, float radius);
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<FireBar>();
+        }
 
         static std::vector<std::unique_ptr<FireBar>> spawnFireBar(Vector2 position);
 

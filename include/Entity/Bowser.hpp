@@ -24,6 +24,9 @@ class Bowser : public Enemy {
         virtual std::string getTag();
 
         void setCenter(Vector2 position);
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Bowser>();
+        }
 
         static std::unique_ptr<Bowser> spawnBowser(Vector2 position);
     private:
