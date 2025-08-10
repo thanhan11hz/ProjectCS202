@@ -8,7 +8,7 @@ Character::Character(int length, int high) : MovingEntity(), mKey(&mKeyBinding),
     mBodyCollide.setLabel(Category::MARIO);
 }
 
-Character::Character(const nlohmann::json& j) : mKey(mKeyBinding) {
+Character::Character(const nlohmann::json& j) : mKey(&mKeyBinding) {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setStatic(false);
     mAnim.setFrameSize({16, 16});
