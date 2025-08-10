@@ -18,6 +18,6 @@ class MenuState : public State {
         Container mContainer;
         Container mContainer_gamemode;
         Button* muteButton;
-
+        Button* loadButton;
         bool gamemode;
 };

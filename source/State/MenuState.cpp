@@ -30,8 +30,20 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     );
     mContainer.pack(playButton);
 
+    loadButton = new Button();
+    loadButton->changShape({93,409,245,65});
+    loadButton->changeText("LOAD GAME");
+    loadButton->changeCallback(
+        [this]() {
+            mWorld.loadSnapshot();
+            requestStackPop();
+            requestStackPush(StateIdentifier::LEVEL);
+        }
+    );
+    mContainer.pack(loadButton);
+
     Button* mapButton = new Button();
-    mapButton->changShape({93,429,245,65});
+    mapButton->changShape({93,499,245,65});
     mapButton->changeFontSize(15);
     mapButton->changeText("CREATE-A-LEVEL");
     mapButton->changeCallback(
@@ -43,7 +55,7 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     mContainer.pack(mapButton);
 
     Button* instructionButton = new Button();
-    instructionButton->changShape({93,539,245,65});
+    instructionButton->changShape({93,589,245,65});
     instructionButton->changeText("INSTRUCTIONS");
     instructionButton->changeCallback(
         [this]() {
@@ -54,7 +66,7 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     mContainer.pack(instructionButton);
 
     Button* settingButton = new Button();
-    settingButton->changShape({93,649,245,65});
+    settingButton->changShape({93,679,245,65});
     settingButton->changeText("SETTINGS");
     settingButton->changeCallback(
         [this]() {
@@ -65,7 +77,7 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
 
     Button* exitButton = new Button();
     exitButton->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
-    exitButton->changShape({93,759,245,65});
+    exitButton->changShape({93,769,245,65});
     exitButton->changeText("EXIT");
     
     exitButton->changeCallback(
@@ -131,6 +143,18 @@ void MenuState::draw() {
 bool MenuState::update(float dt) {
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
+    if (mWorld.haveSnapshot()) {
+        loadButton->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
+        loadButton->changeCallback(
+        [this]() {
+            mWorld.loadSnapshot();
+            requestStackPop();
+            requestStackPush(StateIdentifier::LEVEL);
+        });
+    } else {
+        loadButton->changeTexture(TextureIdentifier::INACTIVE_BUTTON);
+        loadButton->changeCallback([this]() {});
+    }
     return true;
 }
 
