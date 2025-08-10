@@ -60,6 +60,7 @@ class World {
 
     private:
         std::vector<std::unique_ptr<TileMap>> mMap;
+        std::unique_ptr<TileMap> mCurrentMap;
         size_t mCurrent = 0;
 
         std::unique_ptr<Character> mCharacter;

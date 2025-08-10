@@ -240,6 +240,7 @@ void MushroomBehavior::onCollect(TileObject& item) {
 }
 
 void MushroomBehavior::update(TileObject& item, float dt) {
+    if(item.isUp) std::cout << "Mushroom is up" << std::endl;
     SimpleBehavior::update(item, dt);
     if(item.isOn && item.isUp){
 

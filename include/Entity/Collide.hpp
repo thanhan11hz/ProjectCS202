@@ -33,6 +33,7 @@ class Collide {
         void setLabel(Category label);
         void setFilter(Category filter);
         void setHitBox(Rectangle hitBox);
+        void setOwner( Entity* owner);
         Category getLabel() const;
         Rectangle getHitBox() const;
         Entity* getOwner() const;

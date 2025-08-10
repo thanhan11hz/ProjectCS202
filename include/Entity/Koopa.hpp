@@ -27,6 +27,9 @@ public:
     virtual void handleCollision(Side side, Collide other) override;
     virtual Vector2 getSize() override;
     virtual std::string getTag() override;
+    std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Koopa>();
+        }
 
     static std::unique_ptr<Koopa> spawnKoopa(Vector2 position, Type type);
 

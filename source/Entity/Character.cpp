@@ -241,7 +241,7 @@ void Character::handleCollision(Side side, Collide other) {
     }
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Mushroom") {
-        if (!static_cast<TileObject*>(other.getOwner())->up()) setForm(Form::SUPER);
+        if (static_cast<TileObject*>(other.getOwner())->up()) setForm(Form::SUPER);
     }
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "GreenMushroom") {

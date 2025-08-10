@@ -5,7 +5,8 @@
 #include <iostream>
 #include <raylib.h>
 #include <algorithm>
-
+bool updated = false;
+bool drawed = false;
 std::vector<int> tileItemValues = {
     -1,     // Empty
     0,      // OwGround
@@ -24,7 +25,7 @@ std::vector<int> tileItemValues = {
     60, 382, 383, 384, 567,          // UnderTile
 };
 TileBlock::TileBlock(int type, int col, int row)
-    : mType(type), mRect({(col * 48.0f), (row * 48.0f), 48, 48}), posTile({0, 0}), printed(false) {
+    : mType(type), mRect({(col * 48.0f), (row * 48.0f), 48, 48}), posTile({0, 0}), printed(false), mCol(col), mRow(row) {
     mBodyCollide.setLabel(Category::NONE);
     if(type >= 0){
         int x = type % 29;
@@ -53,6 +54,7 @@ TileBlock::TileBlock(int type, int col, int row)
     }
     aniRect=mRect;
 
+
 }
 void TileBlock::createBehavior()  {
     if(getType(calType()) == TileType::OwCoinBlock1||getType(calType()) == TileType::HiddenBox ) {
@@ -72,13 +74,15 @@ void TileBlock::createBehavior()  {
 }
 
 void TileBlock::draw( Texture2D& background, Texture2D& object) {
+    //std::cout << "Draw TileBlock with type: " << mType << "\n\n\n\n\n";
     if (mType != -1 && !isDestroyed && isOn) {
         float posX = mPhysics.getPosition().x;
         float posY = mPhysics.getPosition().y;
         if (mType == 301 || mType ==292){
             DrawTexturePro(object, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);
         }
-       else  {DrawTexturePro(background, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);}
+        else  {DrawTexturePro(background, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);}
+        //print();
     }
     else if(mType != -1 && isDestroyed ) {
         for(int i =0; i < 4; i++){
@@ -91,11 +95,22 @@ void TileBlock::draw( Texture2D& background, Texture2D& object) {
 
 
 void TileBlock::print(){
-    if (printed == false) {
-        if (mRect.x == 0 && mRect.y==0) std::cout << "Error! ";      
-        std::cout << mType <<" " << mSource .x << " " << mSource.y <<  " " << mSource.width << " " << mSource.height  <<"\n";
+    std::cout << "Print called: \n";
+    if (printed == false && mType ==0) {
+        if(mBodyCollide.getHitBox().x == 0 && mBodyCollide.getHitBox().y == 0 && mBodyCollide.getHitBox().width == 0 && mBodyCollide.getHitBox().height == 0) {
+            Vector2 position = mPhysics.getPosition();
+            Vector2 size = getSize();
+            std::cout << "TileBlock: \n";
+            std::cout << "Position: " << position.x << ", " << position.y << "\n";
+            std::cout << "Size: " << size.x << ", " << size.y << "\n";
+        }
+        else
+        {
+            std::cout << "TileBlock: \n";
+            std::cout << "HitBox: " << mBodyCollide.getHitBox().x << ", " << mBodyCollide.getHitBox().y << ", "
+                      << mBodyCollide.getHitBox().width << ", " << mBodyCollide.getHitBox().height << "\n";
+        }
         printed = true;
-
     }
 }
 
@@ -268,24 +283,36 @@ void TileBlock::addFragment() {
 
 
 void TileBlock::update(float dt){
+    
     Vector2 mousePos = GetMousePosition();
-    if (mType == -1) return;  
+    if (mType == -1) return;
+    //std::cout << "TileBlock update: " << mType << std::endl;  
     if (mBehavior) {
         mBehavior->update(*this, dt);
     }
     Vector2 position = mPhysics.getPosition();
     Vector2 size = getSize();
-    if(getType(calType())!= TileType::Empty && isSolid()) {
+    if(mType!= TileType::Empty && isSolid()) {
     mBodyCollide.setHitBox({
         position.x,
         position.y,
         size.x,
         size.y
         });
-    } else {
+    if(mType == 292 || mType == 301) mBodyCollide.setHitBox({
+        position.x,
+        position.y,
+        size.x/2.0f,
+        size.y/2.0f
+        });
+    } 
+    else {
         mBodyCollide.setHitBox({0, 0, 0, 0});
-    }   
-    
+    }
+    // if (mType == 0 && !printed) {
+    //     std::cout <<"Update" << mBodyCollide.getHitBox().x << " " << mBodyCollide.getHitBox().y << " " << mBodyCollide.getHitBox().width << " " << mBodyCollide.getHitBox().height << std::endl;
+    // }
+    //print();
 }
 
 

@@ -41,7 +41,7 @@ void World::update(float dt) {
         }
     }
     
-    mMap[mCurrent]->update(dt);
+    mCurrentMap->update(dt);
     mCharacter->update(dt);
 
     if (mIsMultiPlayers) mCharacter2->update(dt);
@@ -55,30 +55,36 @@ void World::update(float dt) {
         }
     }
 
-    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ) {
-        // If an enemy falls too far down, mark it as dead.
-        const float deathPlaneY = 2000.0f;
-        if ((*itr)->mPhysics.getPosition().y > deathPlaneY) {
-            (*itr)->setDie(true);
-        }
-        // ----------------------
-        if (*itr && !(*itr)->isDie()) {
-            (*itr)->update(dt);
-            ++itr;
-        } else {
-            itr = mEnemy.erase(itr);
-        }
-    }
-    for (auto itr = mItem.begin(); itr != mItem.end(); ) {
-        if (*itr && !(*itr)->isDie()) {
-            (*itr)->update(dt);
-            ++itr;
-        } else {
-            itr = mItem.erase(itr);
-            
-        }
-    }
-    
+    // for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ) {
+    //     // If an enemy falls too far down, mark it as dead.
+    //     const float deathPlaneY = 2000.0f;
+    //     if ((*itr)->mPhysics.getPosition().y > deathPlaneY) {
+    //         (*itr)->setDie(true);
+    //     }
+    //     // ----------------------
+    //     if (*itr && !(*itr)->isDie()) {
+    //         (*itr)->update(dt);
+    //         ++itr;
+    //     } else {
+    //         itr = mEnemy.erase(itr);
+    //     }
+    // }
+
+
+    mCurrentMap->updateEnemy(dt);
+
+
+    // for (auto itr = mItem.begin(); itr != mItem.end(); ) {
+    //     if (*itr && !(*itr)->isDie()) {
+    //         (*itr)->update(dt);
+    //         ++itr;
+    //     } else {
+    //         itr = mItem.erase(itr);
+    //         std::cout << "Item removed" << std::endl;
+    //     }
+    // }
+    mCurrentMap->updateItem(dt);
+
     mCollision.handleCollision();
     
     mEffect.update(dt);
@@ -95,17 +101,11 @@ void World::draw() {
 
     Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
     Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
-    mMap[mCurrent]->setTexture(tiles, object);
+    mCurrentMap->setTexture(tiles, object);
 
     // mMap[mCurrent]->drawBackground();
-    mMap[mCurrent]->drawBackground(mCam);
-
-    // mMap[mCurrent]->drawItem();
-
-    mMap[mCurrent]->drawItem(mCam);
+    mCurrentMap->drawBackground(mCam);
     
-    if (!mCharacter->isDie() && mCharacter->isAfterBlock()) mCharacter->draw();
-
     // Rectangle that represents what the camera can currently see.
     Rectangle cameraView = {
         mCam.target.x - mCam.offset.x,
@@ -113,26 +113,34 @@ void World::draw() {
         (float)targetWidth,
         (float)targetHeight
     };
+    
+    mCurrentMap->drawItem(cameraView);
 
-    // Only draw the ones inside view.
-    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-        // Get the enemy's bounding box
-        Vector2 enemyPos = (*itr)->mPhysics.getPosition();
-        Vector2 enemySize = (*itr)->getSize();
-        Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
+    if (!mCharacter->isDie() && mCharacter->isAfterBlock()) mCharacter->draw();
 
-        // Check if the enemy's rectangle overlaps with the camera's view
-        if (CheckCollisionRecs(cameraView, enemyRect) && (*itr)->isAfterBlock()) {
-            (*itr)->draw(); // Only draw the enemy if it's visible
-        }
-    }
+
+    // // Only draw the ones inside view.
+    // for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
+    //     // Get the enemy's bounding box
+    //     Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+    //     Vector2 enemySize = (*itr)->getSize();
+    //     Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
+
+    //     // Check if the enemy's rectangle overlaps with the camera's view
+    //     if (CheckCollisionRecs(cameraView, enemyRect) && (*itr)->isAfterBlock()) {
+    //         (*itr)->draw(); // Only draw the enemy if it's visible
+    //     }
+    // }
     
     // for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
-        //     (*itr)->draw();
-        // }
+    //         (*itr)->draw();
+    //     }
         
     // mMap[mCurrent]->drawMain();
-    mMap[mCurrent]->drawMain(mCam);
+
+    mCurrentMap->drawEnemy1(cameraView);
+
+    mCurrentMap->drawMain(mCam);
 
     if (!mCharacter->isDie()) mCharacter->draw();
 
@@ -142,18 +150,20 @@ void World::draw() {
         (*itr)->draw();
     }
 
-    // Only draw the ones inside view.
-    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-        // Get the enemy's bounding box
-        Vector2 enemyPos = (*itr)->mPhysics.getPosition();
-        Vector2 enemySize = (*itr)->getSize();
-        Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
+    // // Only draw the ones inside view.
+    // for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
+    //     // Get the enemy's bounding box
+    //     Vector2 enemyPos = (*itr)->mPhysics.getPosition();
+    //     Vector2 enemySize = (*itr)->getSize();
+    //     Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
 
-        // Check if the enemy's rectangle overlaps with the camera's view
-        if (CheckCollisionRecs(cameraView, enemyRect) && !(*itr)->isAfterBlock()) {
-            (*itr)->draw(); // Only draw the enemy if it's visible
-        }
-    }
+    //     // Check if the enemy's rectangle overlaps with the camera's view
+    //     if (CheckCollisionRecs(cameraView, enemyRect) && !(*itr)->isAfterBlock()) {
+    //         (*itr)->draw(); // Only draw the enemy if it's visible
+    //     }
+    // }
+
+    mCurrentMap->drawEnemy2(cameraView);
 
     // mEffect.draw();
     mEffect.draw(mCam);
@@ -220,7 +230,10 @@ void World::backMap() {
 }
 
 void World::reset() {
-    mMap[mCurrent]->reset();
+    //mMap[mCurrent]->reset();
+    if(mMap[mCurrent]) {
+        mCurrentMap = mMap[mCurrent]->clone();
+    }
     mEnemy.clear();
     if (mIsMultiPlayers) {
         mCharacter = Character::spawnMario();
@@ -236,17 +249,18 @@ void World::reset() {
     if (mIsMultiPlayers) mCharacter2->mPhysics.setPosition(mCharacter->mPhysics.getPosition() + Vector2{60, 0});
     mCollision.clearCollidables();
     mItem.clear();
-    std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
-    mCollision.addEnemy(Enemy);
-    mEnemy = mMap[mCurrent]->takeEnemies();
 
-    std::vector<std::unique_ptr<TileObject>>& Items = mMap[mCurrent]->getItems();
+    std::vector<std::unique_ptr<Enemy>>& Enemy = mCurrentMap->getEnemy();
+    mCollision.addEnemy(Enemy);
+    //mEnemy = mCurrentMap->takeEnemies();
+
+    std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
     mCollision.addItem(Items);
-    mItem = mMap[mCurrent]->takeItems();
-    mMap[mCurrent]->resetItem();
+    //mItem = mCurrentMap->takeItems();
+    
     mCollision.addCharacter(mCharacter.get());
     if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
-    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
+    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mCurrentMap->getMain();
     mCollision.addBlock(mBlock);
     mTimer = 100.0f;
     mLives = 3;
@@ -257,6 +271,9 @@ void World::reset() {
 
 void World::restart() {
     mEnemy.clear();
+    if(mMap[mCurrent]) {
+        mCurrentMap = mMap[mCurrent]->clone();
+    }
     if (mCurrent == 0) mCharacter->mPhysics.setPosition({150, 672});
     else if (mCurrent == 1) mCharacter->mPhysics.setPosition({150, 624});
     else if (mCurrent == 4) mCharacter->mPhysics.setPosition({96, 576});
@@ -268,12 +285,16 @@ void World::restart() {
         mCharacter2->mPhysics.setPosition(mCharacter->mPhysics.getPosition() + Vector2{60, 0});
     }
     mCollision.clearCollidables();
-    std::vector<std::unique_ptr<Enemy>>& mEnemy = mMap[mCurrent]->getEnemy();
+    std::vector<std::unique_ptr<Enemy>>& mEnemy = mCurrentMap->getEnemy();
     mCollision.addEnemy(mEnemy);
-    mCollision.addItem(mItem);
+    //mEnemy = mCurrentMap->takeEnemies();
+
+    std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
+    mCollision.addItem(Items);
+    //mItem = mCurrentMap->takeItems();
     mCollision.addCharacter(mCharacter.get());
     if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
-    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
+    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mCurrentMap->getMain();
     mCollision.addBlock(mBlock);
     mCam.target = {0, 500};
 }
@@ -308,7 +329,7 @@ Camera2D& World::getCamera() {
 
 bool World::isSolidTileAt(Vector2 worldPosition) {
     // Get the main tile grid from the current map
-    auto& grid = mMap[mCurrent]->getMain();
+    auto& grid = mCurrentMap->getMain();
 
     if (grid.empty()) {
         return false;

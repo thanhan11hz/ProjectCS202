@@ -31,6 +31,9 @@ class Goomba : public Enemy {
 
         static std::unique_ptr<Goomba> spawnGoomba1(Vector2 position);
         static std::unique_ptr<Goomba> spawnGoomba2(Vector2 position);
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Goomba>();
+        }
 
     private:
         Move mMove;

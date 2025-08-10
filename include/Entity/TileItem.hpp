@@ -75,7 +75,7 @@ class StarBehavior : public SimpleBehavior{
 };
 class TileObject : public TileBlock {
 public:
-    TileObject(int type, int row, int col);
+    TileObject(int type, int col, int row);
     ~TileObject(){};
     TileItem getType();
     std::string getTag();
@@ -89,6 +89,9 @@ public:
     bool up() {return isUp;}
     void handleFootCollision() {
        mPhysics.setOnGround(true);
+    }
+    std::unique_ptr<TileObject> clone() const {
+        return std::make_unique<TileObject>(mType, mCol, mRow);
     }
     friend class FragmentBehavior;
     friend class SimpleBehavior;
