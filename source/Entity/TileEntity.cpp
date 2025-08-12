@@ -150,6 +150,7 @@ int TileBlock::calType() {
         case GreenDotPlatForm3:
             return TileType::GreenDotPlatForm1;
         case CastleTile:      return TileType::CastleTile;
+        case CastleBrigde:      return TileType::CastleBrigde;
         case BrownCube:
             return TileType::BrownCube;
         case HiddenBox:
@@ -320,11 +321,11 @@ bool TileBlock::isSolid(){
     return solid && !isDestroyed;
 }
 std::string TileBlock::getTag() {
-    if (mBehavior) {
-        return mBehavior->getTag();
-    }
     if(mType == 567) {
         return "EndingPoint";
+    }
+    if (mBehavior) {
+        return mBehavior->getTag();
     }
     return "TileBlock";
 }

@@ -1,4 +1,6 @@
 #include "Entity/TileItem.hpp"
+#include "Global.hpp"
+#include "World/World.hpp"
 
 void FragmentBehavior::onCollect(TileObject& item) {
   
@@ -127,9 +129,10 @@ void NormalCoinBehavior::handleCollision(TileObject& item) {
         item.mBodyCollide.setLabel(Category::NONE);
         item.mBodyCollide.setFilter(Category::MARIO);
         item.setDie(true);
-        
+        mWorld.receiveCoin();
     }
     if(other == Category::MARIO && item.isUp) {
+        std::cout << "NormalCoinBehavior handleCollision called" << std::endl;
         item.setOn(false);
         item.mBodyCollide.setLabel(Category::NONE);
         item.mBodyCollide.setFilter(Category::MARIO);
