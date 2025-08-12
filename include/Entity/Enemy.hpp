@@ -25,6 +25,7 @@ class Enemy : public MovingEntity {
         std::unique_ptr<Enemy> cloneImpl() const {
             auto copy = std::make_unique<Derived>(static_cast<const Derived&>(*this));
             copy->mBodyCollide.setOwner(copy.get());
+            copy->mFootCollide.setOwner(copy.get());
             return std::move(copy);
         }
     private:

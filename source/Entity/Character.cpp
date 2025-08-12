@@ -245,14 +245,14 @@ void Character::handleCollision(Side side, Collide other) {
     }
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "GreenMushroom") {
-        if (!static_cast<TileObject*>(other.getOwner())->up()) {
+        if (static_cast<TileObject*>(other.getOwner())->up()) {
             mWorld.heal();
             mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "1-UP"));
         }
     }
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Flower") {
-        if (!static_cast<TileObject*>(other.getOwner())->up()) setForm(Form::FIRE);
+        if (static_cast<TileObject*>(other.getOwner())->up()) setForm(Form::FIRE);
     }
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Coin") {
@@ -260,7 +260,7 @@ void Character::handleCollision(Side side, Collide other) {
     }
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Star") {
-        if (!static_cast<TileObject*>(other.getOwner())->up()) setImmortal(true);
+        if (static_cast<TileObject*>(other.getOwner())->up()) setImmortal(true);
     }
 }
 
