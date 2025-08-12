@@ -28,6 +28,9 @@ class Piranha : public Enemy {
         virtual Vector2 getSize();
 
         virtual std::string getTag();
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Piranha>();
+        }
 
         virtual void serialize(nlohmann::json& j);
 

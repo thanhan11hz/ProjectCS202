@@ -22,6 +22,9 @@ class Podoboo : public Enemy {
         virtual void serialize(nlohmann::json& j);
 
         void setRestPoint(Vector2 position);
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Podoboo>();
+        }
 
         static std::unique_ptr<Podoboo> spawnPodoboo(Vector2 postion);
 

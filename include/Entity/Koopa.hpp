@@ -29,6 +29,9 @@ public:
     virtual void handleCollision(Side side, Collide other) override;
     virtual Vector2 getSize() override;
     virtual std::string getTag() override;
+    std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Koopa>();
+        }
 
     virtual void serialize(nlohmann::json& j);
 

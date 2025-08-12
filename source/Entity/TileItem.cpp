@@ -1,6 +1,6 @@
 #include "Entity/TileItem.hpp"
 
-TileObject::TileObject(int type, int col, int row) : TileBlock(type, row, col){
+TileObject::TileObject(int type, int col, int row) : TileBlock(type, col, row){
     if(type > -1){
         int x = (type) % 36;
         int y = (type) / 36;
@@ -29,6 +29,8 @@ TileObject::TileObject(int type, int col, int row) : TileBlock(type, row, col){
             mBodyCollide.setFilter(Category::BLOCK);
             
         }
+        mCol = col;
+        mRow = row;
     }
     aniRect=mRect;
 }

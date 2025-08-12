@@ -58,7 +58,7 @@ class Character : public MovingEntity {
         Form mForm = Form::NORMAL;
         void setForm(Form form);
 
-        static constexpr float mImmortalTime = 5.0f;
+        static constexpr float mImmortalTime = 30.0f;
         float mImmortalTimer;
         bool mIsImmortal = false;
         void updateImmortal(float dt);

@@ -122,7 +122,7 @@ void CoinBlockBehavior::handleCollision(TileBlock& block) {
         }
         int pre = block.mType;
         block.mType = 26;
-        if(block.mType == 26 && pre == 556) std::cout << "Hidden block is hit" << std::endl;
+        if(block.mType == 26 && pre == 556) block.isOn = true;
         int x = (block.mType) % 29;
         int y = (block.mType) / 29;
         block.posTile = { x * TileBlock::TILE_SIZE, y * TileBlock::TILE_SIZE}; 
