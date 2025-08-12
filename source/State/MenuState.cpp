@@ -37,7 +37,7 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
         [this]() {
             mWorld.loadSnapshot();
             requestStackPop();
-            requestStackPush(StateIdentifier::LEVEL);
+            requestStackPush(StateIdentifier::GAME1);
         }
     );
     mContainer.pack(loadButton);
@@ -147,9 +147,10 @@ bool MenuState::update(float dt) {
         loadButton->changeTexture(TextureIdentifier::ACTIVE_BUTTON);
         loadButton->changeCallback(
         [this]() {
-            mWorld.loadSnapshot();
+            mWorld.restore();
+            std::cout << "Loading!!!!!!!!!!";
             requestStackPop();
-            requestStackPush(StateIdentifier::LEVEL);
+            requestStackPush(StateIdentifier::GAME1);
         });
     } else {
         loadButton->changeTexture(TextureIdentifier::INACTIVE_BUTTON);

@@ -23,7 +23,6 @@ void World::destroyInstance() {
 }
 
 World::~World() {
-    std::cout << "Save Snapshot";
     std::ofstream out("resource\\save.json");
     nlohmann::json j = mSnapshot;
     out << std::setw(4) << j;
@@ -205,19 +204,6 @@ void World::addProjectile(std::unique_ptr<MovingEntity> projectile) {
     mCollision.addProjectile(projectile.get());
     mProjectile.push_back(std::move(projectile));
 }
-        
-bool World::isLevelComplete() {
-    return isComplete;
-}
-        
-bool World::hasNextMap() {
-    if (mCurrent >= mMap.size() - 1) return false;
-    return true;
-}
-        
-void World::nextMap() {
-    mCurrent = (mCurrent + 1) % mMap.size();
-}
 
 void World::reset() {
     mMap[mCurrent]->reset();
@@ -278,6 +264,125 @@ void World::restart() {
     mCam.target = {0, 500};
 }
 
+bool World::isSolidTileAt(Vector2 worldPosition) {
+    // Get the main tile grid from the current map
+    auto& grid = mMap[mCurrent]->getMain();
+
+    if (grid.empty()) {
+        return false;
+    }
+
+    int col = worldPosition.x / 48;
+    int row = worldPosition.y / 48;
+
+    if (row < 0 || row >= grid.size() || col < 0 || col >= grid[0].size()) {
+        return false;
+    }
+
+    // Check if the tile at the grid index exists and is collidables
+    if (grid[row][col] && grid[row][col]->isSolid()) {
+        return true;
+    }
+
+    return false;
+}
+
+void World::saveSnapshot() {
+    std::unique_ptr<Memento> snapshot = std::make_unique<Memento>();
+
+    snapshot->mCurrent = mCurrent;
+    snapshot->mTimer = mTimer;
+    snapshot->mLives = mLives;
+    snapshot->mCoins = mCoins;
+    snapshot->mPoints = mPoints;
+    snapshot->mIsMultiPlayers = mIsMultiPlayers;
+    snapshot->cameraTarget = mCam.target;
+
+    snapshot->mCharacter = std::move(mCharacter);
+    snapshot->mCharacter2 = std::move(mCharacter2);
+    
+    for (int i = 0; i < mEnemy.size(); ++i) {
+        snapshot->mEnemy.push_back(std::move(mEnemy[i]));
+    }
+
+    mEnemy.clear();
+
+    for (int i = 0; i < mProjectile.size(); ++i) {
+        snapshot->mProjectile.push_back(std::move(mProjectile[i]));
+    }
+
+    mProjectile.clear();
+    
+    mSnapshot = std::move(snapshot);
+}
+
+void World::restore() {
+    if (mSnapshot) {
+
+        mCurrent = mSnapshot->mCurrent;
+        mCoins = mSnapshot->mCoins;
+        mLives = mSnapshot->mLives;
+        mTimer = mSnapshot->mTimer;
+        mPoints = mSnapshot->mPoints;
+        mIsMultiPlayers = mSnapshot->mIsMultiPlayers;
+        mCam.target = mSnapshot->cameraTarget;
+
+        mCharacter = std::move(mSnapshot->mCharacter);
+        if (mIsMultiPlayers) mCharacter2 = std::move(mSnapshot->mCharacter2);
+        else mCharacter2 = nullptr;
+
+        for (int i = 0; i < mSnapshot->mEnemy.size(); ++i) {
+            mEnemy.push_back(std::move(mSnapshot->mEnemy[i]));
+        }
+
+        for (int i = 0; i < mSnapshot->mProjectile.size(); ++i) {
+            mProjectile.push_back(std::move(mSnapshot->mProjectile[i]));
+        }
+
+        mSnapshot = nullptr;
+
+        mCollision.clearCollidables();
+        mItem.clear();
+        std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
+        mCollision.addEnemy(Enemy);
+        mEnemy = mMap[mCurrent]->takeEnemies();
+
+        std::vector<std::unique_ptr<TileObject>>& Items = mMap[mCurrent]->getItems();
+        mCollision.addItem(Items);
+        mItem = mMap[mCurrent]->takeItems();
+        mMap[mCurrent]->resetItem();
+        mCollision.addCharacter(mCharacter.get());
+        if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
+        std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
+    }
+}
+
+bool World::haveSnapshot() {
+    if (mSnapshot) return true;
+    return false;
+}
+
+void World::loadSnapshot() {
+    std::ifstream in("resource\\save.json");
+    if (in.is_open()) {
+        nlohmann::json j;
+        in >> j;
+        mSnapshot = j.get<std::unique_ptr<Memento>>();
+    }
+}
+        
+void World::setMultiPlayers(bool flag) {
+    mIsMultiPlayers = flag;
+}
+        
+bool World::isMultiPlayers() const {
+    return mIsMultiPlayers;
+}
+
+bool World::isEndEffect() const {
+    return mEffect.isEmpty();
+}
+
 size_t World::getCurrentMap() {
     return mCurrent;
 }
@@ -306,106 +411,23 @@ Camera2D& World::getCamera() {
     return mCam;
 }
 
-bool World::isSolidTileAt(Vector2 worldPosition) {
-    // Get the main tile grid from the current map
-    auto& grid = mMap[mCurrent]->getMain();
-
-    if (grid.empty()) {
-        return false;
-    }
-
-    int col = worldPosition.x / 48;
-    int row = worldPosition.y / 48;
-
-    if (row < 0 || row >= grid.size() || col < 0 || col >= grid[0].size()) {
-        return false;
-    }
-
-    // Check if the tile at the grid index exists and is collidables
-    if (grid[row][col] && grid[row][col]->isSolid()) {
-        return true;
-    }
-
-    return false;
+size_t World::getCurrentPoint() {
+    return mPoints;
 }
 
-void World::saveSnapshot() {
-    std::unique_ptr<Memento> snapshot = std::make_unique<Memento>();
-    snapshot->mCurrent = mCurrent;
-    snapshot->mTimer = mTimer;
-    snapshot->mLives = mLives;
-    snapshot->mCoins = mCoins;
-    snapshot->mCharacter = std::move(mCharacter);
-    
-    for (int i = 0; i < mEnemy.size(); ++i) {
-        snapshot->mEnemy.push_back(std::move(mEnemy[i]));
-    }
-
-    mEnemy.clear();
-
-    // for (int i = 0; i < mItem.size(); ++i) {
-    //     snapshot->mItem.push_back(std::move(mItem[i]));
-    // }
-
-    // mItem.clear();
-
-    for (int i = 0; i < mProjectile.size(); ++i) {
-        snapshot->mProjectile.push_back(std::move(mProjectile[i]));
-    }
-
-    mProjectile.clear();
-    
-    mSnapshot = std::move(snapshot);
+void World::receivePoint(int points) {
+    mPoints += points;
 }
 
-void World::restore() {
-    if (mSnapshot) {
-
-        mCurrent = mSnapshot->mCurrent;
-        mCoins = mSnapshot->mCoins;
-        mLives = mSnapshot->mLives;
-        mTimer = mSnapshot->mTimer;
-
-        mCharacter = std::move(mSnapshot->mCharacter);
-
-        for (int i = 0; i < mSnapshot->mEnemy.size(); ++i) {
-            mEnemy.push_back(std::move(mSnapshot->mEnemy[i]));
-        }
-
-        // for (int i = 0; i < mSnapshot->mItem.size(); ++i) {
-        //     mItem.push_back(std::move(mSnapshot->mItem[i]));
-        // }
-
-        for (int i = 0; i < mSnapshot->mProjectile.size(); ++i) {
-            mProjectile.push_back(std::move(mSnapshot->mProjectile[i]));
-        }
-
-        mSnapshot = nullptr;
-    }
-}
-
-bool World::haveSnapshot() {
-    if (mSnapshot) return true;
-    return false;
-}
-
-void World::loadSnapshot() {
-    std::ifstream in("resource\\save.json");
-    if (in.is_open()) {
-        nlohmann::json j;
-        in >> j;
-        mSnapshot = j.get<std::unique_ptr<Memento>>();
-    }
+bool World::isLevelComplete() {
+    return isComplete;
 }
         
-void World::setMultiPlayers(bool flag) {
-    mIsMultiPlayers = flag;
+bool World::hasNextMap() {
+    if (mCurrent >= mMap.size() - 1) return false;
+    return true;
 }
         
-bool World::isMultiPlayers() const {
-    return mIsMultiPlayers;
-}
-
-bool World::isEndEffect() const {
-    return mEffect.isEmpty();
+void World::nextMap() {
+    mCurrent = (mCurrent + 1) % mMap.size();
 }

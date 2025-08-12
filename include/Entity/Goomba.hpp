@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "Entity/Enemy.hpp"
-#include "Entity/Animation.hpp"
 #include "World/Effect.hpp"
 #include "Global.hpp"
 
@@ -39,8 +38,8 @@ class Goomba : public Enemy {
     private:
         Move mMove;
         Type mType;
-        static constexpr float mDeadTime = 1.0f;
-        float mDeadTimer = 0.f;
+        static constexpr float mDeadTime = 0.5f;
+        float mDeadTimer = 0.0f;
         float mSpeed = -100.0f;
         void setMove(Move move);
 };

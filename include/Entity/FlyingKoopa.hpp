@@ -1,14 +1,12 @@
 #pragma once
 
-#include <memory>
-
 #include "Entity/Enemy.hpp"
 #include "Global.hpp"
 
-class Podoboo : public Enemy {
+class FlyingKoopa : public Enemy {
     public:
-        Podoboo();
-        Podoboo(const nlohmann::json& j);
+        FlyingKoopa();
+        FlyingKoopa(const nlohmann::json& j);
 
         virtual void update(float dt);
         virtual void handle();
@@ -21,14 +19,7 @@ class Podoboo : public Enemy {
 
         virtual void serialize(nlohmann::json& j);
 
-        void setRestPoint(Vector2 position);
-
-        static std::unique_ptr<Podoboo> spawnPodoboo(Vector2 postion);
-
     private:
-        static constexpr float mRestTime = 2.0f;
-        float mRestTimer = 0.0f;
-        bool mIsRest = false;
-        Vector2 mRestPoint;
-
+        Vector2 mFixedPoint;
+        float mSpeed = -50.0f;
 };

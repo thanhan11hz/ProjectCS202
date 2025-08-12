@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+
 #include "Entity/Enemy.hpp"
 #include "Global.hpp"
 
@@ -48,4 +49,5 @@ private:
     Texture2D mRunTexture;
     Texture2D mShellTexture;
     Texture2D mWiggleTexture;
+    Texture2D mDeathTexture;
 };

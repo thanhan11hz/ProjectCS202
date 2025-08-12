@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "Entity/Enemy.hpp"
-#include "Entity/Animation.hpp"
 #include "Global.hpp"
 
 class Bowser : public Enemy {

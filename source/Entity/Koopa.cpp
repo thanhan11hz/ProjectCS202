@@ -11,16 +11,19 @@ Koopa::Koopa(Type type) : mType(type), mState(State::WALKING), mShellTimer(0.f) 
             mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_RUN);
             mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_SHELL);
             mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_WIGGLE);
+            mDeathTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_DEATH);
             break;
         case Type::K_RED:
             mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_RUN);
             mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_SHELL);
             mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_WIGGLE);
+            mDeathTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_DEATH);
             break;
         case Type::K_BLUE:
             mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_RUN);
             mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_SHELL);
             mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_WIGGLE);
+            mDeathTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_DEATH);
             break;
     }
     setState(State::WALKING);
@@ -40,16 +43,19 @@ Koopa::Koopa(const nlohmann::json& j) {
             mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_RUN);
             mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_SHELL);
             mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_WIGGLE);
+            mDeathTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_DEATH);
             break;
         case Type::K_RED:
             mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_RUN);
             mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_SHELL);
             mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_WIGGLE);
+            mDeathTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_RED_DEATH);
             break;
         case Type::K_BLUE:
             mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_RUN);
             mShellTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_SHELL);
             mWiggleTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_WIGGLE);
+            mDeathTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_BLUE_DEATH);
             break;
     }
     setState(static_cast<State>(j["state"].get<unsigned int>()));
@@ -131,13 +137,14 @@ void Koopa::handleCollision(Side side, Collide other) {
 
     if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
         setDie(true);
-        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mRunTexture, true));
-        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "100"));
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeathTexture, true));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
         return;
     }
     
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
-        mSpeed *= -1;
+        if (side == Side::RIGHT) mSpeed = -fabs(mSpeed);
+        else mSpeed = fabs(mSpeed);
         
         mPhysics.setVelocity(0, mPhysics.getVelocity().y);
 
@@ -160,6 +167,12 @@ void Koopa::handleCollision(Side side, Collide other) {
             mSpeed = 400.0f * pushDirection;
             setState(State::SLIDING);
          }
+    }
+
+    if (otherLabel == Category::ENEMY && (side == Side::LEFT || side == Side::RIGHT)) {
+        mSpeed *= -1;
+        if (side == Side::LEFT) mPhysics.setPosition(mPhysics.getPosition() + Vector2{10, 0});
+        else mPhysics.setPosition(mPhysics.getPosition() + Vector2{-10, 0});
     }
 }
 

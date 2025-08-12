@@ -77,8 +77,8 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     yes->changeCallback(
         [this]() {
             confirmMode = false;
-            requestStackClear();
             mWorld.saveSnapshot();
+            requestStackClear();
             requestStackPush(StateIdentifier::LEVEL);
         }
     );

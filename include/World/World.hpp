@@ -44,12 +44,14 @@ class World {
         float getRestTime();
         size_t getRestLive();
         size_t getCoinCollected();
+        size_t getCurrentPoint();
         size_t getCurrentMap();
         bool isLevelComplete();
         Camera2D& getCamera();
 
         void receiveCoin();
         void heal();
+        void receivePoint(int point);
 
         ~World();
 
@@ -91,7 +93,9 @@ class World {
 
         size_t mCoins = 0;
 
-        bool mIsMultiPlayers = true;
+        size_t mPoints = 0;
+
+        bool mIsMultiPlayers = false;
 
         bool isComplete = false;
 

@@ -17,9 +17,11 @@ class Memento {
         float mTimer;
         size_t mLives;
         size_t mCoins;
+        size_t mPoints;
+        bool mIsMultiPlayers;
+        Vector2 cameraTarget;
         std::unique_ptr<Character> mCharacter;
+        std::unique_ptr<Character> mCharacter2;
         std::vector<std::unique_ptr<Enemy>> mEnemy;
-        // std::vector<std::unique_ptr<TileObject>> mItem;
         std::vector<std::unique_ptr<MovingEntity>> mProjectile;
-        // std::vector<std::vector<std::unique_ptr<TileBlock>>> mBlock;
     };
