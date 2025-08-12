@@ -86,7 +86,6 @@ GameState::GameState(StateStack& stack) : State(stack) {
     //     label->changeText(text);
     // });
     mContainer.pack(score);
-    mWorld.reset();
 }
 
 void GameState::draw() {
@@ -114,7 +113,6 @@ bool GameState::update(float dt) {
 }
 
 bool GameState::handle() {
-    std::cout << "Begin\n";
     if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
@@ -124,6 +122,5 @@ bool GameState::handle() {
     }
     mWorld.handle();
     mContainer.handle();
-    std::cout << "End\n";
     return true;
 }

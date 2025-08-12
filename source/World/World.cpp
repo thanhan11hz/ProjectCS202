@@ -136,7 +136,7 @@ void World::draw() {
         
     // mMap[mCurrent]->drawMain();
     mMap[mCurrent]->drawMain(mCam);
-
+    
     if (!mCharacter->isDie()) mCharacter->draw();
 
     if (mIsMultiPlayers && !mCharacter2->isDie()) mCharacter2->draw();
@@ -343,10 +343,7 @@ void World::restore() {
 
         mCollision.clearCollidables();
         mItem.clear();
-        std::vector<std::unique_ptr<Enemy>>& Enemy = mMap[mCurrent]->getEnemy();
-        mCollision.addEnemy(Enemy);
-        mEnemy = mMap[mCurrent]->takeEnemies();
-
+        mCollision.addEnemy(mEnemy);
         std::vector<std::unique_ptr<TileObject>>& Items = mMap[mCurrent]->getItems();
         mCollision.addItem(Items);
         mItem = mMap[mCurrent]->takeItems();
@@ -354,6 +351,7 @@ void World::restore() {
         mCollision.addCharacter(mCharacter.get());
         if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
         std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mMap[mCurrent]->getMain();
+        mCollision.addBlock(mBlock);
     }
 }
 

@@ -18,6 +18,7 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     retry->changeCallback(
         [this]() {
             requestStackClear();
+            mWorld.reset();
             requestStackPush(StateIdentifier::GAME1);
         }
     );

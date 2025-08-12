@@ -53,6 +53,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
         [this]() {
             requestStackClear();
             mWorld.setCharater(selectedCharacter);
+            mWorld.reset();
             requestStackPush(StateIdentifier::GAME1);
         }
     );

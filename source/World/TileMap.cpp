@@ -298,9 +298,13 @@ void TileMap::drawItem(Camera2D& camera) {
     // Loop only through the visible tiles
     for (int i = startRow; i <= endRow; i++) {
         for (int j = startCol; j <= endCol; j++) {
-
-            if (mItem[i][j] ) {
-                if(!mItem[i][j]->isDie()) mItem[i][j]->draw(tileTexture, objectTexture);
+            if (mItem[i][j]) {
+                if(!mItem[i][j]->isDie()) {
+                    std::cerr << "Begin\n";
+                    if (tileTexture.id != 0 && objectTexture.id != 0) std::cout << "No Error!!!\n";
+                    mItem[i][j]->draw(tileTexture, objectTexture);
+                    std::cerr << "End\n";
+                }
             }
         }
     }

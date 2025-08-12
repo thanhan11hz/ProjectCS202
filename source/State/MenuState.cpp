@@ -35,7 +35,7 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     loadButton->changeText("LOAD GAME");
     loadButton->changeCallback(
         [this]() {
-            mWorld.loadSnapshot();
+            mWorld.restore();
             requestStackPop();
             requestStackPush(StateIdentifier::GAME1);
         }
@@ -148,7 +148,6 @@ bool MenuState::update(float dt) {
         loadButton->changeCallback(
         [this]() {
             mWorld.restore();
-            std::cout << "Loading!!!!!!!!!!";
             requestStackPop();
             requestStackPush(StateIdentifier::GAME1);
         });

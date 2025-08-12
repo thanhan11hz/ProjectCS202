@@ -27,6 +27,7 @@ PauseState::PauseState(StateStack& stack): State(stack), confirmMode(false) {
     restart->changeCallback(
         [this]() {
             requestStackClear();
+            mWorld.reset();
             requestStackPush(StateIdentifier::GAME1);
         }
     );
