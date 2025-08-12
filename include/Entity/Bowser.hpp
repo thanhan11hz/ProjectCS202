@@ -28,6 +28,10 @@ class Bowser : public Enemy {
 
         static std::unique_ptr<Bowser> spawnBowser(Vector2 position);
 
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<Bowser>();
+        }
+
     private:
         Move mMove = Move::MOVE;
         static constexpr float mAttackTime = 3.0f;

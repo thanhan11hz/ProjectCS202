@@ -79,7 +79,6 @@ TileItem TileObject::getType() {
     }
 }
 void TileObject::draw(Texture2D& background, Texture2D& object){
-    std::cerr << "Begin1\n";
     // if (mType != -1 && !isAbsorbed && isOn) {
     //     float posX = mPhysics.getPosition().x;
     //     float posY = mPhysics.getPosition().y;
@@ -91,7 +90,6 @@ void TileObject::draw(Texture2D& background, Texture2D& object){
         {DrawTexturePro(object, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);}
     }
     DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, mColor);
-    std::cerr << "End1\n";
 }
 
 void TileObject::update(float dt) {

@@ -33,7 +33,6 @@ void Goomba::update(float dt) {
         return;
     }
     mPhysics.accelerate(Vector2{mSpeed, 0});
-    std::cout << mPhysics.getVelocity().x << " " << mPhysics.getVelocity().y << "\n";
     mAnim.update(dt);
     mPhysics.setOnGround(false);
 }

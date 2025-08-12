@@ -43,7 +43,7 @@ private:
     State mState;
     Type mType;
     float mSpeed;
-    float mLedgeCooldown;
+    float mLedgeCooldown = 0.0f;
 
     float mShellTimer;
     static constexpr float mTimeToWiggle = 5.0f;

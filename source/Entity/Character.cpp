@@ -101,7 +101,6 @@ void Character::update(float dt) {
             transitionProgress = 1.0f;
         }
     }
-    
     if (mCooldown < mCooldownTime) mCooldown += dt;
     if (invincibleTimer < invincibleTime) invincibleTimer += dt;
     

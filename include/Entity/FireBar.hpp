@@ -22,7 +22,6 @@ class FireBar : public Enemy {
 
         virtual void serialize(nlohmann::json& j);
 
-        void setCircle(Vector2 center, float radius);
         std::unique_ptr<Enemy> clone() const {
             return Enemy::cloneImpl<FireBar>();
         }

@@ -19,6 +19,10 @@ class FlyingKoopa : public Enemy {
 
         virtual void serialize(nlohmann::json& j);
 
+        std::unique_ptr<Enemy> clone() const {
+            return Enemy::cloneImpl<FlyingKoopa>();
+        }
+
     private:
         Vector2 mFixedPoint;
         float mSpeed = -50.0f;
