@@ -26,7 +26,7 @@ void Goomba::update(float dt) {
     Enemy::update(dt);
     if (!isActive()) return;
     if (isDie()) return;
-    MovingEntity::update(dt);
+    Entity::update(dt);
     if (mMove == Move::DEAD) {
         if (mDeadTimer < mDeadTime) mDeadTimer += dt;
         else setDie(true);
@@ -59,6 +59,7 @@ void Goomba::handleCollision(Side side, Collide other) {
         if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
         else mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
     }
 
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
@@ -70,6 +71,7 @@ void Goomba::handleCollision(Side side, Collide other) {
         if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
         else mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
     }
 
     if (otherLabel == Category::ENEMY && (side == Side::LEFT || side == Side::RIGHT)) {
@@ -83,6 +85,7 @@ void Goomba::handleCollision(Side side, Collide other) {
         if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
         else mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
     }
 }
         

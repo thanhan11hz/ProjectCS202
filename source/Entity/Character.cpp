@@ -1,6 +1,6 @@
 #include "Entity/Character.hpp"
 
-Character::Character(int length, int high) : MovingEntity(), mKey(&mKeyBinding), mLength(length), mHigh(high) {
+Character::Character(int length, int high) : Entity(), mKey(&mKeyBinding), mLength(length), mHigh(high) {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setStatic(false);
     mAnim.setFrameSize({16, 16});
@@ -20,7 +20,10 @@ Character::Character(const nlohmann::json& j) : mKey(&mKeyBinding) {
     mPhysics.setRight(j["right"].get<bool>());
     setForm(static_cast<Form>(j["form"].get<unsigned int>()));
     setImmortal(j["immortal"].get<bool>());
-    if (j["length"].get<int>() == 300) {
+    mLength = j["length"].get<float>();
+    mHigh = j["height"].get<float>();
+    std::cout << "Size " << mLength << " " << mHigh << "\n";
+    if (j["length"].get<float>() == 300) {
         mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
         mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);
         mNormal[Move::IDLE] = Resource::mTexture.get(TextureIdentifier::MARIO_N_IDLE);
@@ -60,8 +63,8 @@ void Character::handle() {
         }
     } else {
         if (IsKeyDown((*mKey)[Action::DOWN])) setMove(Move::CROUCH);
-        if (IsKeyDown((*mKey)[Action::LEFT])) mPhysics.accelerate({mIsImmortal ? -3 * mLength : -mLength, 0});
-        if (IsKeyDown((*mKey)[Action::RIGHT])) mPhysics.accelerate({mIsImmortal ? 3 * mLength : mLength, 0});
+        if (IsKeyDown((*mKey)[Action::LEFT])) mPhysics.accelerate({mIsImmortal ? -2 * mLength : -mLength, 0});
+        if (IsKeyDown((*mKey)[Action::RIGHT])) mPhysics.accelerate({mIsImmortal ? 2 * mLength : mLength, 0});
     }
     if (IsKeyDown((*mKey)[Action::JUMP]) && mPhysics.onGround()) {
         mPhysics.startJump(mHigh);
@@ -89,10 +92,10 @@ void Character::draw() {
     DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
     DrawRectangleLines(mFootCollide.getHitBox().x, mFootCollide.getHitBox().y, mFootCollide.getHitBox().width, mFootCollide.getHitBox().height, BLACK);
 }
-        
+
 void Character::update(float dt) {
     if (isDie()) return;
-    MovingEntity::update(dt);
+    Entity::update(dt);
     updateMove();
     updateImmortal(dt);
     if (transitionProgress < 1.0f) {
@@ -101,12 +104,19 @@ void Character::update(float dt) {
             transitionProgress = 1.0f;
         }
     }
+
+    Vector2 localPos = GetWorldToScreen2D(mPhysics.getPosition(), mWorld.getCamera());
+    if (localPos.x < 0) mPhysics.setPosition({mPhysics.getPosition().x - localPos.x, mPhysics.getPosition().y});
+    if (localPos.x > targetWidth) mPhysics.setPosition({mPhysics.getPosition().x - localPos.x + targetWidth, mPhysics.getPosition().y});
+
     if (mCooldown < mCooldownTime) mCooldown += dt;
     if (invincibleTimer < invincibleTime) invincibleTimer += dt;
     
     mAnim.update(dt);
 
-    if (GetWorldToScreen2D(mPhysics.getPosition(), mWorld.getCamera()).y > targetHeight) {
+    if (localPos.y > targetHeight) {
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::MARIO_DEATH), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, false));
         setDie(true);
     } 
@@ -166,9 +176,9 @@ void Character::setMove(Move move) {
         
 void Character::updateImmortal(float dt) {
     if (mIsImmortal) {
-        mImmortalTimer -= dt;
-        if (mImmortalTimer <= 0) {
-            mImmortalTimer = mImmortalTime;
+        mImmortalTimer += dt;
+        if (mImmortalTimer >= mImmortalTime) {
+            mImmortalTimer = 0;
             mIsImmortal = false;
         }
     }
@@ -305,6 +315,10 @@ void Character::handleCollision(Side side, Collide other) {
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Star") {
         if (static_cast<TileObject*>(other.getOwner())->up()) setImmortal(true);
     }
+
+    if (otherLabel == Category::BLOCK && other.getOwner()->getTag() == "EndingPoint") {
+        mWorld.setLevelComplete(true);
+    }
 }
 
 std::string Character::getTag() {
@@ -344,4 +358,8 @@ void Character::serialize(nlohmann::json& j) {
 
 bool Character::isImmortal() const {
     return mIsImmortal;
+}
+
+bool Character::isMario() {
+    return (mLength == 300);
 }

@@ -27,6 +27,8 @@ void SimpleBlockBehavior::handleCollision(TileBlock& block) {
     }
     if ((block.getType(block.calType()) == TileType::OwInitialTile || block.getType(block.calType()) == TileType::UnderTile)  && side == Side::BOTTOM && other == Category::MARIO && (oTag == "Super" || oTag == "Fire")) {
         std::cout << "Destroying block" << "\n";
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::BLOCK_BREAK), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::BLOCK_BREAK));
         block.frag[0]->mPhysics.setVelocity({-80.0f, 300});
         block.frag[0]->setOn(true);
         block.frag[0]->setAnimation();
@@ -115,6 +117,8 @@ void CoinBlockBehavior::update(TileBlock& block, float dt) {
 void CoinBlockBehavior::handleCollision(TileBlock& block) {
     if(side == Side::BOTTOM  && other == Category::MARIO && block.mType != 26){
         if(block.isDoneAnimation){
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
+            PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
             block.mPhysics.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;
             block.aniTime = 0.0f;

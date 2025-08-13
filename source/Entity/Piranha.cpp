@@ -43,7 +43,7 @@ void Piranha::update(float dt) {
     Enemy::update(dt);
     if (!isActive()) return;
     if (isDie()) return;
-    MovingEntity::update(dt);
+    Entity::update(dt);
     if (mMove == Move::FLY) mPhysics.accelerate({0, mSpeed});
     if (mPhysics.getPosition().y > mFixedPoint.y) {
         mPhysics.setPosition(mFixedPoint);
@@ -71,11 +71,13 @@ void Piranha::handleCollision(Side side, Collide other) {
     if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
         setDie(true);
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
     }
 
     if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
         setDie(true);
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
     }
 }
         

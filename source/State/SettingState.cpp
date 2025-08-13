@@ -5,10 +5,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mLocalKeybinds = mKeyBinding;
     mLocalKeybinds2 = mKeyBinding2;
     mLocalFuncKeybinds = mFunctionKey;
-    // std::cout << "mLocalFuncKeybinds contents:\n";
-    // for (const auto& pair : mLocalFuncKeybinds) {
-    //     std::cout << "Action: " << (int)pair.first << ", Key: " << (int)pair.second << " (" << mapKeyToChar(pair.second) << ")\n";
-    // }
+    
     Label* title = new Label();
     title->changeShape({560, 92, 320, 40});
     title->changeSize(40);
@@ -611,25 +608,16 @@ std::string SettingState::mapKeyToChar(KeyboardKey key) {
 bool SettingState::isKeybindDuplicate(KeyboardKey key, Action reassign) {
     for (const auto& pair : mLocalKeybinds) {
         if (pair.second == key && (mCurrentPage != 3 || pair.first != reassign)) {
-            // std::cout << "mLocalKeybinds" << std::endl;
-            // std::cout << "Duplicated key: " << key << " versus" << pair.second << std::endl;
             return true;
         }
     }
     for (const auto& pair : mLocalKeybinds2) {
         if (pair.second == key && (mCurrentPage != 4 || pair.first != reassign)) {
-            // std::cout << "mLocalKeybinds2" << std::endl;
-            // std::cout << "Duplicated key: " << key << " versus" << pair.second << std::endl;
             return true;
         }
     }
     for (const auto& pair : mLocalFuncKeybinds) {
         if (pair.second == key && (mCurrentPage != 2 || pair.first != reassign)) {
-            // for (const auto& pair : mLocalFuncKeybinds) {
-            //     std::cout << "Action: " << (int)pair.first << ", Key: " << (int)pair.second << " (" << mapKeyToChar(pair.second) << ")\n";
-            // }
-            // std::cout << "mLocalFuncKeybinds" << std::endl;
-            // std::cout << "Duplicated key: " << key << " versus " << pair.second << std::endl;
             return true;
         }
     }

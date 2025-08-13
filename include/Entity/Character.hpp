@@ -3,13 +3,13 @@
 #include <memory>
 #include <map>
 
-#include "Entity/MovingEntity.hpp"
+#include "Entity/Entity.hpp"
 #include "Entity/Animation.hpp"
 #include "Entity/Projectile.hpp"
 #include "World/World.hpp"
 #include "Global.hpp"
 
-class Character : public MovingEntity {
+class Character : public Entity {
     public:
         enum class Move : unsigned int {
             IDLE, 
@@ -49,6 +49,8 @@ class Character : public MovingEntity {
 
         virtual void serialize(nlohmann::json& j);
         void setKeyBind(std::map<Action, KeyboardKey> &key);
+
+        bool isMario();
 
     private:
         Move mMove = Move::IDLE;

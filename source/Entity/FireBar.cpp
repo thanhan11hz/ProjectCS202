@@ -37,7 +37,7 @@ void FireBar::update(float dt) {
         mCenter.y + mRadius * cosf(angleRad)
     };
     mPhysics.setPosition(position);
-    MovingEntity::update(dt);
+    Entity::update(dt);
     mAnim.update(dt);
 }
         

@@ -8,6 +8,14 @@ World::World() {
     mCam.target = {0, 500};
     mCam.zoom     = 1.0f;
     mCam.rotation = 0.0f;
+    mCollision.addProjectile(mProjectile);
+}
+
+World::~World() {
+    std::ofstream out("resource\\save.json");
+    nlohmann::json j = mSnapshot;
+    out << std::setw(4) << j;
+    out.close();
 }
 
 World& World::getInstance() {
@@ -20,13 +28,6 @@ World& World::getInstance() {
 void World::destroyInstance() {
     delete instance;
     instance = nullptr;
-}
-
-World::~World() {
-    std::ofstream out("resource\\save.json");
-    nlohmann::json j = mSnapshot;
-    out << std::setw(4) << j;
-    out.close();
 }
         
 void World::update(float dt) {
@@ -45,6 +46,7 @@ void World::update(float dt) {
     }
     
     mCurrentMap->update(dt);
+
     mCharacter->update(dt);
 
     if (mIsMultiPlayers) mCharacter2->update(dt);
@@ -58,43 +60,24 @@ void World::update(float dt) {
         }
     }
 
-    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ) {
-        // If an enemy falls too far down, mark it as dead.
-        const float deathPlaneY = 2000.0f;
-        if ((*itr)->mPhysics.getPosition().y > deathPlaneY) {
-            (*itr)->setDie(true);
-        }
-        // ----------------------
-        if (*itr && !(*itr)->isDie()) {
-            (*itr)->update(dt);
-            ++itr;
-        } else {
-            itr = mEnemy.erase(itr);
-        }
-    }
+    mCurrentMap->updateEnemy(dt);
 
-
-    // mCurrentMap->updateEnemy(dt);
-
-
-    // for (auto itr = mItem.begin(); itr != mItem.end(); ) {
-    //     if (*itr && !(*itr)->isDie()) {
-    //         (*itr)->update(dt);
-    //         ++itr;
-    //     } else {
-    //         itr = mItem.erase(itr);
-    //         std::cout << "Item removed" << std::endl;
-    //     }
-    // }
     mCurrentMap->updateItem(dt);
 
     mCollision.handleCollision();
     
     mEffect.update(dt);
-    
-    mCam.target.x = mCharacter->mPhysics.getPosition().x;
+
+    float maxX = mCharacter->mPhysics.getPosition().x;
+    float minX = mCharacter->mPhysics.getPosition().x;
+    if (mIsMultiPlayers) {
+        maxX = std::max(maxX, mCharacter2->mPhysics.getPosition().x);
+        minX = std::max(minX, mCharacter2->mPhysics.getPosition().x);
+    }
+    if (mCam.target.x <  maxX) mCam.target.x = maxX;
+    if (mCam.target.x - targetWidth / 2.0f > minX) mCam.target.x = minX + targetWidth / 2.0f;
     if (mCam.target.x < targetWidth / 2.0f) mCam.target.x = targetWidth / 2.0f;
-    if (mCam.target.x > 10752 - targetWidth / 2.0f) mCam.target.x = 10752 - targetWidth / 2.0f;
+    if (mCam.target.x > mCurrentMap->getBound() - targetWidth / 2.0f) mCam.target.x = mCurrentMap->getBound() - targetWidth / 2.0f;
     
     mTimer -= dt;
 }
@@ -106,10 +89,8 @@ void World::draw() {
     Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
     mCurrentMap->setTexture(tiles, object);
 
-    // mMap[mCurrent]->drawBackground();
     mCurrentMap->drawBackground(mCam);
     
-    // Rectangle that represents what the camera can currently see.
     Rectangle cameraView = {
         mCam.target.x - mCam.offset.x,
         mCam.target.y - mCam.offset.y,
@@ -121,27 +102,7 @@ void World::draw() {
 
     if (!mCharacter->isDie() && mCharacter->isAfterBlock()) mCharacter->draw();
 
-
-    // Only draw the ones inside view.
-    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-        // Get the enemy's bounding box
-        Vector2 enemyPos = (*itr)->mPhysics.getPosition();
-        Vector2 enemySize = (*itr)->getSize();
-        Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
-
-        // Check if the enemy's rectangle overlaps with the camera's view
-        if (CheckCollisionRecs(cameraView, enemyRect) && (*itr)->isAfterBlock()) {
-            (*itr)->draw(); // Only draw the enemy if it's visible
-        }
-    }
-    
-    // for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
-    //         (*itr)->draw();
-    //     }
-        
-    // mMap[mCurrent]->drawMain();
-
-    // mCurrentMap->drawEnemy1(cameraView);
+    mCurrentMap->drawEnemy1(cameraView);
 
     mCurrentMap->drawMain(mCam);
 
@@ -153,22 +114,8 @@ void World::draw() {
         (*itr)->draw();
     }
 
-    // Only draw the ones inside view.
-    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-        // Get the enemy's bounding box
-        Vector2 enemyPos = (*itr)->mPhysics.getPosition();
-        Vector2 enemySize = (*itr)->getSize();
-        Rectangle enemyRect = { enemyPos.x, enemyPos.y, enemySize.x, enemySize.y };
+    mCurrentMap->drawEnemy2(cameraView);
 
-        // Check if the enemy's rectangle overlaps with the camera's view
-        if (CheckCollisionRecs(cameraView, enemyRect) && !(*itr)->isAfterBlock()) {
-            (*itr)->draw(); // Only draw the enemy if it's visible
-        }
-    }
-
-    // mCurrentMap->drawEnemy2(cameraView);
-
-    // mEffect.draw();
     mEffect.draw(mCam);
 
     EndMode2D();
@@ -176,16 +123,7 @@ void World::draw() {
 
 void World::handle() {
     if (!mCharacter->isDie()) mCharacter->handle();
-
     if (mIsMultiPlayers && !mCharacter2->isDie()) mCharacter2->handle();
-
-    for (auto itr = mEnemy.begin(); itr != mEnemy.end(); ++itr) {
-        (*itr)->handle();
-    }
-
-    for (auto itr = mItem.begin(); itr != mItem.end(); ++itr) {
-        (*itr)->handle();
-    }
 }
 
 void World::loadMap(const std::string folder) {
@@ -210,78 +148,98 @@ void World::addEffect(std::unique_ptr<Effect> effect) {
     mEffect.addEffect(std::move(effect));
 }
 
-void World::addProjectile(std::unique_ptr<MovingEntity> projectile) {
-    mCollision.addProjectile(projectile.get());
+void World::addProjectile(std::unique_ptr<Entity> projectile) {
     mProjectile.push_back(std::move(projectile));
 }
 
 void World::reset() {
-    //mMap[mCurrent]->reset();
+    // Clone Map mới
     if(mMap[mCurrent]) {
         mCurrentMap = mMap[mCurrent]->clone();
     }
-    mEnemy.clear();
+
+    std::vector<std::unique_ptr<Enemy>>& Enemy = mCurrentMap->getEnemy();
+    mCollision.addEnemy(Enemy);
+
+    std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
+    mCollision.addItem(Items);
+
+    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mCurrentMap->getMain();
+    mCollision.addBlock(mBlock);
+
+    mProjectile.clear();
+
     if (mIsMultiPlayers) {
         mCharacter = Character::spawnMario();
         mCharacter2 = Character::spawnLuigi();
         mCharacter->setKeyBind(mKeyBinding);
         mCharacter2->setKeyBind(mKeyBinding2);
     } else mCharacter2 = nullptr;
+
+    // Đặt vị trí spawn
+
     if (mCurrent == 0) mCharacter->mPhysics.setPosition({150, 672});
     else if (mCurrent == 1) mCharacter->mPhysics.setPosition({150, 624});
     else if (mCurrent == 4) mCharacter->mPhysics.setPosition({96, 576});
     else if (mCurrent == 10) mCharacter->mPhysics.setPosition({0, 336});
     else mCharacter->mPhysics.setPosition({150, 624});
+
     if (mIsMultiPlayers) mCharacter2->mPhysics.setPosition(mCharacter->mPhysics.getPosition() + Vector2{60, 0});
-    mCollision.clearCollidables();
-    mItem.clear();
-
-    std::vector<std::unique_ptr<Enemy>>& Enemy = mCurrentMap->getEnemy();
-    mCollision.addEnemy(Enemy);
-    mEnemy = mCurrentMap->takeEnemies();
-
-    std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
-    mCollision.addItem(Items);
-    //mItem = mCurrentMap->takeItems();
     
     mCollision.addCharacter(mCharacter.get());
     if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
-    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mCurrentMap->getMain();
-    mCollision.addBlock(mBlock);
+    else mCollision.addCharacter2(nullptr);
+
     mTimer = 100.0f;
     mLives = 3;
     mCoins = 0;
     mCam.target = {0, 500};
-
+    isComplete = false;
 }
 
 void World::restart() {
-    mEnemy.clear();
+    // Clone Map mới
     if(mMap[mCurrent]) {
         mCurrentMap = mMap[mCurrent]->clone();
     }
+
+    std::vector<std::unique_ptr<Enemy>>& Enemy = mCurrentMap->getEnemy();
+    mCollision.addEnemy(Enemy);
+
+    std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
+    mCollision.addItem(Items);
+
+    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mCurrentMap->getMain();
+    mCollision.addBlock(mBlock);
+
+    mProjectile.clear();
+
+
+    if (mIsMultiPlayers) {
+        mCharacter = Character::spawnMario();
+        mCharacter2 = Character::spawnLuigi();
+        mCharacter->setKeyBind(mKeyBinding);
+        mCharacter2->setKeyBind(mKeyBinding2);
+    } else {
+        if (mCharacter->isMario()) mCharacter = Character::spawnMario();
+        else mCharacter = Character::spawnLuigi();
+        mCharacter2 = nullptr;
+    }
+
+    // Đặt vị trí spawn
+
     if (mCurrent == 0) mCharacter->mPhysics.setPosition({150, 672});
     else if (mCurrent == 1) mCharacter->mPhysics.setPosition({150, 624});
     else if (mCurrent == 4) mCharacter->mPhysics.setPosition({96, 576});
     else if (mCurrent == 10) mCharacter->mPhysics.setPosition({0, 336});
     else mCharacter->mPhysics.setPosition({150, 624});
-    mCharacter->setDie(false);
-    if (mIsMultiPlayers) {
-        mCharacter2->setDie(false);
-        mCharacter2->mPhysics.setPosition(mCharacter->mPhysics.getPosition() + Vector2{60, 0});
-    }
-    mCollision.clearCollidables();
-    std::vector<std::unique_ptr<Enemy>>& mEnemy = mCurrentMap->getEnemy();
-    mCollision.addEnemy(mEnemy);
-    //mEnemy = mCurrentMap->takeEnemies();
 
-    std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
-    mCollision.addItem(Items);
-    //mItem = mCurrentMap->takeItems();
+    if (mIsMultiPlayers) mCharacter2->mPhysics.setPosition(mCharacter->mPhysics.getPosition() + Vector2{60, 0});
+    
     mCollision.addCharacter(mCharacter.get());
     if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
-    std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mCurrentMap->getMain();
-    mCollision.addBlock(mBlock);
+    else mCollision.addCharacter2(nullptr);
+
     mCam.target = {0, 500};
 }
 
@@ -299,17 +257,14 @@ void World::saveSnapshot() {
     snapshot->mCharacter = std::move(mCharacter);
     snapshot->mCharacter2 = std::move(mCharacter2);
     
+    std::vector<std::unique_ptr<Enemy>>& mEnemy = mCurrentMap->getEnemy();
     for (int i = 0; i < mEnemy.size(); ++i) {
         snapshot->mEnemy.push_back(std::move(mEnemy[i]));
     }
 
-    mEnemy.clear();
-
     for (int i = 0; i < mProjectile.size(); ++i) {
         snapshot->mProjectile.push_back(std::move(mProjectile[i]));
     }
-
-    mProjectile.clear();
     
     mSnapshot = std::move(snapshot);
 }
@@ -326,35 +281,34 @@ void World::restore() {
         mCam.target = mSnapshot->cameraTarget;
 
         mCharacter = std::move(mSnapshot->mCharacter);
-        if (mIsMultiPlayers) mCharacter2 = std::move(mSnapshot->mCharacter2);
-        else mCharacter2 = nullptr;
+        mCharacter->setKeyBind(mKeyBinding);
+        mCollision.addCharacter(mCharacter.get());
 
-        for (int i = 0; i < mSnapshot->mEnemy.size(); ++i) {
-            mEnemy.push_back(std::move(mSnapshot->mEnemy[i]));
-        }
+        if (mIsMultiPlayers) {
+            mCharacter2 = std::move(mSnapshot->mCharacter2);
+            mCharacter2->setKeyBind(mKeyBinding2);
+            mCollision.addCharacter2(mCharacter2.get());
+        } else mCharacter2 = nullptr;
 
         for (int i = 0; i < mSnapshot->mProjectile.size(); ++i) {
             mProjectile.push_back(std::move(mSnapshot->mProjectile[i]));
         }
 
-        mSnapshot = nullptr;
-
+        // Clone Map mới
         if(mMap[mCurrent]) {
             mCurrentMap = mMap[mCurrent]->clone();
         }
 
-        mCollision.clearCollidables();
+        mCurrentMap->setEnemy(mSnapshot->mEnemy);
+        mCollision.addEnemy(mCurrentMap->getEnemy());
 
         std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
         mCollision.addItem(Items);
 
-        mCollision.addCharacter(mCharacter.get());
-        if (mIsMultiPlayers) mCollision.addCharacter2(mCharacter2.get());
-
-        mCollision.addEnemy(mEnemy);
-
         std::vector<std::vector<std::unique_ptr<TileBlock>>>& mBlock = mCurrentMap->getMain();
         mCollision.addBlock(mBlock);
+
+        mSnapshot = nullptr;
     }
 }
 
@@ -454,4 +408,8 @@ bool World::hasNextMap() {
         
 void World::nextMap() {
     mCurrent = (mCurrent + 1) % mMap.size();
+}
+
+void World::setLevelComplete(bool flag) {
+    isComplete = flag;
 }

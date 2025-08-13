@@ -42,7 +42,7 @@ private:
 
     State mState;
     Type mType;
-    float mSpeed;
+    float mSpeed = 0.0f;
     float mLedgeCooldown = 0.0f;
 
     float mShellTimer;

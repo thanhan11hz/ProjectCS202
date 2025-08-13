@@ -75,7 +75,7 @@ void Koopa::update(float dt) {
     if (mLedgeCooldown > 0) mLedgeCooldown -= dt;
     Enemy::update(dt);
     if (!isActive() || isDie()) return;
-    MovingEntity::update(dt);
+    Entity::update(dt);
     switch (mState) {
         case State::WALKING:
             // Ledge Detection for Red and Blue Koopas
@@ -139,6 +139,7 @@ void Koopa::handleCollision(Side side, Collide other) {
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeathTexture, true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
         return;
     }
     

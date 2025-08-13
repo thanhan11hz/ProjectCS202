@@ -68,9 +68,9 @@ void SimpleBehavior::moveUp(TileObject& item, float dt) {
         side = Side::NONE;
         other = Category::NONE;
         oTag = "";
-        if(getTag() == "Star") {
-            std::cout << item.mPhysics.getPosition().x << " " << item.mPhysics.getPosition().y << std::endl;
-        } 
+        // if(getTag() == "Star") {
+        //     std::cout << item.mPhysics.getPosition().x << " " << item.mPhysics.getPosition().y << std::endl;
+        // } 
     }
 }
 
@@ -125,6 +125,8 @@ void NormalCoinBehavior::handleCollision(TileObject& item) {
     // }
 
     if(side == Side::BOTTOM && other == Category::BLOCK && item.isUp ) {
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
         item.setOn(false);
         item.mBodyCollide.setLabel(Category::NONE);
         item.mBodyCollide.setFilter(Category::MARIO);
@@ -132,7 +134,9 @@ void NormalCoinBehavior::handleCollision(TileObject& item) {
         mWorld.receiveCoin();
     }
     if(other == Category::MARIO && item.isUp) {
-        std::cout << "NormalCoinBehavior handleCollision called" << std::endl;
+        // std::cout << "NormalCoinBehavior handleCollision called" << std::endl;
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
         item.setOn(false);
         item.mBodyCollide.setLabel(Category::NONE);
         item.mBodyCollide.setFilter(Category::MARIO);
@@ -243,7 +247,7 @@ void MushroomBehavior::onCollect(TileObject& item) {
 }
 
 void MushroomBehavior::update(TileObject& item, float dt) {
-    if(item.isUp) std::cout << "Mushroom is up" << std::endl;
+    // if(item.isUp) std::cout << "Mushroom is up" << std::endl;
     SimpleBehavior::update(item, dt);
     if(item.isOn && item.isUp){
 
@@ -284,6 +288,8 @@ void MushroomBehavior::handleCollision(TileObject& item) {
     //     item.isAbsorbed = true;
     // }
     if(side == Side::BOTTOM && other == Category::MARIO  && !item.isUp){
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR));
         item.setOn(true);
         item.setAnimation();
         item.mPhysics.setVelocity({0, -96.0f});
@@ -416,7 +422,8 @@ void StarBehavior::update(TileObject& item, float dt) {
 
 void StarBehavior::handleCollision(TileObject& item) {
     if (side == Side::BOTTOM && other == Category::MARIO && !item.isUp) {
-
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR));
         item.setOn(true);
         item.setAnimation();
         item.mPhysics.setVelocity({0, -96.0f});

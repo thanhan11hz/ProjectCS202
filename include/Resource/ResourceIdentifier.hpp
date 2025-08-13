@@ -43,7 +43,10 @@ enum class SoundIdentifier {
     FIREBALL, KICK,
     MARIO_DEATH,
     POWER_UP, BOWSER_FIRE,
-    BLOCK_BREAK, PIPE
+    BLOCK_BREAK, PIPE,
+    COIN, GAME_OVER, 
+    LEVEL_COMPLETE, GAME_COMPLETE,
+    RUN_OUT_OF_TIME, POWER_UP_APPEAR,
 };
 
 enum class MusicIdentifier {

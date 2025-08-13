@@ -29,7 +29,7 @@ void Podoboo::update(float dt) {
     Enemy::update(dt);
     if (!isActive()) return;
     if (isDie()) return;
-    MovingEntity::update(dt);
+    Entity::update(dt);
     if (mIsRest) {
         if (mRestTimer > mRestTime) {
             mIsRest = false;

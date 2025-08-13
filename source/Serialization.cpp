@@ -90,7 +90,7 @@ void from_json(const nlohmann::json& j, Memento& s) {
     }
 
     if (s.mIsMultiPlayers && j.contains("character2")) {
-        auto c = createEntityFromJson(j["character"]);
+        auto c = createEntityFromJson(j["character2"]);
         s.mCharacter2 = std::unique_ptr<Character>(static_cast<Character*>(c.release()));
     }
 
@@ -101,7 +101,7 @@ void from_json(const nlohmann::json& j, Memento& s) {
 
     for (const auto& jp : j["projectile"]) {
         auto p = createEntityFromJson(jp);
-        s.mProjectile.push_back(std::unique_ptr<MovingEntity>(static_cast<MovingEntity*>(p.release())));
+        s.mProjectile.push_back(std::unique_ptr<Entity>(static_cast<Entity*>(p.release())));
     }
 }
 

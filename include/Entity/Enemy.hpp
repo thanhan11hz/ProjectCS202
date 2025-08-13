@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Entity/MovingEntity.hpp"
+#include "Entity/Entity.hpp"
 #include "Global.hpp"
 #include <memory>
 
-class Enemy : public MovingEntity {
+class Enemy : public Entity {
     public:
         Enemy();
 

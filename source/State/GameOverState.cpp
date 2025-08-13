@@ -98,6 +98,15 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     //     label->changeText(text);
     // });
     mContainer.pack(score);
+
+    if (mWorld.getRestLive() <= 0) {
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::GAME_OVER));
+    } else {
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME));
+    }
+
 }
 
 void GameOverState::draw() {

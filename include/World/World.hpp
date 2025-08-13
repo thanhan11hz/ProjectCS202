@@ -33,7 +33,7 @@ class World {
         void loadMap(const std::string folder);
         void setMap(size_t index);
         void addEffect(std::unique_ptr<Effect> effect);
-        void addProjectile(std::unique_ptr<MovingEntity> projectile);
+        void addProjectile(std::unique_ptr<Entity> projectile);
 
         void handle();
         void update(float dt);
@@ -47,6 +47,7 @@ class World {
         size_t getCurrentPoint();
         size_t getCurrentMap();
         bool isLevelComplete();
+        void setLevelComplete(bool flag);
         Camera2D& getCamera();
 
         void receiveCoin();
@@ -78,11 +79,7 @@ class World {
 
         std::unique_ptr<Character> mCharacter2;
 
-        std::vector<std::unique_ptr<Enemy>> mEnemy;
-
-        std::vector<std::unique_ptr<TileObject>> mItem;
-
-        std::vector<std::unique_ptr<MovingEntity>> mProjectile;
+        std::vector<std::unique_ptr<Entity>> mProjectile;
 
         Camera2D mCam;
 

@@ -25,7 +25,7 @@ void FlyingKoopa::update(float dt) {
     Enemy::update(dt);
     if (!isActive()) return;
     if (isDie()) return;
-    MovingEntity::update(dt);
+    Entity::update(dt);
     if (mPhysics.getPosition().y > mFixedPoint.y + 48.0f * 3) {
         mPhysics.setPosition({mFixedPoint.x, mFixedPoint.y + 48.0f * 3});
         mSpeed = -50.0f;
@@ -51,12 +51,14 @@ void FlyingKoopa::handleCollision(Side side, Collide other) {
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::KOOPA_RED_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "300"));
+        mWorld.receivePoint(300);
     }
 
     if (other.getLabel() == Category::MARIO && side == Side::TOP) {
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::KOOPA_RED_SHELL), false));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "300"));
+        mWorld.receivePoint(300);
     }
 }
         

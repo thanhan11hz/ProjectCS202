@@ -23,5 +23,5 @@ class Memento {
         std::unique_ptr<Character> mCharacter;
         std::unique_ptr<Character> mCharacter2;
         std::vector<std::unique_ptr<Enemy>> mEnemy;
-        std::vector<std::unique_ptr<MovingEntity>> mProjectile;
+        std::vector<std::unique_ptr<Entity>> mProjectile;
     };

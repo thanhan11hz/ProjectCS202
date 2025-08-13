@@ -10,23 +10,22 @@ class Collision {
     public:
 
         Collision();
-        void addItem(std::vector<std::unique_ptr<TileObject>>& item);
-        void addEnemy(std::vector<std::unique_ptr<Enemy>>& enemy);
-        void addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>>& block);
-        void addProjectile(MovingEntity* projectile);
+        void addItem(std::vector<std::unique_ptr<TileObject>> &item);
+        void addEnemy(std::vector<std::unique_ptr<Enemy>> &enemy);
+        void addBlock(std::vector<std::vector<std::unique_ptr<TileBlock>>> &block);
+        void addProjectile(std::vector<std::unique_ptr<Entity>> &projectile);
         void addCharacter(Character* character);
         void addCharacter2(Character* character);
         void handleCollision();
-        void clearCollidables();
 
     private:
-
         Character* mCharacter;
         Character* mCharacter2;
-        std::vector<std::vector<TileBlock*>> mMain;
-        std::vector<TileObject*> mItem;
-        std::vector<Enemy*> mEnemy;
-        std::vector<MovingEntity*> mProjectile;
+        std::vector<std::vector<std::unique_ptr<TileBlock>>> *mMain;
+        std::vector<std::unique_ptr<TileObject>> *mItem;
+        std::vector<std::unique_ptr<Enemy>> *mEnemy;
+        std::vector<std::unique_ptr<Entity>> *mProjectile;
+
         void checkCollision(Collide A, Collide B);
         void checkFootCollision(Collide A, Collide B);
         bool checkBroadPhase(Collide A, Collide B);

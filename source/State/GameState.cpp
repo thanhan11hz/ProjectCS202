@@ -101,13 +101,14 @@ bool GameState::update(float dt) {
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     mWorld.update(dt);
-    if (((int)mWorld.getRestLive() <= 0 || (int)mWorld.getRestTime() <= 0) && mWorld.isEndEffect()) {
-        requestStackClear();
-        requestStackPush(StateIdentifier::GAMEOVER);
-    }
     if (mWorld.isLevelComplete()) {
         requestStackClear();
         requestStackPush(StateIdentifier::COMPLETE);
+        return true;
+    }
+    if (((int)mWorld.getRestLive() <= 0 || (int)mWorld.getRestTime() <= 0) && mWorld.isEndEffect()) {
+        requestStackClear();
+        requestStackPush(StateIdentifier::GAMEOVER);
     }
     return true;
 }

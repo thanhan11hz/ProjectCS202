@@ -55,13 +55,13 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
     score->changeSize(20);
     score->changeText("SCORE 00000000");
     score->changeColor(WHITE);
-    // score->changeCallback([this](Label* label) {
-    //     size_t sc = mWorld.getScore();
-    //     std::string text = std::to_string(sc);
-    //     while (text.size() < 8) text = "0" + text;
-    //     text = "SCORE " + text; 
-    //     label->changeText(text);
-    // });
+    score->changeCallback([this](Label* label) {
+        size_t sc = mWorld.getCurrentPoint();
+        std::string text = std::to_string(sc);
+        while (text.size() < 8) text = "0" + text;
+        text = "SCORE " + text; 
+        label->changeText(text);
+    });
     mContainer_level.pack(score);
 
     Label* coins = new Label();
@@ -131,7 +131,7 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
     Button* fin = new Button();
     fin->changeText("FINISH");
     fin->changShape({615,574,211,56});
-    mContainer_game.pack(ret);
+    mContainer_game.pack(fin);
     fin->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
     fin->changeCallback(
         [this]() {
@@ -139,11 +139,19 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
             requestStackPush(StateIdentifier::LEVEL);
         }
     );
+
+    if (mWorld.getCurrentMap() == 4) {
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));
+    } else {
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE));
+    }
 }
 
 void CompleteState::draw() {
     DrawRectangle(0,0,GetScreenWidth(),GetScreenHeight(),BLACK);
-    if (mWorld.getCurrentMap() == 4) mContainer_level.draw();
+    if (mWorld.getCurrentMap() != 4) mContainer_level.draw();
     else mContainer_game.draw();
 }
 
@@ -152,12 +160,11 @@ bool CompleteState::update(float dt) {
 }
 
 bool CompleteState::handle() {
-    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+    if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }
-    mWorld.handle();
-    if (mWorld.getCurrentMap() == 4) mContainer_level.handle();
+    if (mWorld.getCurrentMap() != 4) mContainer_level.handle();
     else mContainer_game.handle();
     return true;
 }

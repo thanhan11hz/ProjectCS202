@@ -124,6 +124,12 @@ Game::Game() {
     Resource::mSound.load(SoundIdentifier::BOWSER_FIRE, "resource\\Sound\\bowserFire.wav");
     Resource::mSound.load(SoundIdentifier::BLOCK_BREAK, "resource\\Sound\\breakBlock.wav");
     Resource::mSound.load(SoundIdentifier::PIPE, "resource\\Sound\\pipe.wav");
+    Resource::mSound.load(SoundIdentifier::COIN, "resource\\Sound\\coin.wav");
+    Resource::mSound.load(SoundIdentifier::GAME_COMPLETE, "resource\\Sound\\gameComplete.wav");
+    Resource::mSound.load(SoundIdentifier::GAME_OVER, "resource\\Sound\\gameOver.wav");
+    Resource::mSound.load(SoundIdentifier::LEVEL_COMPLETE, "resource\\Sound\\levelComplete.wav");
+    Resource::mSound.load(SoundIdentifier::POWER_UP_APPEAR, "resource\\Sound\\powerUpAppear.wav");
+    Resource::mSound.load(SoundIdentifier::RUN_OUT_OF_TIME, "resource\\Sound\\runOutOfTime.wav");
 
     Resource::mMusic.load(MusicIdentifier::BACKGROUND_MUSIC, "resource\\Music\\backgroundMusic.ogg");
     SetMusicVolume(Resource::mMusic.get(MusicIdentifier::BACKGROUND_MUSIC), 1.0f);

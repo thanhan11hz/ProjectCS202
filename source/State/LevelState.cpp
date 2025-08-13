@@ -252,7 +252,6 @@ bool LevelState::handle() {
 bool LevelState::update(float dt) {
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
-    //mMap.update(dt);
     return true;
 }
 

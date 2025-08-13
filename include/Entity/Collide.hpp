@@ -41,7 +41,7 @@ class Collide {
 
     private:
         Entity* mOwner;
-        Rectangle mHitBox;
+        Rectangle mHitBox = {0, 0, 0 ,0};
         bool mStatic;
         Category mLabel;
         Category mFilter;

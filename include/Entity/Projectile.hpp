@@ -3,10 +3,10 @@
 #include <memory>
 #include <cmath>
 
-#include "Entity/MovingEntity.hpp"
+#include "Entity/Entity.hpp"
 #include "Global.hpp"
 
-class FireBall : public MovingEntity {
+class FireBall : public Entity {
     public:
         FireBall(bool isRight);
         FireBall(const nlohmann::json& j);
@@ -28,7 +28,7 @@ class FireBall : public MovingEntity {
         float mSpeedX = 400.0f;
 };
 
-class BowserFire: public MovingEntity {
+class BowserFire: public Entity {
     public:
         BowserFire(bool isRight);
         BowserFire(const nlohmann::json& j);

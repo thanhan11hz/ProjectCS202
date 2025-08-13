@@ -47,7 +47,6 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
         }
     }
     else if(choice == 2){ //main
-        std::cout << "Load Main" << "\n";
         for(int i = 0; i < matrix.size(); i++){
             for (int j = 0; j < matrix[i].size(); j++){
                 int num = matrix[i][j];
@@ -103,7 +102,6 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
     
     }
     else if (choice == 5){
-        std::cout << "Load Enemies" << "\n";
         for(int i = 0; i < matrix.size(); i++){
             for (int j = 0; j < matrix[i].size(); j++){
                 int num = matrix[i][j];
@@ -149,8 +147,6 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                         break;
                 }
                 if (Enemy) {
-                    //mEnemy.emplace_back(std::make_pair(num, Vector2{col * 48.0f, i * 48.0f}));
-                    //Enemy->mPhysics.setPosition({col * 48.0f, i * 48.0f});
                     Enemies.emplace_back(std::move(Enemy));
                 }
             }
@@ -174,7 +170,6 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
 }
 
 vector<vector<int>> TileMap::loadMatrixFromCSV(const string& filepath) {
-    std::cout << "Loading CSV file "  << '\n';
     vector<vector<int>> matrix;
     ifstream file(filepath);
     if (!file.is_open()) {
@@ -198,21 +193,6 @@ vector<vector<int>> TileMap::loadMatrixFromCSV(const string& filepath) {
     file.close();
     return matrix;
 }
-
-// void TileMap::drawBackground() {
-//     for (int i = 0; i < mBackground.size(); i++) {
-//         for (int j = 0; j < mBackground[i].size(); j++) {
-//             const Rectangle& rect = mBackground[i][j]->getRect(); 
-//             // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-//             //     rect.y + rect.height >= 0 && rect.y <= screenH) {
-//             //     mBackground[i][j]->draw(tileTexture, objectTexture);
-//             // }
-//             mBackground[i][j]->draw(tileTexture, objectTexture);
-//             if ( mBackground2.size() > 0) 
-//                 mBackground2[i][j]->draw(tileTexture, objectTexture);
-//         }
-//     }
-// }
 
 void TileMap::drawBackground(Camera2D& camera) {
     // Calculate the camera's view in world coordinates
@@ -254,16 +234,6 @@ void TileMap::drawBackground(Camera2D& camera) {
         }
     }
 }
-
-// void TileMap::drawItem() {
-//     for (int i = 0; i < mItem.size(); i++) {
-//         for (int j = 0; j < mItem[i].size(); j++) {
-//             const Rectangle& rect = mItem[i][j]->getRect(); 
-
-//             mItem[i][j]->draw(tileTexture, objectTexture);
-//         }
-//     }
-// }
 
 
 void TileMap::drawItem(Rectangle& camera) {
@@ -349,99 +319,21 @@ void TileMap::drawMain(Camera2D& camera) {
     }
 }
 
+void TileMap::setEnemy(std::vector<std::unique_ptr<Enemy>>& enemy) {
+    Enemies.clear();
+    for (auto& e : enemy) {
+        Enemies.push_back(std::move(e));
+    }
+    enemy.clear();
+}
+
 void TileMap::update(float dt){
     for (int i = 0; i < mMain.size(); i++) {
         for (int j = 0; j < mMain[i].size(); j++) {
-            // if (rect.x + rect.width >= 0 && rect.x <= screenW &&
-            //     rect.y + rect.height >= 0 && rect.y <= screenH) {
-            //     mBackground[i][j]->update(dt);
-            //     mItem[i][j]->update(dt);
-            //     mMain[i][j]->update(dt);
-            // 
             mMain[i][j]->update(dt);
         }
     }
 }
-
-// void TileMap::reset() {
-//     if(!Items.empty()) return;
-//     std::cout << "Reset TileMap" << std::endl;
-//     Enemies.clear();
-//     for (auto& item: mEnemy) {
-//         std::vector<std::unique_ptr<FireBar>> firebar;
-//         Etr Enemy = nullptr;
-//         int num = item.first;
-//         switch (num)
-//         {
-//             case 0: // Goomba
-//             case 1: 
-//                 Enemy = Goomba::spawnGoomba1(item.second);
-//                 break;
-                
-//             case 18:
-//             case 19: 
-//                 Enemy = Goomba::spawnGoomba2(item.second);
-//                 break;
-//             case 84:
-//                 Enemy = Piranha::spawnPiranha2(item.second);
-//                 break;
-//             case 41:
-//                 Enemy = Koopa::spawnKoopa(item.second, Koopa::Type::K_RED);
-//                 break;
-//             case 77:
-//                 Enemy = Koopa::spawnKoopa(item.second, Koopa::Type::K_BLUE);
-//                 break;
-//             case 116:
-//                 Enemy = Bowser::spawnBowser(item.second);
-//                 break;
-//             case 55:
-//                 Enemy = Podoboo::spawnPodoboo(item.second);
-//                 break;
-//             case 330:
-//                 firebar = std::move(FireBar::spawnFireBar(item.second));
-//                 for (auto& f : firebar) {
-//                     Enemies.emplace_back(std::move(f));
-//                 }
-//             default:
-//                 break;
-//         }
-//         if (Enemy) {
-//             //Enemy->mPhysics.setPosition({col * 48.0f, i * 48.0f});
-//             Enemies.emplace_back(std::move(Enemy));
-//         }
-//     }
-    
-//     Items.clear();
-//     for (auto& item : dataItem) {
-//         std::unique_ptr<TileObject> tileObject = nullptr;
-//         switch (item.first) {
-//             case 0: 
-//             case 1: 
-//             case 10: 
-//             case 72: 
-//             case 108: 
-//             case 180: 
-//             case 216: 
-//             case 13: 
-//             case 189: 
-//             case 44: 
-//             case 252:
-//                 tileObject = std::make_unique<TileObject>(item.first, item.second.y , item.second.x );
-//                 break;
-//             default:
-//                 // Handle unknown item
-//                 break;
-//         }
-       
-//         TileObject* block= nullptr;
-//         if (tileObject) {
-//             block = tileObject.get();
-//             Items.emplace_back(std::move(tileObject));
-//             mItem[item.second.y][item.second.x] = block;
-//         }
-//     }
-    
-// }
 
 TileMap::TileMap(const TileMap& other) {
     // Clone mMain
@@ -503,7 +395,6 @@ void TileMap::updateEnemy(float dt) {
         if ((*itr)->mPhysics.getPosition().y > deathPlaneY) {
             (*itr)->setDie(true);
         }
-        // ----------------------
         if (*itr && !(*itr)->isDie()) {
             (*itr)->update(dt);
             ++itr;

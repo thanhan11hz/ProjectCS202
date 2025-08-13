@@ -17,12 +17,12 @@ TileObject::TileObject(int type, int col, int row) : TileBlock(type, col, row){
        if (type != 180 && type != 189 && type != 44 && type != 252) {
             isOn = false;
             isUp = false;
-            if (type != 4 && type != 13)
-                std::cout << "1.TileObject created with type: " << type << std::endl;
+            // if (type != 4 && type != 13)
+            //     std::cout << "1.TileObject created with type: " << type << std::endl;
         } else {
             isOn = true;
             isUp = true;
-            std::cout << "2.TileObject created with type: " << type << std::endl;
+            // std::cout << "2.TileObject created with type: " << type << std::endl;
         }
 
         if(getType() == specialCoin) {
@@ -93,9 +93,6 @@ void TileObject::draw(Texture2D& background, Texture2D& object){
 }
 
 void TileObject::update(float dt) {
-
-    // MovingEntity::update(dt);
-    // mPhysics.setOnGround(false);
     if(!isOn && isUp) return;
     if (mBehavior) {
         mBehavior->update(*this, dt);

@@ -30,7 +30,7 @@ void FireBall::update(float dt) {
     if (mPhysics.onGround()) {
         mPhysics.startJump(3);
     }
-    MovingEntity::update(dt);
+    Entity::update(dt);
     mPhysics.accelerate({mSpeedX, 0});
 }
 
@@ -114,7 +114,7 @@ BowserFire::BowserFire(const nlohmann::json& j) {
 void BowserFire::update(float dt) {
     if (isDie()) return;
     mPhysics.accelerate({mSpeed, 0});
-    MovingEntity::update(dt);
+    Entity::update(dt);
     Vector2 screenPos = GetWorldToScreen2D(mPhysics.getPosition(), mWorld.getCamera());
     if (screenPos.x < -100.0f || screenPos.x > 100 + targetWidth) setDie(true);
 }

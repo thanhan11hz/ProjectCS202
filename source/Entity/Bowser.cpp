@@ -39,7 +39,7 @@ void Bowser::update(float dt) {
             mPhysics.startJump(3);
     }
     }
-    MovingEntity::update(dt);
+    Entity::update(dt);
     if (mMove == Move::MOVE) {
         if (mCooldownTimer < mCooldownTime) mCooldownTimer += dt;
         else {
@@ -72,6 +72,7 @@ void Bowser::handleCollision(Side side, Collide other) {
             setDie(true);
             mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
             mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
+            mWorld.receivePoint(500);
         }
     }
 
@@ -79,12 +80,14 @@ void Bowser::handleCollision(Side side, Collide other) {
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
+        mWorld.receivePoint(500);
     }
 
     if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
+        mWorld.receivePoint(500);
     }
 }
 

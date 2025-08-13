@@ -1,5 +1,5 @@
 #pragma once
-#include "MovingEntity.hpp"
+#include "Entity/Entity.hpp"
 #include <raylib.h>
 #include <vector>
 #include <string>
@@ -84,7 +84,7 @@ public:
 };
 
 
-class TileBlock : public MovingEntity{
+class TileBlock : public Entity{
     public:
     TileBlock(int type, int col, int row);
     int type() const { return mType; }
