@@ -13,7 +13,9 @@ World::World() {
 
 World::~World() {
     std::ofstream out("resource\\save.json");
-    nlohmann::json j = mSnapshot;
+    nlohmann::json j;
+    if (!mSnapshot) j = nullptr;
+    else mSnapshot->serialize(j);
     out << std::setw(4) << j;
     out.close();
 }
@@ -31,6 +33,7 @@ void World::destroyInstance() {
 }
         
 void World::update(float dt) {
+    std::cout << "Begin\n";
     if (mCharacter->isDie() && mLives > 0) {
         if (mEffect.isEmpty()) {
             mLives--;
@@ -44,9 +47,9 @@ void World::update(float dt) {
             restart();
         }
     }
-    
+    std::cout << "Address3 " << mCurrentMap.get() << "\n";
     mCurrentMap->update(dt);
-
+    std::cout << "End\n";
     mCharacter->update(dt);
 
     if (mIsMultiPlayers) mCharacter2->update(dt);
@@ -84,10 +87,6 @@ void World::update(float dt) {
         
 void World::draw() {
     BeginMode2D(mCam);
-
-    Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
-    Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
-    mCurrentMap->setTexture(tiles, object);
 
     mCurrentMap->drawBackground(mCam);
     
@@ -158,6 +157,10 @@ void World::reset() {
         mCurrentMap = mMap[mCurrent]->clone();
     }
 
+    Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
+    Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
+    mCurrentMap->setTexture(tiles, object);
+
     std::vector<std::unique_ptr<Enemy>>& Enemy = mCurrentMap->getEnemy();
     mCollision.addEnemy(Enemy);
 
@@ -202,6 +205,10 @@ void World::restart() {
     if(mMap[mCurrent]) {
         mCurrentMap = mMap[mCurrent]->clone();
     }
+
+    Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
+    Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
+    mCurrentMap->setTexture(tiles, object);
 
     std::vector<std::unique_ptr<Enemy>>& Enemy = mCurrentMap->getEnemy();
     mCollision.addEnemy(Enemy);
@@ -256,15 +263,12 @@ void World::saveSnapshot() {
 
     snapshot->mCharacter = std::move(mCharacter);
     snapshot->mCharacter2 = std::move(mCharacter2);
-    
-    std::vector<std::unique_ptr<Enemy>>& mEnemy = mCurrentMap->getEnemy();
-    for (int i = 0; i < mEnemy.size(); ++i) {
-        snapshot->mEnemy.push_back(std::move(mEnemy[i]));
-    }
 
     for (int i = 0; i < mProjectile.size(); ++i) {
         snapshot->mProjectile.push_back(std::move(mProjectile[i]));
     }
+
+    snapshot->mCurrentMap = std::move(mCurrentMap);
     
     mSnapshot = std::move(snapshot);
 }
@@ -294,13 +298,14 @@ void World::restore() {
             mProjectile.push_back(std::move(mSnapshot->mProjectile[i]));
         }
 
-        // Clone Map mới
-        if(mMap[mCurrent]) {
-            mCurrentMap = mMap[mCurrent]->clone();
-        }
+        mCurrentMap = std::move(mSnapshot->mCurrentMap);
 
-        mCurrentMap->setEnemy(mSnapshot->mEnemy);
-        mCollision.addEnemy(mCurrentMap->getEnemy());
+        Texture2D tiles = Resource::mTexture.get(TextureIdentifier::TILE_SET_BLOCKS);
+        Texture2D object = Resource::mTexture.get(TextureIdentifier::TILE_SET_ITEMS);
+        mCurrentMap->setTexture(tiles, object);
+
+        std::vector<std::unique_ptr<Enemy>>& Enemies = mCurrentMap->getEnemy();
+        mCollision.addEnemy(Enemies);
 
         std::vector<std::unique_ptr<TileObject>>& Items = mCurrentMap->getItems();
         mCollision.addItem(Items);
@@ -322,8 +327,10 @@ void World::loadSnapshot() {
     if (in.is_open()) {
         nlohmann::json j;
         in >> j;
-        mSnapshot = j.get<std::unique_ptr<Memento>>();
+        if (j.is_null()) mSnapshot = nullptr;
+        else mSnapshot = std::make_unique<Memento>(j);
     }
+    std::cout << "Address " << mSnapshot->mCurrentMap.get() << "\n";
 }
         
 void World::setMultiPlayers(bool flag) {
@@ -385,7 +392,7 @@ bool World::isSolidTileAt(Vector2 worldPosition) {
         return false;
     }
 
-    // Check if the tile at the grid index exists and is collidable
+    // Check if the tile at the grid index exists and is collidables
     if (grid[row][col] && grid[row][col]->isSolid()) {
         return true;
     }

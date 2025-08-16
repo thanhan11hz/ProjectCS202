@@ -53,9 +53,60 @@ TileBlock::TileBlock(int type, int col, int row)
         
     }
     aniRect=mRect;
-
-
 }
+
+TileBlock::TileBlock(const nlohmann::json& j) {
+    mType = j["type"].get<int>();
+    mRect = j["rect"].get<Rectangle>();
+    mCol = j["col"].get<int>();
+    mRow = j["row"].get<int>();
+
+    mBodyCollide.setLabel(Category::NONE);
+    if(mType >= 0){
+        int x = mType % 29;
+        int y = mType / 29;
+        if(mType == 301 || mType == 292) {
+           x = mType % 36;
+           y = mType / 36;
+        }
+        
+        posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
+        mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE }; 
+        createBehavior();
+
+        if(getType(calType())!= TileType::Empty) {
+            solid = true;
+            mBodyCollide.setLabel(Category::BLOCK);
+        } 
+        else {
+            mBodyCollide.setLabel(Category::NONE);}
+        if(mType!= 556 && mType != 567) isOn = true;
+        mBodyCollide.setStatic(true);
+        mBodyCollide.setFilter(Category::NONE);
+        mPhysics.setPosition({mRect.x, mRect.y});
+    }
+    aniRect=mRect;
+    
+    mPhysics.setPosition(j["position"].get<Vector2>());
+    mPhysics.setVelocity(j["velocity"].get<Vector2>());
+    mPhysics.setOnGround(j["ground"].get<bool>());
+    mPhysics.setRight(j["right"].get<bool>());
+    mSource = j["source"].get<Rectangle>();
+    posTile = j["posTile"].get<Vector2>();
+    mVelocity = j["speed"].get<Vector2>();
+    aniRect = j["aniRect"].get<Rectangle>();
+    printed = j["printed"].get<bool>();
+    isOn = j["isOn"].get<bool>();
+    isDoneAnimation = j["isDoneAnimation"].get<bool>();
+    bumped = j["bumped"].get<bool>();
+    isDestroyed = j["isDestroyed"].get<bool>();
+    solid = j["solid"].get<bool>();
+    aniTime = j["aniTime"].get<float>();
+    for (const auto& js: j["frag"]) {
+        frag.push_back(std::make_unique<TileObject>(js));
+    }
+}
+
 void TileBlock::createBehavior()  {
     if(getType(calType()) == TileType::OwCoinBlock1||getType(calType()) == TileType::HiddenBox ) {
         mBehavior = new CoinBlockBehavior();
@@ -284,10 +335,9 @@ void TileBlock::addFragment() {
 
 
 void TileBlock::update(float dt){
-    
     Vector2 mousePos = GetMousePosition();
     if (mType == -1) return;
-    //std::cout << "TileBlock update: " << mType << std::endl;  
+    //std::cout << "TileBlock update: " << mType << std::endl;
     if (mBehavior) {
         mBehavior->update(*this, dt);
     }
@@ -353,3 +403,30 @@ void TileBlock::handleCollision(Side side, Collide other) {
 }
 TileBlock::~TileBlock(){}
 
+void TileBlock::serialize(nlohmann::json& j) {
+    j["position"] = mPhysics.getPosition();
+    j["velocity"] = mPhysics.getVelocity();
+    j["ground"] = mPhysics.onGround();
+    j["right"] = mPhysics.isRight();
+    j["type"] = mType;
+    j["rect"] = mRect;
+    j["source"] = mSource;
+    j["posTile"] = posTile;
+    j["speed"] = mVelocity;
+    j["aniRect"] = aniRect;
+    j["printed"] = printed;
+    j["isOn"] = isOn;
+    j["isDoneAnimation"] = isDoneAnimation;
+    j["bumped"] = bumped;
+    j["isDestroyed"] = isDestroyed;
+    j["solid"] = solid;
+    j["aniTime"] = aniTime;
+    j["row"] = mRow;
+    j["col"] = mCol;
+    j["frag"] = nlohmann::json::array();
+    for (const auto& f: frag) {
+        nlohmann::json js;
+        f->serialize(js);
+        j["frag"].push_back(js);
+    }
+}

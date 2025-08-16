@@ -87,6 +87,7 @@ public:
 class TileBlock : public Entity{
     public:
     TileBlock(int type, int col, int row);
+    TileBlock(const nlohmann::json& j);
     int type() const { return mType; }
     void draw() override;
     void handle() override;
@@ -94,7 +95,7 @@ class TileBlock : public Entity{
     Vector2 getSize() override;
     virtual void update(float dt) override;
     float calculateVec(float duration, float dis);
-    void serialize(nlohmann::json& j) override {}
+    void serialize(nlohmann::json& j) override;
     
 
     virtual void draw(Texture2D& background, Texture2D& object);
@@ -139,11 +140,11 @@ private:
     virtual void createBehavior();
 protected:
     int mType;
-    Rectangle mRect;
-    Rectangle mSource;
-    Vector2 posTile;
-    Vector2 mVelocity;
-    Rectangle aniRect;
+    Rectangle mRect = {0, 0, 0, 0};
+    Rectangle mSource = {0, 0, 0, 0};
+    Vector2 posTile = {0, 0};
+    Vector2 mVelocity = {0, 0};
+    Rectangle aniRect = {0, 0, 0, 0};
     bool printed;
     bool isOn = false;
     bool isDoneAnimation = true;

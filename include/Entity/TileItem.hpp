@@ -76,6 +76,7 @@ class StarBehavior : public SimpleBehavior{
 class TileObject : public TileBlock {
 public:
     TileObject(int type, int col, int row);
+    TileObject(const nlohmann::json& j);
     ~TileObject(){};
     TileItem getType();
     std::string getTag();
@@ -90,6 +91,7 @@ public:
     void handleFootCollision() {
        mPhysics.setOnGround(true);
     }
+    void serialize(nlohmann::json& j) override;
     std::unique_ptr<TileObject> clone() const {
         return std::make_unique<TileObject>(mType, mCol, mRow);
     }

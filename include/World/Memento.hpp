@@ -1,17 +1,20 @@
 #pragma once
 
+#include <raylib.h>
 #include <nlohmann/json.hpp>
 
-#include "Entity/Character.hpp"
+#include "World/TileMap.hpp"
 
 class World;
 
+class Character;
+
 class Memento {
     friend class World;
-    friend void to_json(nlohmann::json& j, const Memento& s);
-    friend void to_json(nlohmann::json& j, const std::unique_ptr<Memento>& s);
-    friend void from_json(const nlohmann::json& j, std::unique_ptr<Memento>& s);
-    friend void from_json(const nlohmann::json& j, Memento& s);
+    public:
+        Memento() = default;
+        Memento(const nlohmann::json& j);
+        void serialize(nlohmann::json& j);
     private:
         size_t mCurrent;
         float mTimer;
@@ -22,6 +25,6 @@ class Memento {
         Vector2 cameraTarget;
         std::unique_ptr<Character> mCharacter;
         std::unique_ptr<Character> mCharacter2;
-        std::vector<std::unique_ptr<Enemy>> mEnemy;
         std::vector<std::unique_ptr<Entity>> mProjectile;
+        std::unique_ptr<TileMap> mCurrentMap;
     };
