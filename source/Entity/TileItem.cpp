@@ -35,6 +35,43 @@ TileObject::TileObject(int type, int col, int row) : TileBlock(type, col, row){
     aniRect=mRect;
 }
 
+TileObject::TileObject(const nlohmann::json& j) : TileBlock(j) {
+    if(mType > -1){
+        // int x = (type) % 36;
+        // int y = (type) / 36;
+        // mRect = {(col * TILE_RENDER_SIZE), (row * TILE_RENDER_SIZE), TILE_RENDER_SIZE, TILE_RENDER_SIZE};
+        // posTile = { x * TILE_SIZE, y * TILE_SIZE }; 
+        // mSource = {posTile.x, posTile.y, TILE_SIZE, TILE_SIZE };  
+        mPhysics.setPosition({mRect.x, mRect.y});
+        mBodyCollide.setStatic(false);
+        createBehavior();
+        //isOn = true;
+        mBodyCollide.setLabel(Category::ITEM);
+        mBodyCollide.setFilter(Category::ENEMY);
+
+    //    if (type != 180 && type != 189 && type != 44 && type != 252) {
+    //         isOn = false;
+    //         isUp = false;
+    //         // if (type != 4 && type != 13)
+    //         //     std::cout << "1.TileObject created with type: " << type << std::endl;
+    //     } else {
+    //         isOn = true;
+    //         isUp = true;
+    //         // std::cout << "2.TileObject created with type: " << type << std::endl;
+    //     }
+
+        if(getType() == specialCoin) {
+            mBodyCollide.setFilter(Category::BLOCK);
+            
+        }
+        // mCol = col;
+        // mRow = row;
+    }
+    isUp = j["up"].get<bool>();
+    isMoving = j["moving"].get<bool>();
+    isAbsorbed = j["absorbed"].get<bool>();
+}
+
 void TileObject::createBehavior()  {
     if(getType() == TileItem::fragment || getType() == TileItem::underfragment) {
         mBehavior = new FragmentBehavior();
@@ -143,4 +180,11 @@ std::string TileObject::getTag(){
         return mBehavior->getTag();
     }
     return "Tille Item";
+}
+
+void TileObject::serialize(nlohmann::json& j) {
+    TileBlock::serialize(j);
+    j["up"] = isUp;
+    j["moving"] = isMoving;
+    j["absorbed"] = isAbsorbed;
 }

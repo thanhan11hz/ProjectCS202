@@ -22,7 +22,6 @@ Character::Character(const nlohmann::json& j) : mKey(&mKeyBinding) {
     setImmortal(j["immortal"].get<bool>());
     mLength = j["length"].get<float>();
     mHigh = j["height"].get<float>();
-    std::cout << "Size " << mLength << " " << mHigh << "\n";
     if (j["length"].get<float>() == 300) {
         mNormal[Move::JUMP] = Resource::mTexture.get(TextureIdentifier::MARIO_N_JUMP);
         mNormal[Move::RUN] = Resource::mTexture.get(TextureIdentifier::MARIO_N_RUN);

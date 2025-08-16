@@ -10,6 +10,7 @@
 #include "Entity/Koopa.hpp"
 #include "Entity/Podoboo.hpp"
 #include "Entity/Piranha.hpp"
+#include "Entity/FlyingKoopa.hpp"
 #include "Entity/TileItem.hpp"
 #include "Entity/Enemy.hpp"
 #include <memory>
@@ -22,6 +23,7 @@ public:
     using Etr = std::unique_ptr<Enemy>;
                                             
     TileMap(){};
+    TileMap(const nlohmann::json& j);
     void loadFromFile(const std::string& directory);
     std::vector<std::vector<int>> loadMatrixFromCSV(const std::string& filepath);
     void createMap(int choice, std::vector<std::vector<int>>& matrix);
@@ -59,6 +61,8 @@ public:
     
     void updateEnemy(float dt);
     void updateItem(float dt);
+    
+    void serialize(nlohmann::json& j);
     
 private:
     std::vector<std::vector<Btr>> mMain;

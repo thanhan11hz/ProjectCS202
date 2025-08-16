@@ -9,6 +9,42 @@
 #include <sstream>
 using namespace std;
 
+TileMap::TileMap(const nlohmann::json& j) {
+    for (const auto& je : j["enemy"]) {
+        auto e = createEntityFromJson(je);
+        Enemies.push_back(std::unique_ptr<Enemy>(static_cast<Enemy*>(e.release())));
+    }
+
+    for (const auto& ji: j["item"]) {
+        Items.push_back(std::make_unique<TileObject>(ji));
+    }
+    std::cout << "Create Main\n";
+    for (const auto& jr: j["main"]) {
+        std::vector<Btr> row;
+        for (const auto& jc: jr) {
+            row.push_back(std::make_unique<TileBlock>(jc));
+        }
+        mMain.push_back(std::move(row));
+    }
+    std::cout << "Address Main " << &mMain << "\n";
+
+    for (const auto& jr: j["background1"]) {
+        std::vector<Btr> row;
+        for (const auto& jc: jr) {
+            row.push_back(std::make_unique<TileBlock>(jc));
+        }
+        mBackground.push_back(std::move(row));
+    }
+
+    for (const auto& jr: j["background2"]) {
+        std::vector<Btr> row;
+        for (const auto& jc: jr) {
+            row.push_back(std::make_unique<TileBlock>(jc));
+        }
+        mBackground2.push_back(std::move(row));
+    }
+}
+
 void TileMap::loadFromFile(const std::string& directory) {
     std::string folderName = std::filesystem::path(directory).filename().string();
     std::string prefix =  folderName.substr(0, 2) + "_";
@@ -411,6 +447,52 @@ void TileMap::updateItem(float dt) {
             ++itr;
         } else {
             itr = Items.erase(itr);
+        }
+    }
+}
+
+void TileMap::serialize(nlohmann::json& j) {
+    j["enemy"] = nlohmann::json::array();
+    for (const auto& e: Enemies) {
+        nlohmann::json js;
+        e->serialize(js);
+        j["enemy"].push_back(js);
+    }
+
+    j["item"] = nlohmann::json::array();
+    for (const auto& i: Items) {
+        nlohmann::json js;
+        i->serialize(js);
+        j["item"].push_back(js);
+    }
+
+    j["main"] = nlohmann::json::array();
+    for (int i = 0; i < mMain.size(); ++i) {
+        j["main"].push_back(nlohmann::json::array());
+        for (auto& m: mMain[i]) {
+            nlohmann::json js;
+            m->serialize(js);
+            j["main"][i].push_back(js);
+        }
+    }
+
+    j["background1"] = nlohmann::json::array();
+    for (int i = 0; i < mBackground.size(); ++i) {
+        j["background1"].push_back(nlohmann::json::array());
+        for (auto& m: mBackground[i]) {
+            nlohmann::json js;
+            m->serialize(js);
+            j["background1"][i].push_back(js);
+        }
+    }
+
+    j["background2"] = nlohmann::json::array();
+    for (int i = 0; i < mBackground2.size(); ++i) {
+        j["background2"].push_back(nlohmann::json::array());
+        for (auto& m: mBackground2[i]) {
+            nlohmann::json js;
+            m->serialize(js);
+            j["background2"][i].push_back(js);
         }
     }
 }
