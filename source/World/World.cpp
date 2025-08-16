@@ -330,7 +330,7 @@ void World::loadSnapshot() {
         if (j.is_null()) mSnapshot = nullptr;
         else mSnapshot = std::make_unique<Memento>(j);
     }
-    std::cout << "Address " << mSnapshot->mCurrentMap.get() << "\n";
+    //std::cout << "Address " << mSnapshot->mCurrentMap.get() << "\n";
 }
         
 void World::setMultiPlayers(bool flag) {

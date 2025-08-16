@@ -219,8 +219,9 @@ void Character::damage() {
     if (isDie()) return;
     if (mForm == Form::NORMAL) {
         if (invincibleTimer < invincibleTime) return;
-        SetSoundVolume(Resource::mSound.get(SoundIdentifier::MARIO_DEATH), sfxVolume);
-        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
+        if (isMute) SetSoundVolume(Resource::mSound.get(SoundIdentifier::MARIO_DEATH), 0);
+        else SetSoundVolume(Resource::mSound.get(SoundIdentifier::MARIO_DEATH), sfxVolume);
+        PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, false));
     } else {

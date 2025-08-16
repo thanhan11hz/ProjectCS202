@@ -112,6 +112,9 @@ bool PauseState::handle() {
             isMute = false;
         }
     }
+    if (IsKeyPressed(mFunctionKey[Action::PAUSE]) && !confirmMode) {
+        requestStackPop();
+    }
     if (!confirmMode) mContainer.handle();
     else mConfirmContainer.handle();
     return false;

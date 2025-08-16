@@ -1,10 +1,10 @@
 #include "State/CharSelectState.hpp"
-
+#include "World/World.hpp"
 CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedCharacter(0) {
-    Label* lvl = new Label();
+    lvl = new Label();
     lvl->changeShape({580, 72, 280, 40});
     lvl->changeSize(40);
-    lvl->changeText("LEVEL 1");
+    lvl->changeText("LEVEL " + std::to_string(mWorld.getCurrentMap() % 3 + 1));
     lvl->changeColor(WHITE);
     mContainer.pack(lvl);
 
@@ -86,6 +86,7 @@ void CharSelectState::draw() {
 }
 
 bool CharSelectState::update(float dt) {
+    if (mWorld.getCurrentMap() > 5) lvl->changeText("");
     if (IsMusicStreamPlaying(mPlayingMusic)) muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     else muteButton->changeTexture(TextureIdentifier::SOUND_OFF);
     return false;
