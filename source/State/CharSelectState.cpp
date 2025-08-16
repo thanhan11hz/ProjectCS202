@@ -28,7 +28,14 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+                PauseMusicStream(mPlayingMusic);
+                isMute = true;
+            }
+            else {
+                ResumeMusicStream(mPlayingMusic);
+                isMute = false;
+            }
             else ResumeMusicStream(mPlayingMusic);
         }
     );
@@ -87,8 +94,14 @@ bool CharSelectState::update(float dt) {
 bool CharSelectState::handle() {
     mContainer.handle();
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-        else ResumeMusicStream(mPlayingMusic);
+        if (!isMute) {
+            PauseMusicStream(mPlayingMusic);
+            isMute = true;
+        }
+        else {
+            ResumeMusicStream(mPlayingMusic);
+            isMute = false;
+        }
     }
     if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
         if (selectedCharacter == 0) selectedCharacter = (selectedCharacter + 1) % 2;

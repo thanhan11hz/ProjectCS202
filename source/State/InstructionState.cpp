@@ -24,13 +24,19 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
     mContainer.pack(description);
 
     muteButton = new Button();
-    // muteButton->changeToggle(true);
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23,22,41,41});
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+                PauseMusicStream(mPlayingMusic);
+                isMute = true;
+            }
+            else {
+                ResumeMusicStream(mPlayingMusic);
+                isMute = false;
+            }
             else ResumeMusicStream(mPlayingMusic);
         }
     );
@@ -207,8 +213,14 @@ void InstructionState::draw() {
 
 bool InstructionState::handle() {
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-        else ResumeMusicStream(mPlayingMusic);
+        if (!isMute) {
+            PauseMusicStream(mPlayingMusic);
+            isMute = true;
+        }
+        else {
+            ResumeMusicStream(mPlayingMusic);
+            isMute = false;
+        }
     }
     mContainer.handle();
     return true;

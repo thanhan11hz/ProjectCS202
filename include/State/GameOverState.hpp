@@ -5,7 +5,7 @@
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
 #include "GUI/Container.hpp"
-
+#include "Global.hpp"
 class GameOverState: public State {
     public:
         GameOverState(StateStack& stack);

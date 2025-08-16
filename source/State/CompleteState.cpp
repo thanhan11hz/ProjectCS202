@@ -1,6 +1,7 @@
 #include "State/CompleteState.hpp"
 
 CompleteState::CompleteState(StateStack& stack) : State(stack) {
+    
     Label* header = new Label();
     header->changeShape({343,245,754,50});
     header->changeAlignment(Alignment::CENTER);
@@ -140,31 +141,49 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
         }
     );
 
-    if (mWorld.getCurrentMap() == 4) {
+    PauseMusicStream(mPlayingMusic);
+    if (mWorld.getCurrentMap() == FINAL_LEVEL) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE), sfxVolume);
         PlaySound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));
+        
     } else {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE), sfxVolume);
         PlaySound(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE));
+        
     }
 }
 
 void CompleteState::draw() {
     DrawRectangle(0,0,GetScreenWidth(),GetScreenHeight(),BLACK);
-    if (mWorld.getCurrentMap() != 4) mContainer_level.draw();
+    if (mWorld.getCurrentMap() != FINAL_LEVEL) mContainer_level.draw();
     else mContainer_game.draw();
 }
 
 bool CompleteState::update(float dt) {
+    if (!IsSoundPlaying(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE)) && !IsSoundPlaying(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE))) {
+        ResumeMusicStream(mPlayingMusic);
+    } else {
+        PauseMusicStream(mPlayingMusic);
+    }
     return false;
 }
 
 bool CompleteState::handle() {
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-        else ResumeMusicStream(mPlayingMusic);
+        if (IsMusicStreamPlaying(mPlayingMusic)) {
+            isMute = true;
+            PauseMusicStream(mPlayingMusic);
+            PauseSound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));
+            PauseSound(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE));
+        }
+        else {
+            isMute = false;
+            ResumeMusicStream(mPlayingMusic);
+            ResumeSound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));
+            ResumeSound(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE));
+        }
     }
-    if (mWorld.getCurrentMap() != 4) mContainer_level.handle();
+    if (mWorld.getCurrentMap() != FINAL_LEVEL) mContainer_level.handle();
     else mContainer_game.handle();
     return true;
 }

@@ -70,10 +70,10 @@ void Character::handle() {
         mPhysics.startJump(mHigh);
         if (mForm == Form::NORMAL) {
             SetSoundVolume(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP), sfxVolume);
-            PlaySound(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP));
+            if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::NORMAL_JUMP));
         } else {
             SetSoundVolume(Resource::mSound.get(SoundIdentifier::SUPER_JUMP), sfxVolume);
-            PlaySound(Resource::mSound.get(SoundIdentifier::SUPER_JUMP));
+            if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::SUPER_JUMP));
         }
     }
     if (IsKeyReleased((*mKey)[Action::JUMP])) mPhysics.endJump();
@@ -116,7 +116,7 @@ void Character::update(float dt) {
 
     if (localPos.y > targetHeight) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::MARIO_DEATH), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, false));
         setDie(true);
     } 
@@ -192,13 +192,13 @@ void Character::setForm(Form form) {
     if (mForm == form) return;
     if (mForm == Form::NORMAL) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::POWER_UP), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP));
         transitionProgress = 0.0f;
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y - 48});
     }
     if (form == Form::NORMAL) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::PIPE), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::PIPE));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::PIPE));
         invincibleTimer = 0.0f;
         transitionProgress = 0.0f;
         mPhysics.setPosition({mPhysics.getPosition().x, mPhysics.getPosition().y + 48});
@@ -210,7 +210,7 @@ void Character::setForm(Form form) {
 void Character::fire() {
     mCooldown = 0.0f;
     SetSoundVolume(Resource::mSound.get(SoundIdentifier::FIREBALL), sfxVolume);
-    PlaySound(Resource::mSound.get(SoundIdentifier::FIREBALL));
+    if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::FIREBALL));
     Vector2 position = mPhysics.isRight() ? mPhysics.getPosition() + Vector2{getSize().x, getSize().y / 2.0f} : mPhysics.getPosition() + Vector2{0, getSize().y / 2.0f};
     std::unique_ptr<FireBall> fireBall = FireBall::spawnFireBall(position, mPhysics.isRight());
     mWorld.addProjectile(std::move(fireBall));
@@ -221,7 +221,7 @@ void Character::damage() {
     if (mForm == Form::NORMAL) {
         if (invincibleTimer < invincibleTime) return;
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::MARIO_DEATH), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::MARIO_DEATH));
         setDie(true);
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeath, false));
     } else {

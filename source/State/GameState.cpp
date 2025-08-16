@@ -1,5 +1,4 @@
 #include "State/GameState.hpp"
-
 GameState::GameState(StateStack& stack) : State(stack) {
     muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
@@ -7,7 +6,14 @@ GameState::GameState(StateStack& stack) : State(stack) {
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+                PauseMusicStream(mPlayingMusic);
+                isMute = true;
+            }
+            else {
+                ResumeMusicStream(mPlayingMusic);
+                isMute = false;
+            }
             else ResumeMusicStream(mPlayingMusic);
         }
     );
@@ -78,13 +84,13 @@ GameState::GameState(StateStack& stack) : State(stack) {
     score->changeSize(17);
     score->changeText("SCORE 00000000");
     score->changeColor(WHITE);
-    // score->changeCallback([this](Label* label) {
-    //     size_t sc = mWorld.getScore();
-    //     std::string text = std::to_string(sc);
-    //     while (text.size() < 8) text = "0" + text;
-    //     text = "SCORE " + text; 
-    //     label->changeText(text);
-    // });
+    score->changeCallback([this](Label* label) {
+        size_t sc = mWorld.getCurrentPoint();
+        std::string text = std::to_string(sc);
+        while (text.size() < 8) text = "0" + text;
+        text = "SCORE " + text; 
+        label->changeText(text);
+    });
     mContainer.pack(score);
 }
 
@@ -110,13 +116,23 @@ bool GameState::update(float dt) {
         requestStackClear();
         requestStackPush(StateIdentifier::GAMEOVER);
     }
+    if (!IsMusicStreamPlaying(mPlayingMusic) && !isMute) {
+        ResumeMusicStream(mPlayingMusic);
+    }
+    if (IsSoundPlaying(Resource::mSound.get(SoundIdentifier::MARIO_DEATH))) PauseMusicStream(mPlayingMusic);
     return true;
 }
 
 bool GameState::handle() {
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-        else ResumeMusicStream(mPlayingMusic);
+        if (!isMute) {
+            PauseMusicStream(mPlayingMusic);
+            isMute = true;
+        }
+        else {
+            ResumeMusicStream(mPlayingMusic);
+            isMute = false;
+        }
     }
     if (IsKeyPressed(mFunctionKey[Action::PAUSE])) {
         requestStackPush(StateIdentifier::PAUSE);

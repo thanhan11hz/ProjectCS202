@@ -50,7 +50,7 @@ void Goomba::handleCollision(Side side, Collide other) {
     Category otherLabel = other.getLabel();
     if (side == Side::TOP && otherLabel == Category::MARIO && mMove == Move::RUN) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         setMove(Move::DEAD);
     }
 

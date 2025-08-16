@@ -39,5 +39,6 @@ std::map<Action, KeyboardKey> mKeyBinding2 = {
 Music mPlayingMusic;
 float musicVolume = 1.0f;
 float sfxVolume = 1.0f;
+bool isMute = false;
 
 int createdCount = 0;

@@ -1,5 +1,5 @@
 #include "State/GameOverState.hpp"
-
+#include <iostream>
 GameOverState::GameOverState(StateStack& stack) : State(stack) {
     Label* header = new Label();
     header->changeShape({359,325,722,50});
@@ -90,17 +90,17 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     score->changeSize(17);
     score->changeText("SCORE 00000000");
     score->changeColor(WHITE);
-    // score->changeCallback([this](Label* label) {
-    //     size_t sc = mWorld.getScore();
-    //     std::string text = std::to_string(sc);
-    //     while (text.size() < 8) text = "0" + text;
-    //     text = "SCORE " + text; 
-    //     label->changeText(text);
-    // });
+    score->changeCallback([this](Label* label) {
+        size_t sc = mWorld.getCurrentPoint();
+        std::string text = std::to_string(sc);
+        while (text.size() < 8) text = "0" + text;
+        text = "SCORE " + text; 
+        label->changeText(text);
+    });
     mContainer.pack(score);
-
+    PauseMusicStream(mPlayingMusic);
     if (mWorld.getRestLive() <= 0) {
-        SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), sfxVolume);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), sfxVolume);;
         PlaySound(Resource::mSound.get(SoundIdentifier::GAME_OVER));
     } else {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME), sfxVolume);
@@ -119,13 +119,24 @@ void GameOverState::draw() {
 }
 
 bool GameOverState::update(float dt) {
+    if (IsSoundPlaying(Resource::mSound.get(SoundIdentifier::GAME_OVER)) || IsSoundPlaying(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME))) {
+        PauseMusicStream(mPlayingMusic);
+    } else if (!IsMusicStreamPlaying(mPlayingMusic)){
+        ResumeMusicStream(mPlayingMusic);
+    }
     return false;
 }
 
 bool GameOverState::handle() {
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-        else ResumeMusicStream(mPlayingMusic);
+        if (!isMute) {
+            PauseMusicStream(mPlayingMusic);
+            isMute = true;
+        }
+        else {
+            ResumeMusicStream(mPlayingMusic);
+            isMute = false;
+        }
     }
     mWorld.handle();
     mContainer.handle();

@@ -5,6 +5,9 @@
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
 #include "GUI/Container.hpp"
+#include "Global.hpp"
+
+const int FINAL_LEVEL = 5;
 
 class CompleteState: public State {
     public:

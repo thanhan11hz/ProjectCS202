@@ -109,7 +109,7 @@ std::unique_ptr<Bowser> Bowser::spawnBowser(Vector2 position) {
 
 void Bowser::fire() {
     SetSoundVolume(Resource::mSound.get(SoundIdentifier::BOWSER_FIRE), sfxVolume);
-    PlaySound(Resource::mSound.get(SoundIdentifier::BOWSER_FIRE));
+    if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::BOWSER_FIRE));
     Vector2 position = mPhysics.getPosition();
     if (mPhysics.isRight()) position += {getSize().x, 0};
     else position += {-144, 0};

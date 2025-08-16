@@ -6,7 +6,14 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     muteButton->changShape({23,22,41,41});
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+                PauseMusicStream(mPlayingMusic);
+                isMute = true;
+            }
+            else {
+                ResumeMusicStream(mPlayingMusic);
+                isMute = false;
+            }
             else ResumeMusicStream(mPlayingMusic);
         }
     );
@@ -160,8 +167,14 @@ bool MenuState::update(float dt) {
 
 bool MenuState::handle() {
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-        else ResumeMusicStream(mPlayingMusic);
+        if (!isMute) {
+            PauseMusicStream(mPlayingMusic);
+            isMute = true;
+        }
+        else {
+            ResumeMusicStream(mPlayingMusic);
+            isMute = false;
+        }
     }
     if (!gamemode) mContainer.handle();
     else mContainer_gamemode.handle();

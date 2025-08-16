@@ -7,7 +7,14 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
+            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+                PauseMusicStream(mPlayingMusic);
+                isMute = true;
+            }
+            else {
+                ResumeMusicStream(mPlayingMusic);
+                isMute = false;
+            }
             else ResumeMusicStream(mPlayingMusic);
         }
     );
@@ -242,8 +249,14 @@ void LevelState::draw() {
 
 bool LevelState::handle() {
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
-        else ResumeMusicStream(mPlayingMusic);
+        if (!isMute) {
+            PauseMusicStream(mPlayingMusic);
+            isMute = true;
+        }
+        else {
+            ResumeMusicStream(mPlayingMusic);
+            isMute = false;
+        }
     }
     mContainer.handle();
     return true;

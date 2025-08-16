@@ -126,7 +126,7 @@ void NormalCoinBehavior::handleCollision(TileObject& item) {
 
     if(side == Side::BOTTOM && other == Category::BLOCK && item.isUp ) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
         item.setOn(false);
         item.mBodyCollide.setLabel(Category::NONE);
         item.mBodyCollide.setFilter(Category::MARIO);
@@ -136,7 +136,7 @@ void NormalCoinBehavior::handleCollision(TileObject& item) {
     if(other == Category::MARIO && item.isUp) {
         // std::cout << "NormalCoinBehavior handleCollision called" << std::endl;
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
         item.setOn(false);
         item.mBodyCollide.setLabel(Category::NONE);
         item.mBodyCollide.setFilter(Category::MARIO);
@@ -289,7 +289,7 @@ void MushroomBehavior::handleCollision(TileObject& item) {
     // }
     if(side == Side::BOTTOM && other == Category::MARIO  && !item.isUp){
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR));
         item.setOn(true);
         item.setAnimation();
         item.mPhysics.setVelocity({0, -96.0f});
@@ -423,7 +423,7 @@ void StarBehavior::update(TileObject& item, float dt) {
 void StarBehavior::handleCollision(TileObject& item) {
     if (side == Side::BOTTOM && other == Category::MARIO && !item.isUp) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR), sfxVolume);
-        PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR));
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::POWER_UP_APPEAR));
         item.setOn(true);
         item.setAnimation();
         item.mPhysics.setVelocity({0, -96.0f});

@@ -53,5 +53,6 @@ extern std::map<Action, KeyboardKey> mKeyBinding2;
 extern Music mPlayingMusic;
 extern float musicVolume;
 extern float sfxVolume;
+extern bool isMute;
 
 extern int createdCount;
