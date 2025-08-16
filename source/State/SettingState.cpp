@@ -435,7 +435,7 @@ void SettingState::draw() {
 }
 
 bool SettingState::handle() {
-    if (IsKeyPressed(mKeyBinding[Action::MUTE]) && !isReassigning) {
+    if (IsKeyPressed(mFunctionKey[Action::MUTE]) && !isReassigning) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }

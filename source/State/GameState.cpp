@@ -114,11 +114,11 @@ bool GameState::update(float dt) {
 }
 
 bool GameState::handle() {
-    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+    if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }
-    if (IsKeyPressed(mKeyBinding[Action::PAUSE])) {
+    if (IsKeyPressed(mFunctionKey[Action::PAUSE])) {
         requestStackPush(StateIdentifier::PAUSE);
     }
     mWorld.handle();

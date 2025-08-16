@@ -102,7 +102,7 @@ bool PauseState::update(float dt) {
 }
 
 bool PauseState::handle() {
-    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+    if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }

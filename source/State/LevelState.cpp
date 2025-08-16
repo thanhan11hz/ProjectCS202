@@ -241,7 +241,7 @@ void LevelState::draw() {
 }
 
 bool LevelState::handle() {
-    if (IsKeyPressed(mKeyBinding[Action::MUTE])) {
+    if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }

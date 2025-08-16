@@ -750,7 +750,7 @@ void MapEditor::saveMap() {
 }
 
 bool MapEditor::handle() {
-    if (IsKeyPressed(mKeyBinding[Action::MUTE]) && mMode != MapEditorMode::RENAME) {
+    if (IsKeyPressed(mFunctionKey[Action::MUTE]) && mMode != MapEditorMode::RENAME) {
         if (IsMusicStreamPlaying(mPlayingMusic)) PauseMusicStream(mPlayingMusic);
         else ResumeMusicStream(mPlayingMusic);
     }
