@@ -89,6 +89,12 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     
     exitButton->changeCallback(
         [this]() {
+            CloseAudioDevice();
+            TextureHolder::destroyInstance();
+            FontHolder::destroyInstance();
+            SoundHolder::destroyInstance();
+            MusicHolder::destroyInstance();
+            World::destroyInstance();
             CloseWindow();
         }
     );
