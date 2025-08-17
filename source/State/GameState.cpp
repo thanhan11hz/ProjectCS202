@@ -25,7 +25,7 @@ GameState::GameState(StateStack& stack) : State(stack) {
     mContainer.pack(pauseButton);
     pauseButton->changeCallback(
         [this]() {
-            requestStackPush(StateIdentifier::PAUSE);
+            if (!IsSoundPlaying(Resource::mSound.get(SoundIdentifier::MARIO_DEATH))) requestStackPush(StateIdentifier::PAUSE);
         }
     );
 
@@ -134,7 +134,7 @@ bool GameState::handle() {
             isMute = false;
         }
     }
-    if (IsKeyPressed(mFunctionKey[Action::PAUSE])) {
+    if (IsKeyPressed(mFunctionKey[Action::PAUSE]) && !IsSoundPlaying(Resource::mSound.get(SoundIdentifier::MARIO_DEATH))) {
         requestStackPush(StateIdentifier::PAUSE);
     }
     mWorld.handle();

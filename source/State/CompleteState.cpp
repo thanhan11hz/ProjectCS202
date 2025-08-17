@@ -82,7 +82,7 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
     Label* time = new Label();
     time->changeShape({598,521,200, 20});
     time->changeSize(20);
-    time->changeText("TIME: 00:00");
+    time->changeText("TIME 00:00");
     time->changeColor(WHITE);
     time->changeCallback([this](Label* label) {
         int time = (int)mWorld.getRestTime();
@@ -170,7 +170,7 @@ bool CompleteState::update(float dt) {
 
 bool CompleteState::handle() {
     if (IsKeyPressed(mFunctionKey[Action::MUTE])) {
-        if (IsMusicStreamPlaying(mPlayingMusic)) {
+        if (!isMute) {
             isMute = true;
             PauseMusicStream(mPlayingMusic);
             PauseSound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));

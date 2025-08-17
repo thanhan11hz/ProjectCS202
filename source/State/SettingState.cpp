@@ -119,30 +119,30 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mus = new Slider(648,437,564,20, musicVolume*100);
     mContainer_sound.pack(mus);
 
-    Label* bgm = new Label();
-    bgm->changeShape({166, 569, 309, 25});
-    bgm->changeSize(25);
-    bgm->changeText("Current BGM: ");
-    bgm->changeColor(WHITE);
-    mContainer_sound.pack(bgm);
+    // Label* bgm = new Label();
+    // bgm->changeShape({166, 569, 309, 25});
+    // bgm->changeSize(25);
+    // bgm->changeText("Current BGM: ");
+    // bgm->changeColor(WHITE);
+    // mContainer_sound.pack(bgm);
 
-    Label* currentSong = new Label();
-    currentSong->changeShape({647, 569, 565, 25});
-    currentSong->changeSize(25);
-    currentSong->changeText("BGM_1");
-    currentSong->changeColor(WHITE);
-    mContainer_sound.pack(currentSong);
+    // Label* currentSong = new Label();
+    // currentSong->changeShape({647, 569, 565, 25});
+    // currentSong->changeSize(25);
+    // currentSong->changeText("BGM_1");
+    // currentSong->changeColor(WHITE);
+    // mContainer_sound.pack(currentSong);
 
-    Button* toggle = new Button();
-    toggle->changeText("TOGGLE");
-    toggle->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
-    toggle->changShape({166, 623, 170, 45});
-    mContainer_sound.pack(toggle);
-    toggle->changeCallback(
-        [this]() {
-            //toggleBGM();
-        }
-    );
+    // Button* toggle = new Button();
+    // toggle->changeText("TOGGLE");
+    // toggle->changeTexture(TextureIdentifier::ACTIVE_BUTTON_SMALL);
+    // toggle->changShape({166, 623, 170, 45});
+    // mContainer_sound.pack(toggle);
+    // toggle->changeCallback(
+    //     [this]() {
+    //         //toggleBGM();
+    //     }
+    // );
 
     //General config
     Label* subtitleGen = new Label();
