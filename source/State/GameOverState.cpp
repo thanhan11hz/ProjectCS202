@@ -100,10 +100,12 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     mContainer.pack(score);
     PauseMusicStream(mPlayingMusic);
     if (mWorld.getRestLive() <= 0) {
-        SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), sfxVolume);;
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), sfxVolume);
+        if (isMute) SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), 0);
         PlaySound(Resource::mSound.get(SoundIdentifier::GAME_OVER));
     } else {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME), sfxVolume);
+        if (isMute) SetSoundVolume(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME), 0);
         PlaySound(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME));
     }
 
@@ -121,7 +123,7 @@ void GameOverState::draw() {
 bool GameOverState::update(float dt) {
     if (IsSoundPlaying(Resource::mSound.get(SoundIdentifier::GAME_OVER)) || IsSoundPlaying(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME))) {
         PauseMusicStream(mPlayingMusic);
-    } else if (!IsMusicStreamPlaying(mPlayingMusic)){
+    } else if (!IsMusicStreamPlaying(mPlayingMusic) && !isMute) {
         ResumeMusicStream(mPlayingMusic);
     }
     return false;
@@ -132,10 +134,14 @@ bool GameOverState::handle() {
         if (!isMute) {
             PauseMusicStream(mPlayingMusic);
             isMute = true;
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), 0);
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME), 0);
         }
         else {
             ResumeMusicStream(mPlayingMusic);
             isMute = false;
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_OVER), sfxVolume);
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::RUN_OUT_OF_TIME), sfxVolume);
         }
     }
     mWorld.handle();

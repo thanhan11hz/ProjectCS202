@@ -614,7 +614,7 @@ std::string SettingState::mapKeyToChar(KeyboardKey key) {
         case KEY_RIGHT_CONTROL: return "RCTRL"; break;
         case KEY_RIGHT_ALT: return "RALT"; break;
 
-        default: return ""; break; // Non-character keys (e.g., ESC, F1, arrows) return empty string
+        default: return ""; break; 
     }
 }
 

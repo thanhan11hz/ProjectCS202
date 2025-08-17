@@ -12,9 +12,6 @@ void Button::handle() {
     Vector2 mousePos = GetMousePosition();
     if (CheckCollisionPointRec(mousePos, mShape)) {
         select();
-        // if (mID == TextureIdentifier::ACTIVE_BUTTON) changeTexture(TextureIdentifier::HOVERED_BUTTON);
-        // else if (mID == TextureIdentifier::ACTIVE_BUTTON_MEDIUM) changeTexture(TextureIdentifier::HOVERED_BUTTON_MEDIUM);
-        // else if (mID == TextureIdentifier::ACTIVE_BUTTON_SMALL) changeTexture(TextureIdentifier::HOVERED_BUTTON_SMALL);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             mCallback();
         }

@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <map>
 #include <raylib.h>
 #include "State/State.hpp"
 #include "GUI/Container.hpp"
@@ -10,73 +11,52 @@
 #include "GUI/TextBox.hpp"
 #include "Resource/ResourceHolder.hpp"
 #include "World/World.hpp"
-
-enum class MapEditorMode {
-    SELECTION,
-    VIEW,
-    EDIT,
-    PEN,
-    ERASE,
-    CONFIRM,
-    RENAME
-};
-
-enum class Palette {
-    NONE,
-    BLOCKS,
-    COINS,
-    FOLIAGE1,
-    FOLIAGE2,
-    ITEMS,
-    GOOMBA
-};
-
-const int TILES_PER_ROW_BLOCKS = 29;
-const int TILES_PER_ROW_ITEMS = 36; 
-const int TILES_PER_ROW_ENEMIES = 18; 
-const int DEFAULT_MAP_HEIGHT = 19;
-const int DEFAULT_MAP_WIDTH = 30;
-const int TILE_SIZE = 16;
-const int SCALED_TILE_SIZE = 48;
-const int workspaceWidth = 1440;
-const int workspaceHeight = 762; 
+#include "State/MapEditorTypes.hpp"
 
 class MapEditor : public State {
     public:
         MapEditor(StateStack& stack);
+
     private:
         virtual void draw();
-        virtual bool handle();
-        virtual bool update(float dt);
-        
-        void setupCamera();
-        void cameraHandle();
-        void paletteHandle();
-        void stampingHandle();
-
         void drawUI();
         void drawMapPreview();
-        void drawPalette();
-        void drawGrid(int startX, int startY, int width, int height, int tileSize, Color lineColor = Fade(GRAY, 0.5f));
-        void createMap();
-        int getTilesPerRow();
+        void drawPalette(); 
 
+        virtual bool handle();
+        void cameraHandle();
+        bool paletteHandle();
+        void stampingHandle();
+
+        virtual bool update(float dt);
+        void setupCamera();
+        
+        //Map data
+        Camera2D mCamera;
+        int tileX;
+        int tileY;
+        int selected;
         std::vector<std::vector<int>> mMap;
         std::vector<std::vector<int>> mItems;
         std::vector<std::vector<int>> mEnemies;
+        void drawGrid(int startX, int startY, int width, int height, int tileSize, Color lineColor = Fade(GRAY, 0.5f));
         void saveMap();
-                
+        int getTilesPerRow();
+
+        //Metadata                
         std::string name;
         MapEditorMode mMode;
+        EnemyType enemy;
         Palette mPalette;
+        std::map<Palette, Rectangle> paletteRects;
         bool showPalette;
         bool isDropDown;
         bool showGrid;
-
         bool hasChanges;
         bool confirm;
         bool cfReset;
 
+        //UI Elements
         Label* currentMode;
         Label* subtext;
         Label* mapName;
@@ -99,10 +79,5 @@ class MapEditor : public State {
         Container mContainer_confirm;
         Container mContainer_reset;
         Container mContainer_rename;
-
-        Camera2D mCamera;
-        int tileX;
-        int tileY;
-        int selected;
-        
 };
+

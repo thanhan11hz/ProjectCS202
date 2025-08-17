@@ -144,10 +144,12 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
     PauseMusicStream(mPlayingMusic);
     if (mWorld.getCurrentMap() == FINAL_LEVEL) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE), sfxVolume);
+        if (isMute) SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE), 0);
         PlaySound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));
         
     } else {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE), sfxVolume);
+        if (isMute) SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE), 0);
         PlaySound(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE));
         
     }
@@ -160,7 +162,7 @@ void CompleteState::draw() {
 }
 
 bool CompleteState::update(float dt) {
-    if (!IsSoundPlaying(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE)) && !IsSoundPlaying(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE))) {
+    if (!IsSoundPlaying(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE)) && !IsSoundPlaying(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE)) && !isMute) {
         ResumeMusicStream(mPlayingMusic);
     } else {
         PauseMusicStream(mPlayingMusic);
@@ -173,14 +175,14 @@ bool CompleteState::handle() {
         if (!isMute) {
             isMute = true;
             PauseMusicStream(mPlayingMusic);
-            PauseSound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));
-            PauseSound(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE));
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE), 0);
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE), 0);
         }
         else {
             isMute = false;
             ResumeMusicStream(mPlayingMusic);
-            ResumeSound(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE));
-            ResumeSound(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE));
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::GAME_COMPLETE), sfxVolume);
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::LEVEL_COMPLETE), sfxVolume);
         }
     }
     if (mWorld.getCurrentMap() != FINAL_LEVEL) mContainer_level.handle();

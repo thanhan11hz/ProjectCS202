@@ -42,7 +42,6 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
     );
 
     Button* homeButton = new Button();
-    // homeButton->changeToggle(true);
     homeButton->changeTexture(TextureIdentifier::HOME_BUTTON);
     homeButton->changShape({1372,24,41,41});
     mContainer.pack(homeButton);
@@ -136,16 +135,12 @@ void InstructionState::setupPage(int page) {
             break;
         }
         case 9: {
-            // next->changeToggle(true);
-            // previous->changeToggle(true);
            description->changeText (
                 "Outsmart Bowser’s generals — time your jumps, attacks, and power-\nups to claim each key."
             );
             break; 
         }
         case 10: {
-            // next->changeToggle(false);
-            // previous->changeToggle(true);
             description->changeText (
                 "With Bowser defeated, Peach is safe, the kingdom rejoices, and a new adventure\nglimmers on the horizon."
             );

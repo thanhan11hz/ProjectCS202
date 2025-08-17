@@ -15,13 +15,6 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     header->changeColor(WHITE);
     mContainer.pack(header);
 
-    // Label* Character = new Label();
-    // Character->changeShape({515, 648, 85, 17});
-    // Character->changeSize(17);
-    // Character->changeText("MARIO");
-    // Character->changeColor(WHITE);
-    // mContainer.pack(Character);
-
     muteButton = new Button();
     muteButton->changeTexture(TextureIdentifier::SOUND_ON);
     muteButton->changShape({23, 22, 41, 41});
