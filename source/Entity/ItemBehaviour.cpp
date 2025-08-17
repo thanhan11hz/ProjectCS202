@@ -200,10 +200,12 @@ void SpecialCoinBehavior::handleCollision(TileObject& item) {
         
     // }
    if(side == Side::BOTTOM && other == Category::MARIO  && item.isDoneAnimation && !item.isUp){
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
+        mWorld.receiveCoin();
         item.setOn(true);
         item.setAnimation();
         item.mPhysics.setVelocity({0, -500.0f});
-        
     }
 }
 

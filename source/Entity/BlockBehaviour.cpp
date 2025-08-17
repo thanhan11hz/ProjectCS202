@@ -118,9 +118,6 @@ void CoinBlockBehavior::update(TileBlock& block, float dt) {
 void CoinBlockBehavior::handleCollision(TileBlock& block) {
     if(side == Side::BOTTOM  && other == Category::MARIO && block.mType != 26){
         if(block.isDoneAnimation){
-            SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
-            if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
-            mWorld.receiveCoin();
             block.mPhysics.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;
             block.aniTime = 0.0f;
