@@ -5,7 +5,6 @@
 #include <iostream>
 #include <cmath>
 
-
 #include <sstream>
 using namespace std;
 
@@ -18,7 +17,7 @@ TileMap::TileMap(const nlohmann::json& j) {
     for (const auto& ji: j["item"]) {
         Items.push_back(std::make_unique<TileObject>(ji));
     }
-    std::cout << "Create Main\n";
+        
     for (const auto& jr: j["main"]) {
         std::vector<Btr> row;
         for (const auto& jc: jr) {
@@ -26,7 +25,6 @@ TileMap::TileMap(const nlohmann::json& j) {
         }
         mMain.push_back(std::move(row));
     }
-    std::cout << "Address Main " << &mMain << "\n";
 
     for (const auto& jr: j["background1"]) {
         std::vector<Btr> row;

@@ -1,7 +1,7 @@
 #include "Entity/FireBar.hpp"
 
 FireBar::FireBar() {
-    mBodyCollide.setFilter(static_cast<Category>(Category::BLOCK | Category::ENEMY));
+    mBodyCollide.setFilter(static_cast<Category>(Category::BLOCK | Category::ENEMY | Category::MARIO));
     mBodyCollide.setLabel(Category::ENEMY);
     mPhysics.setDensity(0.0f);
     mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::FIREBAR), 9, 9);
@@ -11,7 +11,7 @@ FireBar::FireBar() {
 }
 
 FireBar::FireBar(const nlohmann::json& j) {
-    mBodyCollide.setFilter(static_cast<Category>(Category::BLOCK | Category::ENEMY));
+    mBodyCollide.setFilter(static_cast<Category>(Category::BLOCK | Category::ENEMY | Category::MARIO));
     mBodyCollide.setLabel(Category::ENEMY);
     mPhysics.setDensity(0.0f);
     mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::FIREBAR), 9, 9);

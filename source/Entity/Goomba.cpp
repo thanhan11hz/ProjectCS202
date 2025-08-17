@@ -52,10 +52,14 @@ void Goomba::handleCollision(Side side, Collide other) {
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
         if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         setMove(Move::DEAD);
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
     }
 
     if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
         else mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
@@ -68,6 +72,8 @@ void Goomba::handleCollision(Side side, Collide other) {
 
     if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
         else mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
@@ -82,6 +88,8 @@ void Goomba::handleCollision(Side side, Collide other) {
 
     if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Koopa") {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         if (mType == Type::BROWN_GOOMBA) mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA_DEATH), true));
         else mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::GOOMBA2_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));

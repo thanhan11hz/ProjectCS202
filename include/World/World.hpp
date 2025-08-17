@@ -49,6 +49,7 @@ class World {
         bool isLevelComplete();
         void setLevelComplete(bool flag);
         Camera2D& getCamera();
+        Character* getCharacter();
 
         void receiveCoin();
         void heal();

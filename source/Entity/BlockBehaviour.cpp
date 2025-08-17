@@ -1,6 +1,7 @@
 
 #include "Entity/TileEntity.hpp"
 #include "Entity/TileItem.hpp"
+#include "World/World.hpp"
 #include <iostream>
 using namespace std;
 IBlockBehavior::~IBlockBehavior() = default;
@@ -26,7 +27,7 @@ void SimpleBlockBehavior::handleCollision(TileBlock& block) {
         }
     }
     if ((block.getType(block.calType()) == TileType::OwInitialTile || block.getType(block.calType()) == TileType::UnderTile)  && side == Side::BOTTOM && other == Category::MARIO && (oTag == "Super" || oTag == "Fire")) {
-        std::cout << "Destroying block" << "\n";
+        // std::cout << "Destroying block" << "\n";
         SetSoundVolume(Resource::mSound.get(SoundIdentifier::BLOCK_BREAK), sfxVolume);
         if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::BLOCK_BREAK));
         block.frag[0]->mPhysics.setVelocity({-80.0f, 300});
@@ -119,6 +120,7 @@ void CoinBlockBehavior::handleCollision(TileBlock& block) {
         if(block.isDoneAnimation){
             SetSoundVolume(Resource::mSound.get(SoundIdentifier::COIN), sfxVolume);
             if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::COIN));
+            mWorld.receiveCoin();
             block.mPhysics.setVelocity({0, 192.5f});
             block.isDoneAnimation = false;
             block.aniTime = 0.0f;

@@ -1,11 +1,12 @@
 #include "Entity/Koopa.hpp"
 #include "World/World.hpp"
+#include "Entity/Character.hpp"
 
 Koopa::Koopa(Type type) : mType(type), mState(State::WALKING), mShellTimer(0.f) {
     mBodyCollide.setFilter(Category::NONE);
     mBodyCollide.setLabel(Category::ENEMY);
     mAnim.setFrameSize({16, 24}); 
-    mSpeed = (mType == Type::K_BLUE) ? -150.0f : -100.0f;
+    mSpeed = (mType == Type::K_BLUE) ? -100.0f : -80.0f;
     switch (type) {
         case Type::K_GREEN:
             mRunTexture = Resource::mTexture.get(TextureIdentifier::KOOPA_GREEN_RUN);
@@ -160,6 +161,13 @@ void Koopa::handleCollision(Side side, Collide other) {
         mPhysics.setPosition(newPos);
         mLedgeCooldown = 0.2f;
     }
+
+    if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeathTexture, true));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
+    }
     
     if (otherLabel == Category::MARIO) {
          if (mState == State::WALKING) {
@@ -168,6 +176,13 @@ void Koopa::handleCollision(Side side, Collide other) {
             mSpeed = 400.0f * pushDirection;
             setState(State::SLIDING);
          }
+    }
+
+        if (otherLabel == Category::ITEM && other.getOwner()->getTag() == "Koopa") {
+        setDie(true);
+        mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), mDeathTexture, true));
+        mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
+        mWorld.receivePoint(200);
     }
 
     if (otherLabel == Category::ENEMY && (side == Side::LEFT || side == Side::RIGHT)) {

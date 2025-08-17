@@ -49,6 +49,8 @@ void FlyingKoopa::draw() {
 void FlyingKoopa::handleCollision(Side side, Collide other) {
     if (other.getLabel() == Category::PROJECTILE && other.getOwner()->getTag() == "Fireball") {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::KOOPA_RED_DEATH), true));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "300"));
         mWorld.receivePoint(300);
@@ -56,6 +58,8 @@ void FlyingKoopa::handleCollision(Side side, Collide other) {
 
     if (other.getLabel() == Category::MARIO && side == Side::TOP) {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::KOOPA_RED_SHELL), false));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "300"));
         mWorld.receivePoint(300);

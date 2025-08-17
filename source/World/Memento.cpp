@@ -24,8 +24,9 @@ Memento::Memento(const nlohmann::json& j) {
         auto p = createEntityFromJson(jp);
         mProjectile.push_back(std::unique_ptr<Entity>(static_cast<Entity*>(p.release())));
     }
-
-    mCurrentMap = std::make_unique<TileMap>(j["map"]);
+    if (j.contains("map")) {
+        mCurrentMap = std::make_unique<TileMap>(j["map"]);
+    } else mCurrentMap = nullptr;
 }
 
 void Memento::serialize(nlohmann::json& j) {

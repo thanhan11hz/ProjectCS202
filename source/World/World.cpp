@@ -12,6 +12,7 @@ World::World() {
 }
 
 World::~World() {
+    if (!isComplete && mCurrentMap) saveSnapshot(); 
     std::ofstream out("resource\\save.json");
     nlohmann::json j;
     if (!mSnapshot) j = nullptr;
@@ -33,7 +34,6 @@ void World::destroyInstance() {
 }
         
 void World::update(float dt) {
-    std::cout << "Begin\n";
     if (mCharacter->isDie() && mLives > 0) {
         if (mEffect.isEmpty()) {
             mLives--;
@@ -47,9 +47,7 @@ void World::update(float dt) {
             restart();
         }
     }
-    std::cout << "Address3 " << mCurrentMap.get() << "\n";
     mCurrentMap->update(dt);
-    std::cout << "End\n";
     mCharacter->update(dt);
 
     if (mIsMultiPlayers) mCharacter2->update(dt);
@@ -177,7 +175,11 @@ void World::reset() {
         mCharacter2 = Character::spawnLuigi();
         mCharacter->setKeyBind(mKeyBinding);
         mCharacter2->setKeyBind(mKeyBinding2);
-    } else mCharacter2 = nullptr;
+    } else {
+        if (mCharacter->isMario()) mCharacter = Character::spawnMario();
+        else mCharacter = Character::spawnLuigi();
+        mCharacter2 = nullptr;
+    }
 
     // Đặt vị trí spawn
 
@@ -330,7 +332,7 @@ void World::loadSnapshot() {
         if (j.is_null()) mSnapshot = nullptr;
         else mSnapshot = std::make_unique<Memento>(j);
     }
-    std::cout << "Address " << mSnapshot->mCurrentMap.get() << "\n";
+    in.close();
 }
         
 void World::setMultiPlayers(bool flag) {
@@ -371,6 +373,10 @@ void World::heal() {
 
 Camera2D& World::getCamera() {
     return mCam;
+}
+
+Character* World::getCharacter() {
+    return mCharacter.get();
 }
 
 size_t World::getCurrentPoint() {

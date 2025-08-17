@@ -4,7 +4,7 @@
 
 Piranha::Piranha(Type type) : mType(type) {
     mPhysics.setDensity(0.0f);
-    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setFilter(Category::BLOCK);
     mBodyCollide.setLabel(Category::ENEMY);
     mPhysics.setDensity(0.0f);
     mAnim.setFrameSize({16, 24});
@@ -47,7 +47,7 @@ void Piranha::update(float dt) {
     if (mMove == Move::FLY) mPhysics.accelerate({0, mSpeed});
     if (mPhysics.getPosition().y > mFixedPoint.y) {
         mPhysics.setPosition(mFixedPoint);
-        mSpeed = -50.0f;
+        mSpeed = -10.0f;
     }
     updateMove(dt);
     mAnim.update(dt);
@@ -65,17 +65,21 @@ void Piranha::draw() {
 void Piranha::handleCollision(Side side, Collide other) {
     Category otherLabel = other.getLabel();
     if (side == Side::TOP && otherLabel == MARIO) {
-        if (mMove == Move::FLY && mSpeed == -50.0f) mSpeed = 50.0f;
+        if (mMove == Move::FLY && mSpeed == -10.0f) mSpeed = 10.0f;
     }
 
     if (otherLabel == Category::PROJECTILE && other.getOwner()->getTag() == "FireBall") {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
         mWorld.receivePoint(200);
     }
 
     if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "200"));
         mWorld.receivePoint(200);
     }
@@ -93,7 +97,7 @@ void Piranha::updateMove(float dt) {
         else {
             attackTimer = 0.0f;
             mMove = Move::FLY;
-            mSpeed = 50.0f;
+            mSpeed = 10.0f;
         }
     } else {
         if (mPhysics.getPosition().y < mFixedPoint.y - 48 * 2) {
@@ -117,8 +121,8 @@ std::unique_ptr<Piranha> Piranha::spawnPiranha2(Vector2 position) {
 }
 
 void Piranha::setFixedPoint(Vector2 point) {
-    mPhysics.setPosition(point);
-    mFixedPoint = point;
+    mPhysics.setPosition(point + Vector2{-24, 144});
+    mFixedPoint = point + Vector2{-24, 144};
 }
 
 std::string Piranha::getTag() {

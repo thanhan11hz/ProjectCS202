@@ -27,24 +27,34 @@ void Bowser::update(float dt) {
     Enemy::update(dt);
     if (!isActive()) return;
     if (isDie()) return;
-    if (mPhysics.getPosition().x < mCenter.x - mAmplitude) mSpeed = 50;
-    else if (mPhysics.getPosition().x > mCenter.x + mAmplitude) mSpeed = -50;
-    mPhysics.accelerate(mSpeed, 0); 
-    if (mJumpTimer < mJumpTime) {
-        mJumpTimer += dt;
+    if (fabs(mWorld.getCharacter()->mPhysics.getPosition().x - mPhysics.getPosition().x) > 480) {
+        if (mPhysics.getPosition().x < mCenter.x - mAmplitude) mSpeed = 50;
+        else if (mPhysics.getPosition().x > mCenter.x + mAmplitude) mSpeed = -50;
+    } else if (fabs(mWorld.getCharacter()->mPhysics.getPosition().x - mPhysics.getPosition().x) > 192) {
+        if (mPhysics.getPosition().x < mCenter.x - 2/3.f * mAmplitude && mPhysics.onGround()) mSpeed = 100;
+        else if (mPhysics.getPosition().x > mCenter.x + 2/3.f * mAmplitude && mPhysics.onGround()) mSpeed = -100;
+        else {
+            mPhysics.setRight(mWorld.getCharacter()->mPhysics.getPosition().x > mPhysics.getPosition().x);
+            mSpeed = 0;
+        }
     } else {
-        mJumpTimer = 0.0f;
-        float random = GetRandomValue(0, 100) / 100.0f;
-        if (random < jumpChance && mPhysics.onGround()) {
+        if (mJumpTimer < mJumpTime) {
+            mJumpTimer += dt;
+        } else {
+            mJumpTimer = 0.0f;
             mPhysics.startJump(3);
+            if (mPhysics.getPosition().x > mWorld.getCharacter()->mPhysics.getPosition().x && !mPhysics.onGround()) mSpeed = -200;
+            else if (mPhysics.getPosition().x < mWorld.getCharacter()->mPhysics.getPosition().x && !mPhysics.onGround()) mSpeed = 200;
+        }
     }
-    }
+    mPhysics.accelerate(mSpeed, 0); 
     Entity::update(dt);
     if (mMove == Move::MOVE) {
         if (mCooldownTimer < mCooldownTime) mCooldownTimer += dt;
-        else {
+        else if (mPhysics.isRest()) {
             mCooldownTimer = 0.0f;
             setMove(Move::ATTACK);
+            fire();
         }
     } else {
         if (mAttackTimer < mAttackTime) mAttackTimer += dt;
@@ -54,6 +64,7 @@ void Bowser::update(float dt) {
         }
     }
     mAnim.update(dt);
+    mPhysics.setOnGround(false);
 }
         
 void Bowser::handle() {
@@ -70,6 +81,8 @@ void Bowser::handleCollision(Side side, Collide other) {
         mLives --;
         if (mLives == 0) {
             setDie(true);
+            SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+            if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
             mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
             mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
             mWorld.receivePoint(500);
@@ -78,6 +91,8 @@ void Bowser::handleCollision(Side side, Collide other) {
 
     if (otherLabel == Category::MARIO && side == Side::TOP) {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
         mWorld.receivePoint(500);
@@ -85,9 +100,15 @@ void Bowser::handleCollision(Side side, Collide other) {
 
     if (otherLabel == Category::MARIO && static_cast<Character*>(other.getOwner())->isImmortal()) {
         setDie(true);
+        SetSoundVolume(Resource::mSound.get(SoundIdentifier::KICK), sfxVolume);
+        if (!isMute) PlaySound(Resource::mSound.get(SoundIdentifier::KICK));
         mWorld.addEffect(DeathEffect::spawnDeathEffect(mPhysics.getPosition(), Resource::mTexture.get(TextureIdentifier::BOWSER_SHELL), false));
         mWorld.addEffect(PointEffect::spawnPointEffect(mPhysics.getPosition(), "500"));
         mWorld.receivePoint(500);
+    }
+
+    if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
+        mSpeed = (side == Side::RIGHT) ? -100.0f : 100.0f;
     }
 }
 
@@ -113,6 +134,7 @@ void Bowser::fire() {
     Vector2 position = mPhysics.getPosition();
     if (mPhysics.isRight()) position += {getSize().x, 0};
     else position += {-144, 0};
+    if (!mWorld.getCharacter()->mPhysics.isRising()) position.y = mWorld.getCharacter()->mPhysics.getPosition().y;
     mWorld.addProjectile(BowserFire::spawnBowserFire(position, mPhysics.isRight()));
 }
 
@@ -122,7 +144,6 @@ void Bowser::setMove(Move move) {
     if (move == Move::MOVE) texture = &Resource::mTexture.get(TextureIdentifier::BOWSER_MOVE);
     else {
         texture = &Resource::mTexture.get(TextureIdentifier::BOWSER_ATTACK);
-        fire();
     }
 
     mMove = move;

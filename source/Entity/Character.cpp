@@ -62,8 +62,8 @@ void Character::handle() {
         }
     } else {
         if (IsKeyDown((*mKey)[Action::DOWN])) setMove(Move::CROUCH);
-        if (IsKeyDown((*mKey)[Action::LEFT])) mPhysics.accelerate({mIsImmortal ? -2 * mLength : -mLength, 0});
-        if (IsKeyDown((*mKey)[Action::RIGHT])) mPhysics.accelerate({mIsImmortal ? 2 * mLength : mLength, 0});
+        if (IsKeyDown((*mKey)[Action::LEFT])) mPhysics.accelerate({mIsImmortal ? -1.12f * mLength : -mLength, 0});
+        if (IsKeyDown((*mKey)[Action::RIGHT])) mPhysics.accelerate({mIsImmortal ? 1.12f * mLength : mLength, 0});
     }
     if (IsKeyDown((*mKey)[Action::JUMP]) && mPhysics.onGround()) {
         mPhysics.startJump(mHigh);

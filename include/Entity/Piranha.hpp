@@ -42,9 +42,9 @@ class Piranha : public Enemy {
     private:
         Type mType;
         Move mMove = Move::FLY;
-        static constexpr float attackTime = 2.0f;
+        static constexpr float attackTime = 3.0f;
         float attackTimer = 0.0f;
-        float mSpeed = -50.0f;
+        float mSpeed = -10.0f;
         Vector2 mFixedPoint;
         void updateMove(float dt);
 };
