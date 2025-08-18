@@ -470,7 +470,11 @@ bool MapEditor::paletteHandle() {
             if (mPalette != Palette::ENEMIES) {
                 selectedTile = {palRect.x+tX*SCALED_TILE_SIZE, palRect.y+tY*SCALED_TILE_SIZE, SCALED_TILE_SIZE, SCALED_TILE_SIZE};
                 int index = tY * tilesPerRow + tX;
-                if (mPalette == Palette::COINS) index += 23;
+                if (mPalette == Palette::COINS) {
+                    index += 23;
+                    if (index >= 52 && index <=54) index += 128;
+                    if (index >= 110 && index <= 112) index += 79;
+                }
                 else if (mPalette == Palette::FOLIAGE1) index += 8*tilesPerRow;
                 else if (mPalette == Palette::FOLIAGE2) index += 20*tilesPerRow;
                 selected = index;
@@ -542,13 +546,12 @@ void MapEditor::stampingHandle() {
     bool inBounds = tileX >= 0 && tileX < mMap[0].size() && tileY >= 0 && tileY < mMap.size();
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && inBounds && mMode == MapEditorMode::PEN && !isDropDown) {
-        if (mPalette == Palette::ITEMS) mItems[tileY][tileX] = selected;
+        if (mPalette == Palette::ITEMS && selected != 292) mItems[tileY][tileX] = selected;
+        else if (mPalette == Palette::COINS && ((selected >= 180 && selected <= 182) || (selected >= 189 && selected <= 190))) mItems[tileY][tileX] = selected;
         else if (mPalette == Palette::ENEMIES) {
             switch (enemy) {
                 case EnemyType::GOOMBA:
                 case EnemyType::GOOMBA_BLUE:
-                    mEnemies[tileY][tileX] = selected;
-                    break;
                 case EnemyType::FIRE:
                     mEnemies[tileY][tileX] = selected;
                     break;
@@ -634,17 +637,21 @@ void MapEditor::drawMapPreview() {
 
     BeginScissorMode(0,0,workspaceWidth,workspaceHeight);
     BeginMode2D(mCamera);
-    
     for (int y = 0; y < mMap.size(); ++y) {
         for (int x = 0; x < mMap[y].size(); ++x) {
+            int tiles = TILES_PER_ROW_BLOCKS;
+            Texture2D tileset = brickTiles;
             int tileID = mMap[y][x];
             if (tileID < 0) continue;
-
-            int tx = tileID % TILES_PER_ROW_BLOCKS;
-            int ty = tileID / TILES_PER_ROW_BLOCKS;
+            if (tileID == 292) {
+                tiles = TILES_PER_ROW_ITEMS; 
+                tileset = items;   
+            }
+            int tx = tileID % tiles;
+            int ty = tileID / tiles;
             Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
             Vector2 dest = { float(x * TILE_SIZE), float(y * TILE_SIZE) };
-            DrawTextureRec(brickTiles, srcRect, dest, WHITE);
+            DrawTextureRec(tileset, srcRect, dest, WHITE);
         }
     }
 
@@ -663,21 +670,19 @@ void MapEditor::drawMapPreview() {
 
     for (int y = 0; y < mEnemies.size(); ++y) {
         for (int x = 0; x < mEnemies[y].size(); ++x) {
+            int tiles = TILES_PER_ROW_ENEMIES;
+            Texture2D tileset = enemies;
             int tileID = mEnemies[y][x];
             if (tileID < 0) continue;
-            if (tileID != 330) {
-                int tx = tileID % TILES_PER_ROW_ENEMIES;
-                int ty = tileID / TILES_PER_ROW_ENEMIES;
-                Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
-                Vector2 dest = { float(x * TILE_SIZE), float(y * TILE_SIZE) };
-                DrawTextureRec(enemies, srcRect, dest, WHITE);
-            } else {
-                int tx = tileID % TILES_PER_ROW_ITEMS;
-                int ty = tileID / TILES_PER_ROW_ITEMS;
-                Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
-                Vector2 dest = { float(x * TILE_SIZE), float(y * TILE_SIZE) };
-                DrawTextureRec(items, srcRect, dest, WHITE);
+            if (tileID == 330) {
+                tiles = TILES_PER_ROW_ITEMS;
+                tileset = items;
             }
+            int tx = tileID % tiles;
+            int ty = tileID / tiles;
+            Rectangle srcRect = { float(tx * TILE_SIZE), float(ty * TILE_SIZE), TILE_SIZE, TILE_SIZE };
+            Vector2 dest = { float(x * TILE_SIZE), float(y * TILE_SIZE) };
+            DrawTextureRec(tileset, srcRect, dest, WHITE);
         }
     }
 
@@ -687,6 +692,9 @@ void MapEditor::drawMapPreview() {
             Texture2D tileset = brickTiles;
             int tilesPerRow = TILES_PER_ROW_BLOCKS;
             if (mPalette == Palette::ITEMS) {
+                tileset = items;
+                tilesPerRow = TILES_PER_ROW_ITEMS;
+            } else if (mPalette == Palette::COINS && ((selected >= 180 && selected <= 182) || (selected >= 189 && selected <= 190))) {
                 tileset = items;
                 tilesPerRow = TILES_PER_ROW_ITEMS;
             }
