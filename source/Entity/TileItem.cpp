@@ -74,28 +74,28 @@ TileObject::TileObject(const nlohmann::json& j) : TileBlock(j) {
 
 void TileObject::createBehavior()  {
     if(getType() == TileItem::fragment || getType() == TileItem::underfragment) {
-        mBehavior = new FragmentBehavior();
+        mBehavior = std::make_unique<FragmentBehavior>();
     } 
     else if(getType() == TileItem::flower) {
-        mBehavior = new SimpleBehavior();
+        mBehavior = std::make_unique<SimpleBehavior>();
     } 
     else if(getType() == TileItem::mushroom ||getType() == TileItem::underMushroom ) {
-        mBehavior = new MushroomBehavior();
+        mBehavior = std::make_unique<MushroomBehavior>();
     } 
     else if(getType() == TileItem::greenMushroom) {
-        mBehavior = new GreenMushroomBehavior();
+        mBehavior = std::make_unique<GreenMushroomBehavior>();
     } 
     else if(getType() == TileItem::star) {
-        mBehavior = new StarBehavior();
+        mBehavior = std::make_unique<StarBehavior>();
     } 
     else if(getType() == TileItem::normalCoin || getType() == TileItem::underCoin) {
-        mBehavior = new NormalCoinBehavior();
+        mBehavior = std::make_unique<NormalCoinBehavior>();
     }
     else if(getType() == TileItem::specialCoin ) {
-        mBehavior = new SpecialCoinBehavior();
+        mBehavior = std::make_unique<SpecialCoinBehavior>();
     } 
     else if( getType() == TileItem::hammer) {
-        mBehavior = new NormalCoinBehavior();
+        mBehavior = std::make_unique<NormalCoinBehavior>();
     } 
     
     else {
