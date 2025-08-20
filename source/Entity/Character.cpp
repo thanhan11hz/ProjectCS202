@@ -88,8 +88,8 @@ void Character::draw() {
         if (mForm == Form::NORMAL) mAnim.drawScale(mPhysics.getPosition() - Vector2{0, 48 - transitionProgress * 48}, 3.0f, 3.0f * (32 - transitionProgress * 16) / 16.0f, !mPhysics.isRight(), false, mIsImmortal);
         else mAnim.drawScale(mPhysics.getPosition() + Vector2{0, 48 - transitionProgress * 48}, 3.0f, 3.0f * (16 + transitionProgress * 16) / 32.0f, !mPhysics.isRight(), false, mIsImmortal);
     } else mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f, !mPhysics.isRight(), false, mIsImmortal);
-    DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
-    DrawRectangleLines(mFootCollide.getHitBox().x, mFootCollide.getHitBox().y, mFootCollide.getHitBox().width, mFootCollide.getHitBox().height, BLACK);
+    // DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
+    // DrawRectangleLines(mFootCollide.getHitBox().x, mFootCollide.getHitBox().y, mFootCollide.getHitBox().width, mFootCollide.getHitBox().height, BLACK);
 }
 
 void Character::update(float dt) {

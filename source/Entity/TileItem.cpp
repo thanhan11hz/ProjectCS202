@@ -126,7 +126,7 @@ void TileObject::draw(Texture2D& background, Texture2D& object){
         float posY = mPhysics.getPosition().y;
         {DrawTexturePro(object, mSource, {posX, posY, mRect.width, mRect.height}, {0, 0}, 0.0f, WHITE);}
     }
-    DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, mColor);
+    // DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, mColor);
 }
 
 void TileObject::update(float dt) {

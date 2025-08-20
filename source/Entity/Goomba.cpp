@@ -43,7 +43,7 @@ void Goomba::handle() {
         
 void Goomba::draw() {
     mAnim.draw(mPhysics.getPosition(), 3.0f, 0.0f);
-    DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
+    // DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, BLACK);
 }
 
 void Goomba::handleCollision(Side side, Collide other) {

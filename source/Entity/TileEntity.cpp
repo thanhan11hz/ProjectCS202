@@ -140,7 +140,7 @@ void TileBlock::draw( Texture2D& background, Texture2D& object) {
             frag[i]->draw( background, object);
         }
     }
-    DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, mColor);
+    // DrawRectangleLines(mBodyCollide.getHitBox().x, mBodyCollide.getHitBox().y, mBodyCollide.getHitBox().width, mBodyCollide.getHitBox().height, mColor);
 
 }
 
