@@ -161,7 +161,7 @@ Game::Game() {
 
 
     //Load all provided maps 
-    std::filesystem::path exePath = std::filesystem::current_path().parent_path();
+    std::filesystem::path exePath = std::filesystem::current_path();
     std::filesystem::path mapDir = exePath / "resource" / "Map";
     for (const auto& entry : std::filesystem::directory_iterator(mapDir)) {
         if (entry.is_directory() && entry.path().filename().string() != "Custom") {
