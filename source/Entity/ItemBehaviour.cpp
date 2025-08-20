@@ -52,11 +52,16 @@ void SimpleBehavior::moveUp(TileObject& item, float dt) {
     } 
         
     float startY = item.mRect.y-48.0f;
+    float finalY = item.mRect.y+48.0f;
 
     item.mPhysics.setPosition({item.mPhysics.getPosition().x, item.mPhysics.getPosition().y + item.mPhysics.getVelocity().y * dt});
 
-    if (item.mPhysics.getPosition().y <= startY) {
-        item.mPhysics.setPosition({item.mPhysics.getPosition().x, startY});
+    if (item.mPhysics.getPosition().y <= startY || (item.mType==10 && item.mPhysics.getPosition().y >= finalY)) {
+        if(item.mType == 10) {
+            item.mPhysics.setPosition({item.mPhysics.getPosition().x, finalY});
+        }
+        else item.mPhysics.setPosition({item.mPhysics.getPosition().x, startY});
+        
         if (getTag() != "Flower") {
             item.isMoving = true;
             item.mPhysics.setVelocity({50,0});
@@ -101,8 +106,8 @@ void NormalCoinBehavior::update(TileObject& item, float dt) {
             item.aniTime+=dt;
         }
         else{
-            if(item.mType==180 || item.mType==189) item.mType +=1 ;
-            else if (item.mType == 181 || item.mType==190) item.mType+=1;
+            if(item.mType==180 || item.mType==189 || item.mType==252) item.mType +=1 ;
+            else if (item.mType == 181 || item.mType==190 || item.mType==253) item.mType+=1;
             else item.mType -= 2;
             int x = (item.mType) % 36;
             int y = (item.mType) / 36;
@@ -296,7 +301,7 @@ void MushroomBehavior::handleCollision(TileObject& item) {
         item.setAnimation();
         item.mPhysics.setVelocity({0, -96.0f});
         if(item.mType == 10) {
-            item.mPhysics.setVelocity({0, -96.0f});
+            item.mPhysics.setVelocity({0, 96.0f});
         }
     }
 

@@ -94,6 +94,10 @@ void TileObject::createBehavior()  {
     else if(getType() == TileItem::specialCoin ) {
         mBehavior = new SpecialCoinBehavior();
     } 
+    else if( getType() == TileItem::hammer) {
+        mBehavior = new NormalCoinBehavior();
+    } 
+    
     else {
         mBehavior = nullptr;
     }
