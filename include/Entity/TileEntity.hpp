@@ -152,7 +152,7 @@ protected:
     bool isDestroyed = false;
     bool solid = false;
     float aniTime = 0.0f;
-    IBlockBehavior* mBehavior = nullptr;
+    std::unique_ptr<IBlockBehavior> mBehavior = nullptr;    
     int mRow;
     int mCol;
     std::vector<std::unique_ptr<TileObject>> frag;

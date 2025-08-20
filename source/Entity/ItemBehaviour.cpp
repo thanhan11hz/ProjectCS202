@@ -2,9 +2,7 @@
 #include "Global.hpp"
 #include "World/World.hpp"
 
-void FragmentBehavior::onCollect(TileObject& item) {
-  
-}
+
 void FragmentBehavior::update(TileObject& item, float dt) {
     if (item.isDoneAnimation) return;
 
@@ -79,9 +77,7 @@ void SimpleBehavior::moveUp(TileObject& item, float dt) {
     }
 }
 
-void NormalCoinBehavior::onCollect(TileObject& item) {
-    // Logic for collecting a normal coin
-}
+
 
 void NormalCoinBehavior::update(TileObject& item, float dt) {
     Vector2 mousePos = GetMousePosition();
@@ -149,9 +145,7 @@ void NormalCoinBehavior::handleCollision(TileObject& item) {
     }
 }
 
-void SpecialCoinBehavior::onCollect(TileObject& item) {
-    // Logic for collecting a special coin
-}
+
 
 void SpecialCoinBehavior::update(TileObject& item, float dt) {
     Vector2 mousePos = GetMousePosition();
@@ -249,9 +243,7 @@ void SpecialCoinBehavior::moveUp(TileObject& item, float dt) {
     }
 }
 
-void MushroomBehavior::onCollect(TileObject& item) {
-    // Logic for collecting a mushroom
-}
+
 
 void MushroomBehavior::update(TileObject& item, float dt) {
     // if(item.isUp) std::cout << "Mushroom is up" << std::endl;
@@ -325,9 +317,6 @@ void MushroomBehavior::handleCollision(TileObject& item) {
     
 }
 
-void StarBehavior::onCollect(TileObject& item) {
-    // Logic for collecting a star
-}
 
 void StarBehavior::update(TileObject& item, float dt) {
     SimpleBehavior::update(item, dt);

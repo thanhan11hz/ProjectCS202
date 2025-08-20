@@ -109,18 +109,18 @@ TileBlock::TileBlock(const nlohmann::json& j) {
 
 void TileBlock::createBehavior()  {
     if(getType(calType()) == TileType::OwCoinBlock1||getType(calType()) == TileType::HiddenBox ) {
-        mBehavior = new CoinBlockBehavior();
+        mBehavior = std::make_unique<CoinBlockBehavior>();
     } 
     else if(getType(calType()) == TileType::OwInitialTile || getType(calType()) == TileType::UnderTile) {
-        mBehavior = new SimpleBlockBehavior();
+        mBehavior = std::make_unique<SimpleBlockBehavior>();
     }
     else if(getType(calType()) == TileType::HoriMovingBlock ) {
         mPhysics.setVelocity({50.0f,0});
-        mBehavior = new MovingBlockBehavior(301);
+        mBehavior = std::make_unique<MovingBlockBehavior>(301);
     }
     else if(getType(calType()) == TileType::VertMovingBlock ) {
         mPhysics.setVelocity({0,50.0f});
-        mBehavior = new MovingBlockBehavior(292);
+        mBehavior = std::make_unique<MovingBlockBehavior>(292);
     }
 }
 
@@ -336,7 +336,6 @@ void TileBlock::addFragment() {
 
 void TileBlock::update(float dt){
     Vector2 mousePos = GetMousePosition();
-    if (mType == -1) return;
     //std::cout << "TileBlock update: " << mType << std::endl;
     if (mBehavior) {
         mBehavior->update(*this, dt);
