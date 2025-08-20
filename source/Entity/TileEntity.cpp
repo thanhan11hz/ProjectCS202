@@ -410,6 +410,7 @@ void TileBlock::serialize(nlohmann::json& j) {
     j["right"] = mPhysics.isRight();
     if (mType == 180 || mType == 181 || mType == 182) mType = 180;
     if (mType == 189 || mType == 190 || mType == 191) mType = 189;
+    if (mType == 252 || mType == 253 || mType == 254) mType = 252;
     j["type"] = mType;
     j["rect"] = mRect;
     j["source"] = mSource;
