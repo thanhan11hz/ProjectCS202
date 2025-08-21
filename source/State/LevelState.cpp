@@ -7,7 +7,7 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -15,7 +15,6 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
 

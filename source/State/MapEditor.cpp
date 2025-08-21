@@ -14,7 +14,7 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
     mContainer_view.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -22,7 +22,6 @@ MapEditor::MapEditor(StateStack& stack): State(stack), mMode(MapEditorMode::VIEW
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
 
@@ -612,7 +611,7 @@ void MapEditor::drawUI() {
         case MapEditorMode::CONFIRM:
         {    
             //std::cout << "cfmode" << std::endl;
-            DrawRectangle(0,0,1440,900,Fade({83,83,83,255}, 0.7f));
+            DrawRectangle(0,0,1440,912,Fade({83,83,83,255}, 0.7f));
             Texture2D cfbox = Resource::mTexture.get(TextureIdentifier::CONFIRM_BOX);
             DrawTexture(cfbox, 426, 257, WHITE);
             if (!cfReset) mContainer_confirm.draw();

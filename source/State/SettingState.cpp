@@ -20,7 +20,7 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -28,7 +28,6 @@ SettingState::SettingState(StateStack& stack): State(stack), mCurrentPage(1), mM
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
 

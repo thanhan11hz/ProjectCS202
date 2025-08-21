@@ -21,7 +21,7 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -29,7 +29,6 @@ CharSelectState::CharSelectState(StateStack& stack): State(stack), selectedChara
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
 

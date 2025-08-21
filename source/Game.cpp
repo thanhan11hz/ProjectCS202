@@ -166,7 +166,6 @@ Game::Game() {
         if (entry.is_directory() && entry.path().filename().string() != "Custom") {
             std::string folder_path = entry.path().string();
             mWorld.loadMap(folder_path);
-            std::cout << "Loaded map: " << folder_path << std::endl;
         }
     }
     
