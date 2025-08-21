@@ -836,7 +836,7 @@ int MapEditor::getTilesPerRow() {
  
 void MapEditor::saveMap() {
     int order = (createdCount >= 4 ? 3 : createdCount);
-    std::filesystem::path exePath = std::filesystem::current_path().parent_path();
+    std::filesystem::path exePath = std::filesystem::current_path();
     std::filesystem::path customDir = exePath / "resource" / "Map" / "Custom";
 
     std::string prefix = "0" + std::to_string(order+1);
