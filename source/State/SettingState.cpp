@@ -621,11 +621,13 @@ std::string SettingState::mapKeyToChar(KeyboardKey key) {
 bool SettingState::isKeybindDuplicate(KeyboardKey key, Action reassign) {
     for (const auto& pair : mLocalKeybinds) {
         if (pair.second == key && (mCurrentPage != 3 || pair.first != reassign)) {
+            if (Action::FIRE == pair.first && mCurrentPage == 2) continue;
             return true;
         }
     }
     for (const auto& pair : mLocalKeybinds2) {
         if (pair.second == key && (mCurrentPage != 4 || pair.first != reassign)) {
+            if (Action::FIRE == pair.first && mCurrentPage == 2) continue;
             return true;
         }
     }
