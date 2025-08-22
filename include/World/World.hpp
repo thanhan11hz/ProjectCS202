@@ -17,7 +17,6 @@ class World {
     public:
 
         // Memento
-        std::unique_ptr<Memento> mSnapshot;
         void saveSnapshot();
         void restore();
         void loadSnapshot();
@@ -103,4 +102,6 @@ class World {
         bool hasNextMap();
 
         void nextMap();
+
+        std::unique_ptr<Memento> mSnapshot;
 };

@@ -185,10 +185,10 @@ void Koopa::handleCollision(Side side, Collide other) {
         mWorld.receivePoint(200);
     }
 
-    if (otherLabel == Category::ENEMY && (side == Side::LEFT || side == Side::RIGHT)) {
+    if ((otherLabel == Category::ENEMY || otherLabel == Category::ITEM) && (side == Side::LEFT || side == Side::RIGHT)) {
         mSpeed *= -1;
-        if (side == Side::LEFT) mPhysics.setPosition(mPhysics.getPosition() + Vector2{10, 0});
-        else mPhysics.setPosition(mPhysics.getPosition() + Vector2{-10, 0});
+        if (side == Side::LEFT) mPhysics.setPosition(mPhysics.getPosition() + Vector2{5, 0});
+        else mPhysics.setPosition(mPhysics.getPosition() + Vector2{-5, 0});
     }
 }
 

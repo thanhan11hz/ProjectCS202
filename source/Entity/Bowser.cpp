@@ -110,6 +110,12 @@ void Bowser::handleCollision(Side side, Collide other) {
     if ((side == Side::RIGHT || side == Side::LEFT) && otherLabel == Category::BLOCK) {
         mSpeed = (side == Side::RIGHT) ? -100.0f : 100.0f;
     }
+
+    if ((otherLabel == Category::ENEMY || otherLabel == Category::ITEM) && (side == Side::LEFT || side == Side::RIGHT)) {
+        mSpeed *= -1;
+        if (side == Side::LEFT) mPhysics.setPosition(mPhysics.getPosition() + Vector2{5, 0});
+        else mPhysics.setPosition(mPhysics.getPosition() + Vector2{-5, 0});
+    }
 }
 
 Vector2 Bowser::getSize() {

@@ -85,3 +85,10 @@ void FlyingKoopa::serialize(nlohmann::json& j) {
         {"class", "flyingKoopa"}
     };
 }
+
+std::unique_ptr<FlyingKoopa> FlyingKoopa::spawnFlyingKoopa(Vector2 position) {
+    std::unique_ptr<FlyingKoopa> mFKoopa;
+    mFKoopa->mPhysics.setPosition(position);
+    mFKoopa->mFixedPoint = position;
+    return std::move(mFKoopa);
+}

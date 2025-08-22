@@ -23,6 +23,8 @@ class FlyingKoopa : public Enemy {
             return Enemy::cloneImpl<FlyingKoopa>();
         }
 
+        static std::unique_ptr<FlyingKoopa> spawnFlyingKoopa(Vector2 position);
+
     private:
         Vector2 mFixedPoint;
         float mSpeed = -50.0f;

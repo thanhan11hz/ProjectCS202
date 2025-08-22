@@ -5,7 +5,7 @@
 
 FireBall::FireBall(bool isRight) {
     mBodyCollide.setLabel(Category::PROJECTILE);
-    mBodyCollide.setFilter(Category::NONE);
+    mBodyCollide.setFilter(static_cast<Category>(Category::MARIO | Category::ITEM));
     mPhysics.setDensity(2.0f);
     mBodyCollide.setStatic(false);
     mAnim.setTexture(&Resource::mTexture.get(TextureIdentifier::FIREBALL), 9, 9);
