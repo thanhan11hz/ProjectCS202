@@ -52,7 +52,7 @@ public:
     std::vector<std::unique_ptr<TileObject>>& getItems() {return Items;}
     std::vector<std::unique_ptr<TileObject>> takeItems() {return std::move(Items); }
     void setEnemy(std::vector<std::unique_ptr<Enemy>>& enemy);
-    void resetItem() { Items.clear(); }
+    void resetItem() {Items.clear(); }
 
     TileMap(const TileMap&);
     std::unique_ptr<TileMap> clone() const {

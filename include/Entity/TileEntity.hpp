@@ -84,7 +84,7 @@ public:
 };
 
 
-class TileBlock : public Entity{
+class TileBlock : public Entity {
     public:
     TileBlock(int type, int col, int row);
     TileBlock(const nlohmann::json& j);
@@ -112,7 +112,7 @@ class TileBlock : public Entity{
     bool isSolid();
     virtual std::string getTag();
 
-    virtual ~TileBlock();
+    virtual ~TileBlock(){ }
     Color getCorlor() const { 
         if(mType == 42) {
             return BLACK;}

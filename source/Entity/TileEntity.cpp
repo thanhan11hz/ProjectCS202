@@ -400,7 +400,6 @@ void TileBlock::handleCollision(Side side, Collide other) {
     }
     mColor = RED;
 }
-TileBlock::~TileBlock(){}
 
 void TileBlock::serialize(nlohmann::json& j) {
     j["position"] = mPhysics.getPosition();
