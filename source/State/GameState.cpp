@@ -6,7 +6,7 @@ GameState::GameState(StateStack& stack) : State(stack) {
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -14,7 +14,6 @@ GameState::GameState(StateStack& stack) : State(stack) {
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
     

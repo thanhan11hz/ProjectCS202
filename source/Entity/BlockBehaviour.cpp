@@ -79,7 +79,7 @@ void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
     //std::cout << "SimpleBlockBehavior destroy called" << std::endl;
     if (block.isDoneAnimation) return;
     block.aniTime += dt;
-    if(block.aniTime < 1.0f){
+    if(block.aniTime < 10.0f){
         for (int i = 0; i < 4; i++){
             
             block.frag[i]->update(dt);
@@ -87,7 +87,9 @@ void SimpleBlockBehavior::destroy(TileBlock& block, float dt) {
         }
     }
     else{
+        block.isDoneAnimation = true;
         block.mType = -1;
+        std::cout << "Block destroyed" << std::endl;
     }
 }
 

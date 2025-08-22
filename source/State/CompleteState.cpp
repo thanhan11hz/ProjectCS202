@@ -88,7 +88,7 @@ CompleteState::CompleteState(StateStack& stack) : State(stack) {
         int time = (int)mWorld.getRestTime();
         int minute = time / 60;
         int second = time % 60;
-        std::string text = "TIME: ";
+        std::string text = "TIME ";
         if (minute < 10) text += "0";
         text += std::to_string(minute) + ":";
         if (second < 10) text += "0";

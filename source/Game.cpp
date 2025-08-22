@@ -1,9 +1,8 @@
 #include "Game.hpp"
-
 Game::Game() {
 
     // SetConfigFlags(FLAG_FULLSCREEN_MODE);
-    InitWindow(targetWidth, targetHeight, "Project CS202 - Group 7 - Super Mario Game");
+    InitWindow(targetWidth, targetHeight, "Project CS202 - Group 6 - Super Mario Game");
     InitAudioDevice();
     Resource::mTexture.load(TextureIdentifier::MENU_BACKGROUND, "resource\\Texture\\Background\\mainmenubg.png");
     Resource::mTexture.load(TextureIdentifier::LEVEL_BACKGROUND, "resource\\Texture\\Background\\cloudsbg.png");

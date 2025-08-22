@@ -7,7 +7,7 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -15,7 +15,6 @@ LevelState::LevelState(StateStack& stack) : State(stack), mCurrentPage(1), mMaxP
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
 
@@ -269,7 +268,7 @@ bool LevelState::update(float dt) {
 }
 
 void LevelState::setupCustom() {
-    level1->changeCallback([this]() {
+        level1->changeCallback([this]() {
                 }
             );
             level2->changeCallback([this]() {
@@ -282,9 +281,9 @@ void LevelState::setupCustom() {
                 }
             );
             header_lv1->changeText("CUSTOM MAP");
-            header_lv1->changeText("CUSTOM MAP");
-            header_lv1->changeText("CUSTOM MAP");
-            header_lv1->changeText("CUSTOM MAP");
+            header_lv2->changeText("CUSTOM MAP");
+            header_lv3->changeText("CUSTOM MAP");
+            header_lv4->changeText("CUSTOM MAP");
     switch (createdCount) {
         case 0:
             level1->changeTexture(TextureIdentifier::INACTIVE_BUTTON_MEDIUM);
@@ -317,20 +316,18 @@ void LevelState::setupCustom() {
             level4->changeTexture(TextureIdentifier::ACTIVE_BUTTON_MEDIUM);
             break;
     }
-    std::filesystem::path exePath = std::filesystem::current_path().parent_path();
+    std::filesystem::path exePath = std::filesystem::current_path();
     std::filesystem::path customDir = exePath / "resource" / "Map" / "Custom";
     for (const auto& entry : std::filesystem::directory_iterator(customDir)) {
         // Check if the entry is a directory
         if (entry.is_directory()) {
             std::string folder_name = entry.path().filename().string();
 
-            // Check if folder name matches the "0x_name" pattern
-            if (folder_name.length() >= 3 && // Minimum length for "0x_"
-                folder_name[0] == '0' && // Starts with '0'
-                std::isdigit(folder_name[1]) && // Second character is a digit
-                folder_name[2] == '_') { // Third character is '_'
+            if (folder_name.length() >= 3 && 
+                folder_name[0] == '0' && 
+                std::isdigit(folder_name[1]) && 
+                folder_name[2] == '_') { 
                 
-                // Extract the name part after "0x_"
                 std::string name_part = folder_name.substr(3);
                 if (folder_name[1] == '1') header_lv1->changeText(name_part);
                 if (folder_name[1] == '2') header_lv2->changeText(name_part);

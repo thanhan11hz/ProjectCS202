@@ -45,13 +45,13 @@ GameOverState::GameOverState(StateStack& stack) : State(stack) {
     Label* time = new Label();
     time->changeShape({23,858,170, 17});
     time->changeSize(17);
-    time->changeText("TIME: 00:00");
+    time->changeText("TIME 00:00");
     time->changeColor(WHITE);
     time->changeCallback([this](Label* label) {
         int time = (int)mWorld.getRestTime();
         int minute = time / 60;
         int second = time % 60;
-        std::string text = "TIME: ";
+        std::string text = "TIME ";
         if (minute < 10) text += "0";
         text += std::to_string(minute) + ":";
         if (second < 10) text += "0";

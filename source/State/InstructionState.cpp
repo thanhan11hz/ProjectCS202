@@ -29,7 +29,7 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
     mContainer.pack(muteButton);
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -37,7 +37,6 @@ InstructionState::InstructionState(StateStack& stack): State(stack), mCurrentPag
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
 

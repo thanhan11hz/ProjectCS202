@@ -6,7 +6,7 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
     muteButton->changShape({23,22,41,41});
     muteButton->changeCallback(
         [this]() {
-            if (IsMusicStreamPlaying(mPlayingMusic)) if (!isMute) {
+            if (!isMute) {
                 PauseMusicStream(mPlayingMusic);
                 isMute = true;
             }
@@ -14,7 +14,6 @@ MenuState::MenuState(StateStack& stack): State(stack), gamemode(false) {
                 ResumeMusicStream(mPlayingMusic);
                 isMute = false;
             }
-            else ResumeMusicStream(mPlayingMusic);
         }
     );
     mContainer.pack(muteButton);
