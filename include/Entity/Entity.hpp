@@ -35,7 +35,6 @@ class Entity {
 
         void setAfterBlock(bool flag);
         bool isAfterBlock();
-
         protected:
             Animation mAnim;
         

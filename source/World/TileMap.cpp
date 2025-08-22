@@ -117,6 +117,7 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                     case 44: 
                     case 252: 
                         item = std::make_unique<TileObject>(tileId, j, i);
+
                         //dataItem.emplace_back(std::make_pair(tileId, Vector2{j*1.0f, i*1.0f}));
                         break;
                     default:
@@ -157,7 +158,9 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                         break;
                     case 84:
                         Enemy = Piranha::spawnPiranha2({col * 48.0f, i * 48.0f});
-
+                        break;
+                    case 39:
+                        Enemy = FlyingKoopa::spawnFlyingKoopa({col * 48.0f, i * 48.0f});
                         break;
                     case 41:
                         Enemy = Koopa::spawnKoopa({col * 48.0f, i * 48.0f},Koopa::Type::K_RED);
@@ -180,6 +183,7 @@ void TileMap::createMap(int choice, vector<vector<int>>& matrix){
                     default:
                         break;
                 }
+                
                 if (Enemy) {
                     Enemies.emplace_back(std::move(Enemy));
                 }
